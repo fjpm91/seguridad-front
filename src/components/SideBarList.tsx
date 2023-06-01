@@ -7,111 +7,110 @@ import {
   ListItemText,
 } from "@mui/material";
 import CollapsableItem from "./CollapsableItem";
-import { Aplicacion, User } from "../App";
-import { AccountCircle, Home } from "@mui/icons-material";
+import { AccountCircle } from "@mui/icons-material";
+import { Aplicacion, Modulo, Persona, Rol, User } from "../interfaces/interfaces";
 
 interface Props {
-  user: User;
   aplicacion: Aplicacion;
+  persona: Persona;
+  user: User;
+  rol: Rol;
 }
 
-export interface Modulo {
-  id: number;
-  Url: string;
-  Nombre: string;
-  Icono: string;
-  Menu: boolean;
-  Aplicacion_Id: number;
-  Modulo_Padre: number | null;
-  SubModulos: Modulo[] | [];
-}
-
-const accesos: Modulo[] = [
+const modulos: Modulo[] = [
   {
-    id: 1,
-    Url: "/",
-    Nombre: "Inicio",
-    Icono: "home",
-    Menu: true,
-    Aplicacion_Id: 1,
-    Modulo_Padre: null,
+    modulo_id: 1,
+    url: "/",
+    nombre: "Inicio",
+    titulo: "Inicio",
+    icono: "home",
+    menu: true,
+    aplicacion_id: 1,
+    modulo_padre: null,
     SubModulos: [],
   },
   {
-    id: 2,
-    Url: "/usuarios-personas",
-    Nombre: "Usuarios y Personas",
-    Icono: "PeopleAltIcon",
-    Menu: true,
-    Aplicacion_Id: 2,
-    Modulo_Padre: null,
+    modulo_id: 2,
+    url: "/usuarios-personas",
+    nombre: "Usuarios y Personas",
+    titulo: "Usuarios y Personas",
+    icono: "PeopleAltIcon",
+    menu: true,
+    aplicacion_id: 2,
+    modulo_padre: null,
     SubModulos: [
       {
-        id: 5,
-        Url: "/usuarios",
-        Nombre: "Usuarios",
-        Icono: "HttpsIcon",
-        Menu: true,
-        Aplicacion_Id: 1,
-        Modulo_Padre: 2,
+        modulo_id: 5,
+        url: "/usuarios",
+        nombre: "Usuarios",
+        titulo: "Usuarios",
+        icono: "HttpsIcon",
+        menu: true,
+        aplicacion_id: 1,
+        modulo_padre: 2,
         SubModulos: [],
       },
       {
-        id: 6,
-        Url: "/personas",
-        Nombre: "Personas",
-        Icono: "HttpsIcon",
-        Menu: true,
-        Aplicacion_Id: 1,
-        Modulo_Padre: null,
+        modulo_id: 6,
+        url: "/personas",
+        nombre: "Personas",
+        titulo: "Personas",
+        icono: "HttpsIcon",
+        menu: true,
+        aplicacion_id: 1,
+        modulo_padre: null,
         SubModulos: [],
       },
     ],
   },
   {
-    id: 3,
-    Url: "/aplicaciones",
-    Nombre: "Aplicaciones",
-    Icono: "Apps",
-    Menu: true,
-    Aplicacion_Id: 1,
-    Modulo_Padre: null,
+    modulo_id: 3,
+    url: "/aplicaciones",
+    nombre: "Aplicaciones",
+    titulo: "Aplicaciones",
+    icono: "Apps",
+    menu: true,
+    aplicacion_id: 1,
+    modulo_padre: null,
     SubModulos: [],
   },
   {
-    id: 4,
-    Url: "/roles-accesos",
-    Nombre: "Roles y Accesos",
-    Icono: "HttpsIcon",
-    Menu: true,
-    Aplicacion_Id: 1,
-    Modulo_Padre: null,
+    modulo_id: 4,
+    url: "/roles-accesos",
+    nombre: "Roles y Accesos",
+    titulo: "Roles y Accesos",
+    icono: "HttpsIcon",
+    menu: true,
+    aplicacion_id: 1,
+    modulo_padre: null,
     SubModulos: [
       {
-        id: 7,
-        Url: "/roles",
-        Nombre: "Roles",
-        Icono: "HttpsIcon",
-        Menu: false,
-        Aplicacion_Id: 1,
-        Modulo_Padre: null,
+        modulo_id: 7,
+        url: "/roles",
+        nombre: "Roles",
+        titulo: "Roles",
+        icono: "HttpsIcon",
+        menu: false,
+        aplicacion_id: 1,
+        modulo_padre: null,
         SubModulos: [],
       },
       {
-        id: 8,
-        Url: "/roles",
-        Nombre: "Roles",
-        Icono: "HttpsIcon",
-        Menu: false,
-        Aplicacion_Id: 1,
-        Modulo_Padre: null,
+        modulo_id: 8,
+        url: "/roles",
+        nombre: "Roles",
+        titulo: "Roles",
+        icono: "HttpsIcon",
+        menu: false,
+        aplicacion_id: 1,
+        modulo_padre: null,
         SubModulos: [],
       },
     ],
   },
 ];
 
-const SideBarList = ({ user, aplicacion }: Props) => {
+const SideBarList = ({ aplicacion, persona, rol, user }: Props) => {
   return (
     <>
       <List>
@@ -121,16 +120,16 @@ const SideBarList = ({ user, aplicacion }: Props) => {
               <AccountCircle />
             </ListItemIcon>
             <ListItemText
-              primary={user.nombre_completo}
-              secondary={user.nombre_rol}
+              primary={persona?.nombre_completo}
+              secondary={rol.nombre}
             />
           </ListItemButton>
         </ListItem>
       </List>
       <Divider />
       <List>
-        {accesos.map((acceso) => (
-          <CollapsableItem key={acceso.id} acceso={acceso} />
+        {modulos.map((modulo) => (
+          <CollapsableItem key={modulo.modulo_id} modulo={modulo} />
         ))}
         <Divider />
         <ListItem disablePadding>

@@ -1,6 +1,6 @@
 import { AppBar, Button, IconButton, Toolbar, Typography } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Aplicacion, User } from "../App";
+import { User, Aplicacion } from "../interfaces/interfaces";
 
 interface Props {
   user: User;
@@ -9,7 +9,7 @@ interface Props {
 }
 
 const ButtonAppBar = ({ user, aplicacion, onOpen }: Props) => {
-  const botones = user.rol ? (
+  const botones = user.persona_id ? (
     <Button color="inherit">Cerrar sesión</Button>
   ) : (
     <Button color="inherit">Login</Button>

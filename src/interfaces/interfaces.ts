@@ -7,41 +7,44 @@ export interface Empresa {
 }
 
 export interface Persona {
-    persona_id: number;
-    nombre: string;
-    apellido_paterno: string;
     apellido_materno: string;
-    nombre_completo: string;
-    ci: string;
-    ci_origen: string;
-    ci_extension: string;
-    fecha_nacimiento: string;
-    correo: string;
-    telefono: string;
-    empresa: string;
-    cargo: string;
-    foto: string;
-    ubicacion: string;
-    habilitado: boolean;
+    apellido_paterno: string;
+    cargo?: string;
+    ci_extension?: string;
+    ci_origen?: string;
+    ci?: string;
+    correo?: string;
     created_at?: number;
+    empresa_id?: number;
+    fecha_nacimiento?: string;
+    foto?: string;
+    habilitado?: boolean;
+    nombre_completo?: string;
+    nombre?: string;
+    persona_id?: number;
+    telefono?: string;
+    ubicacion?: string;
     updated_at?: number;
 }
 
 export interface Rol {
     rol_id: number;
+    aplicacion_id: number;
     nombre: string;
     habilitado: boolean;
     created_at?: number;
     updated_at?: number;
 }
 
-export interface Usuario {
-    usuario_id: number;
-    persona_id: number;
-    rol_id: number;
+export interface User {
+    id: number;
+    created_at: number;
+    email: string;
     habilitado: boolean;
-    created_at?: number;
-    updated_at?: number;
+    name: string;
+    persona_id: number;
+    updated_at: number;
+    // persona: Persona;
 }
 
 export interface Operacion {
@@ -63,36 +66,42 @@ export interface Bitacora {
 
 export interface Aplicacion {
     aplicacion_id: number;
+    area?: string;
+    base_datos?: string;
     codigo: string;
+    created_at?: number;
+    descripcion: string;
+    habilitado: number;
+    icono: string;
+    ip_servidor?: string;
     nombre: string;
     titulo: string;
-    icono: string;
-    url: string;
-    descripcion: string;
-    area: string;
-    base_datos: string;
-    ip_servidor: string;
-    version: string;
-    created_at?: number;
     updated_at?: number;
+    url: string;
+    version: string;
 }
 
 export interface Modulo {
-    modulo_id: number;
     aplicacion_id: number;
-    modulo_padre: number;
-    url: string;
-    nombre: string;
-    icono: string;
-    menu: number;
     created_at?: number;
+    icono: string;
+    menu: boolean;
+    modulo_id: number;
+    modulo_padre?: number | null;
+    nombre: string;
+    SubModulos?: Modulo[] | null
+    titulo: string;
     updated_at?: number;
+    url: string;
 }
 
 export interface RolAcceso {
-    id: number;
-    rolId: number;
-    modulod: number;   
+    acceso_id: number;
+    rol_id: number;
+    modulo_id: number;   
+    nombre: string;
+    titulo: string;
+    url: string;
 }
 
 export interface Componente {
@@ -126,3 +135,17 @@ export interface MenuItem {
     RutaModulo: string;
     Menu: number;
 }
+
+export interface BackendResponse {
+    success: boolean;
+    message: string;
+    data: any;
+}
+
+// export interface AppAuthState {
+//     user?: User,
+//     aplicacion?: Aplicacion,
+//     rol?: Rol,
+//     modulos?: Modulo[],
+//     token?: string;
+// }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Collapse,
   List,
@@ -9,28 +9,31 @@ import {
 import MailIcon from "@mui/icons-material/Mail";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
-import { AccountCircle, Home } from "@mui/icons-material";
-import { Modulo } from "./SideBarList";
+import { Modulo } from "../interfaces/interfaces";
+import { useNavigate } from "react-router-dom";
+// import { Modulo } from "./SideBarList";
 
 interface Props {
-  acceso: Modulo;
+  modulo: Modulo | null;
 }
 
-const CollapsableItem = ({ acceso }: Props) => {
+const CollapsableItem = ({ modulo }: Props) => {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const handleClick = () => {
-    setOpen(!open);
+  const handleClick = (event?: Modulo | undefined | null) => {
+    if (!event) return;
+    event.menu && event?.SubModulos?.length !== 0 ? setOpen(!open) : navigate(event?.url ?? "/");
   };
 
   return (
     <>
-      <ListItemButton onClick={handleClick}>
+      <ListItemButton onClick={() => handleClick(modulo)}>
         <ListItemIcon>
-          {acceso.id % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+          <MailIcon />
         </ListItemIcon>
-        <ListItemText primary={acceso.Nombre} />
-        {acceso.SubModulos.length !== 0 ? (
+        <ListItemText primary={modulo?.titulo} />
+        {!!modulo?.SubModulos && modulo.SubModulos.length !== 0 ? (
           open ? (
             <ExpandLess />
           ) : (
@@ -38,15 +41,19 @@ const CollapsableItem = ({ acceso }: Props) => {
           )
         ) : null}
       </ListItemButton>
-      {acceso.SubModulos.length === 0 ? null : (
+      {!!modulo?.SubModulos && modulo.SubModulos.length === 0 ? null : (
         <Collapse in={open} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            {acceso.SubModulos.map((subModulo) => (
-              <ListItemButton key={subModulo.id} sx={{ pl: 4 }}>
+            {modulo?.SubModulos?.map((subModulo) => (
+              <ListItemButton
+                key={subModulo.modulo_id}
+                sx={{ pl: 4 }}
+                onClick={() => handleClick(subModulo)}
+              >
                 <ListItemIcon>
-                  {acceso.id % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  {modulo.modulo_id % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                 </ListItemIcon>
-                <ListItemText primary={subModulo.Nombre} />
+                <ListItemText primary={subModulo.titulo} />
               </ListItemButton>
             ))}
           </List>
