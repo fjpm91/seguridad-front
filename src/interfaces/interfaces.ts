@@ -31,9 +31,10 @@ export interface Rol {
     rol_id: number;
     aplicacion_id: number;
     nombre: string;
-    habilitado: boolean;
+    habilitado: number;
     created_at?: number;
     updated_at?: number;
+    aplicacion: Aplicacion;
 }
 
 export interface User {
@@ -79,6 +80,7 @@ export interface Aplicacion {
     updated_at?: number;
     url: string;
     version: string;
+    codigo_nombre?: string;
 }
 
 export interface Modulo {

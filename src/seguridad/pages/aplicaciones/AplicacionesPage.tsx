@@ -25,7 +25,7 @@ export const AplicacionesPage = () => {
 
   const getAplicaciones = async () => {
     const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.CRUD_APLICACIONES}`
+      `/${ApiEndpoints.APLICACIONES}`
     );
 
     if (!data) {
@@ -59,7 +59,7 @@ export const AplicacionesPage = () => {
     try {
       const datos = {
         user: user?.id,
-        codigo: appSeleccionada?.codigo,
+        codigo_app: import.meta.env.VITE_CODIGO_APP,
       };
       const { data } = await apiClient.put<BackendResponse>(
         `/aplicaciones/habilitar/${appSeleccionada?.aplicacion_id}`,

@@ -32,11 +32,16 @@ export enum ApiEndpoints {
   ACCESOS = "accesos",
   BITACORA = "bitacora",
   COMPONENTES = "componentes",
-  CRUD_APLICACIONES = "aplicaciones",
+  APLICACIONES = "aplicaciones",
   EMPRESA = "empresa",
   LOGIN = "aut/login",
   MODULOS = "modulos",
   PERSONAS = "personas",
   ROLES = "roles",
+  HABILITAR_ROLES = "roles/habilitar",
   USUARIOS = "usuarios",
+}
+
+export enum Messages {
+  NO_SE_PUDO_COMPLETAR = "No se pudo completar la operación"
 }

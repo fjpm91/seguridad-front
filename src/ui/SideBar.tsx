@@ -1,13 +1,5 @@
 import Drawer from "@mui/material/Drawer";
 import {
-  Aplicacion,
-  Modulo,
-  Persona,
-  Rol,
-  User,
-} from "../interfaces/interfaces";
-import { AccountCircle } from "@mui/icons-material";
-import {
   List,
   ListItem,
   ListItemButton,
@@ -15,7 +7,15 @@ import {
   ListItemText,
   Divider,
 } from "@mui/material";
-import CollapsableItem from "./CollapsableItem";
+import { AccountCircle } from "@mui/icons-material";
+import CollapsableItem from "../components/CollapsableItem";
+import {
+  Aplicacion,
+  Modulo,
+  Persona,
+  Rol,
+  User,
+} from "../interfaces/interfaces";
 
 interface Props {
   aplicacion: Aplicacion | null | undefined;
@@ -26,7 +26,8 @@ interface Props {
   modulos: Modulo[] | null | undefined;
   onOpenClose: () => void;
 }
-export default function SideBar({
+
+export function SideBar({
   aplicacion,
   open = false,
   persona,
@@ -34,8 +35,6 @@ export default function SideBar({
   modulos,
   onOpenClose,
 }: Props) {
-  // const [state, setState] = React.useState(open);
-
   return (
     <>
       <Drawer anchor="left" open={open} onClose={() => onOpenClose()}>
@@ -56,9 +55,11 @@ export default function SideBar({
           <Divider />
 
           {/* Modulos dinamicos por rol */}
-          {modulos?.map((modulo) => (
-             modulo.menu ? <CollapsableItem key={modulo?.modulo_id} modulo={modulo} /> : null
-          ))}
+          {modulos?.map((modulo) =>
+            modulo.menu ? (
+              <CollapsableItem key={modulo?.modulo_id} modulo={modulo} />
+            ) : null
+          )}
           <Divider />
           <ListItem disablePadding>
             <ListItemButton>

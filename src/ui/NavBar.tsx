@@ -1,14 +1,12 @@
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppBar, Button, IconButton, Toolbar, Typography } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Aplicacion } from "../interfaces/interfaces";
-import { useContext } from "react";
 import { AuthContext } from "../auth";
+import { Aplicacion } from "../interfaces/interfaces";
 
 interface Props {
   aplicacion: Aplicacion | null | undefined;
-  // rol: Rol;
-  // user: User;
   onOpen: () => void;
 }
 

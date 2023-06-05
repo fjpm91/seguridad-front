@@ -13,28 +13,29 @@ import {
   Typography,
 } from "@mui/material";
 import apiClient from "../../../../services/api-client";
-import { Aplicacion, BackendResponse } from "../../../../interfaces/interfaces";
-import { ApiEndpoints } from "../../../../models/enums";
 import { useAuth } from "../../../../auth/context/useAuth";
+import { Aplicacion, BackendResponse } from "../../../../interfaces/interfaces";
+import { ApiEndpoints, Messages } from "../../../../models/enums";
+import { UseToastMessage } from "../../../../hooks/useToastMessage";
 
 export const AplicacionForm = () => {
   const { id } = useParams();
   const { authState } = useAuth();
   const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
+  const { toastMessage, setToastMessage } = UseToastMessage();
   const { control, register, setValue, handleSubmit } = useForm();
   const navigate = useNavigate();
-  const {user} = authState;
+  const { user } = authState;
 
   useEffect(() => {
     getAplicacionById();
   }, []);
 
   const getAplicacionById = async () => {
-    if (!id || id === '0') return;
+    if (!id || id === "0") return;
 
     const { data } = await apiClient.get<Aplicacion>(
-      `/${ApiEndpoints.CRUD_APLICACIONES}/${id}`
+      `/${ApiEndpoints.APLICACIONES}/${id}`
     );
 
     if (!data) return;
@@ -63,11 +64,15 @@ export const AplicacionForm = () => {
 
     try {
       const { data } = await apiClient.post<BackendResponse>(
-        `/${ApiEndpoints.CRUD_APLICACIONES}`,
-        { ...datos, user: user?.id}
+        `/${ApiEndpoints.APLICACIONES}`,
+        {
+          ...datos,
+          user: user?.id,
+          codigo_app: import.meta.env.VITE_CODIGO_APP,
+        }
       );
       if (!data) {
-        showMessage("No se pudo completar la operación");
+        showMessage(Messages.NO_SE_PUDO_COMPLETAR);
         return;
       }
       if (!data.success) {
@@ -85,7 +90,11 @@ export const AplicacionForm = () => {
   };
 
   const update = async (formData: any) => {
-    const datos = { ...formData };
+    const datos = {
+      ...formData,
+      user: user?.id,
+      codigo_app: import.meta.env.VITE_CODIGO_APP,
+    };
     if (datos.area === "...") datos.area = null;
     if (datos.url === "...") datos.url = null;
     if (datos.descripcion === "...") datos.descripcion = null;
@@ -94,11 +103,11 @@ export const AplicacionForm = () => {
 
     try {
       const { data } = await apiClient.put<BackendResponse>(
-        `/${ApiEndpoints.CRUD_APLICACIONES}/${id}`,
+        `/${ApiEndpoints.APLICACIONES}/${id}`,
         datos
       );
       if (!data) {
-        showMessage("No se pudo completar la operación");
+        showMessage(Messages.NO_SE_PUDO_COMPLETAR);
         return;
       }
 
@@ -115,7 +124,7 @@ export const AplicacionForm = () => {
 
   const handleClose = () => {
     setOpen(false);
-    setMessage("");
+    setToastMessage("");
   };
 
   const submitForm = (event: any) => {
@@ -127,7 +136,7 @@ export const AplicacionForm = () => {
   };
 
   const showMessage = (text: string = "Operacion correcta") => {
-    setMessage(text);
+    setToastMessage(text);
     setOpen(true);
   };
 
@@ -325,7 +334,7 @@ export const AplicacionForm = () => {
         autoHideDuration={2000}
         onClose={() => handleClose()}
         anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        message={message}
+        message={toastMessage}
       ></Snackbar>
     </Box>
   );
