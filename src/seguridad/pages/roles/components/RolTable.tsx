@@ -1,46 +1,40 @@
-import { Edit } from "@mui/icons-material";
 import {
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
   Box,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
   IconButton,
 } from "@mui/material";
-import { Aplicacion, RolAcceso } from "../../../../interfaces/interfaces";
-import { useMemo } from "react";
 import { MaterialReactTable, type MRT_ColumnDef } from "material-react-table";
+import { useMemo } from "react";
+import { Rol, RolAcceso } from "../../../../interfaces/interfaces";
 import { MRT_Localization_ES } from "material-react-table/locales/es";
 import { IconoHabilitado } from "../../../../components";
+import { Edit } from "@mui/icons-material";
 
 interface Props {
   accesos: RolAcceso[] | null;
-  aplicaciones: Aplicacion[];
+  roles: Rol[];
   handleOpen: (aplicacion_id: number) => void;
   handleHabilitar: (aplicacion_id: number) => void;
 }
 
-export const AplicacionTable = ({
+export const RolTable = ({
   accesos,
-  aplicaciones,
+  roles,
   handleHabilitar,
   handleOpen,
 }: Props) => {
-  const columns = useMemo<MRT_ColumnDef<Aplicacion>[]>(
+  const columns = useMemo<MRT_ColumnDef<Rol>[]>(
     () => [
-      {
-        accessorKey: "codigo",
-        header: "Codigo",
-        // size: 100,
-      },
       {
         accessorKey: "nombre",
         header: "Nombre",
-        // size: 180,
       },
       {
-        accessorKey: "version",
-        header: "Version",
-        enableColumnFilter: false,
+        accessorKey: "aplicacion.nombre",
+        header: "Aplicacion",
+        // enableColumnFilter: false,
       },
       {
         accessorKey: "habilitado",
@@ -62,13 +56,12 @@ export const AplicacionTable = ({
         ),
       },
     ],
-    [aplicaciones]
+    [roles]
   );
-
   return (
     <MaterialReactTable
       columns={columns}
-      data={aplicaciones}
+      data={roles}
       localization={MRT_Localization_ES}
       enableRowActions
       positionActionsColumn="last"
@@ -79,13 +72,13 @@ export const AplicacionTable = ({
         >
           <IconButton
             color="warning"
-            onClick={() => handleHabilitar(row.original.aplicacion_id)}
+            onClick={() => handleHabilitar(row.original.rol_id)}
           >
             <IconoHabilitado habilitado={row.original.habilitado} />
           </IconButton>
           <IconButton
             color="primary"
-            onClick={() => handleOpen(row.original.aplicacion_id)}
+            onClick={() => handleOpen(row.original.rol_id)}
           >
             <Edit />
           </IconButton>

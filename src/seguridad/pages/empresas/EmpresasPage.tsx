@@ -1,4 +1,5 @@
 import { Box, Container, Typography } from '@mui/material';
+import { CountryList } from './components/CountryList';
 
 export const EmpresasPage = () => {
   return (
@@ -7,6 +8,8 @@ export const EmpresasPage = () => {
         <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
           Empresas
         </Typography>
+
+        <CountryList />
       </Container>
     </Box>
   );

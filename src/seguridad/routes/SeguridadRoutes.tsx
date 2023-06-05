@@ -1,7 +1,5 @@
 import { useContext, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import SideBar from "../../components/SideBar";
-import { NavBar } from "../../ui/NavBar";
 import {
   AplicacionesPage,
   EmpresasPage,
@@ -15,23 +13,25 @@ import { AplicacionForm } from "../pages/aplicaciones/components";
 import { ComponentesPage } from "../pages/componentes/ComponentesPage";
 import { RolesPage } from "../pages/roles/RolesPage";
 import { UsuariosPage } from "../pages/usuarios/UsuariosPage";
+import { NavBar, SideBar } from "../../ui";
+import { RolForm } from "../pages/roles/components";
 
 export const SeguridadRoutes = () => {
-  const [openState, setOpenState] = useState(false);
+  const [openNavBar, setOpenNavBar] = useState(false);
   const { authState } = useContext(AuthContext);
 
   const { aplicacion, modulos, persona, rol, user } = authState;
   return (
     <>
-      <NavBar aplicacion={aplicacion} onOpen={() => setOpenState(!openState)} />
+      <NavBar aplicacion={aplicacion} onOpen={() => setOpenNavBar(!openNavBar)} />
       <SideBar
         aplicacion={aplicacion}
-        open={openState}
+        open={openNavBar}
         persona={persona}
         rol={rol}
         user={user}
         modulos={modulos}
-        onOpenClose={() => setOpenState(false)}
+        onOpenClose={() => setOpenNavBar(false)}
       />
 
       <div>
@@ -75,6 +75,7 @@ export const SeguridadRoutes = () => {
 
           <Route element={<SeguridadProtectedRoutes url="roles_index" />}>
             <Route path="roles" element={<RolesPage />} />
+            <Route path="roles/:id" element={<RolForm />} />
           </Route>
 
           <Route element={<SeguridadProtectedRoutes url="usuarios_index" />}>
