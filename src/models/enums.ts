@@ -9,12 +9,13 @@ export enum StorageKeys {
   LOGGED = "_logged",
 }
 
+// Los nombres de los modulos deben ir en plural
 export enum ModulosSistema {
   ACCESOS = "accesos",
   APLICACIONES = "aplicaciones",
   BITACORA = "bitacora",
   COMPONENTES = "componentes",
-  EMPRESA = "empresa",
+  EMPRESA = "empresas",
   MODULOS = "modulos",
   PERSONAS = "personas",
   ROLES = "roles",
@@ -33,13 +34,14 @@ export enum ApiEndpoints {
   BITACORA = "bitacora",
   COMPONENTES = "componentes",
   APLICACIONES = "aplicaciones",
-  EMPRESA = "empresa",
+  EMPRESAS = "empresas",
   LOGIN = "aut/login",
   MODULOS = "modulos",
   PERSONAS = "personas",
   ROLES = "roles",
   HABILITAR_ROLES = "roles/habilitar",
   HABILITAR_MODULOS = "modulos/habilitar",
+  HABILITAR_EMPRESAS = "empresas/habilitar",
   USUARIOS = "usuarios",
 }
 
