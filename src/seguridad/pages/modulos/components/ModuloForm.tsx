@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useParams, useNavigate } from "react-router-dom";
+import apiClient from "../../../../services/api-client";
 import {
   Box,
   Container,
@@ -21,10 +22,8 @@ import {
   Modulo,
 } from "../../../../interfaces/interfaces";
 import { ApiEndpoints, Messages } from "../../../../models/enums";
-import apiClient from "../../../../services/api-client";
 
 const regMultipleSpaces = /  +/g;
-// const regMultipleSlash = /\/\/+/g;
 const regYspaces = /\sy\s/gi;
 
 export const ModuloForm = () => {

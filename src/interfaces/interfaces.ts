@@ -1,7 +1,7 @@
 export interface Empresa {
   empresa_id: number;
   nombre: string;
-  habilitado: boolean;
+  habilitado: number;
   created_at?: number;
   updated_at?: number;
 }
