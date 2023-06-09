@@ -1,20 +1,20 @@
 import { useContext, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
+import { AuthContext } from "../../auth";
 import {
-  AplicacionesPage,
   EmpresasPage,
   InicioPage,
   PersonasPage,
   RolesAccesosPage,
 } from "../pages";
-import { AuthContext } from "../../auth";
-import { SeguridadProtectedRoutes } from "./SeguridadProtectedRoutes";
-import { AplicacionForm } from "../pages/aplicaciones/components";
+import { AplicacionForm, AplicacionesPage } from "../pages/aplicaciones";
 import { ComponentesPage } from "../pages/componentes/ComponentesPage";
-import { RolesPage } from "../pages/roles/RolesPage";
-import { UsuariosPage } from "../pages/usuarios/UsuariosPage";
+import { ModuloForm, ModulosPage } from "../pages/modulos";
 import { NavBar, SideBar } from "../../ui";
+import { RolesPage } from "../pages/roles/RolesPage";
 import { RolForm } from "../pages/roles/components";
+import { SeguridadProtectedRoutes } from "./SeguridadProtectedRoutes";
+import { UsuariosPage } from "../pages/usuarios/UsuariosPage";
 
 export const SeguridadRoutes = () => {
   const [openNavBar, setOpenNavBar] = useState(false);
@@ -57,6 +57,11 @@ export const SeguridadRoutes = () => {
 
           <Route element={<SeguridadProtectedRoutes url="empresas_index" />}>
             <Route path="empresas" element={<EmpresasPage />} />
+          </Route>
+
+          <Route element={<SeguridadProtectedRoutes url="modulos_index" />}>
+            <Route path="modulos" element={<ModulosPage />} />
+            <Route path="modulos/:id" element={<ModuloForm />} />
           </Route>
 
           <Route element={<SeguridadProtectedRoutes url="componentes_index" />}>

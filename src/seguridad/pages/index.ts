@@ -1,4 +1,4 @@
-export * from "./aplicaciones/AplicacionesPage";
+// export * from "./aplicaciones/AplicacionesPage";
 export * from "./empresas/EmpresasPage";
 export * from "./inicio/InicioPage";
 export * from "./MainPage";
