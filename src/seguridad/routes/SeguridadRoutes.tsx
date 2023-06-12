@@ -16,6 +16,7 @@ import { RolForm } from "../pages/roles/components";
 import { SeguridadProtectedRoutes } from "./SeguridadProtectedRoutes";
 import { UsuariosPage } from "../pages/usuarios/UsuariosPage";
 import { EmpresaForm } from "../pages/empresas";
+import { UsersForm } from "../pages/usuarios";
 
 export const SeguridadRoutes = () => {
   const [openNavBar, setOpenNavBar] = useState(false);
@@ -85,8 +86,9 @@ export const SeguridadRoutes = () => {
             <Route path="roles/:id" element={<RolForm />} />
           </Route>
 
-          <Route element={<SeguridadProtectedRoutes url="usuarios_index" />}>
-            <Route path="usuarios" element={<UsuariosPage />} />
+          <Route element={<SeguridadProtectedRoutes url="users_index" />}>
+            <Route path="users" element={<UsuariosPage />} />
+            <Route path="users/:id" element={<UsersForm />} />
           </Route>
 
           <Route path="/" element={<Navigate to="/inicio" />} />

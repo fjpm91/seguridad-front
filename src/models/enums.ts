@@ -19,7 +19,7 @@ export enum ModulosSistema {
   MODULOS = "modulos",
   PERSONAS = "personas",
   ROLES = "roles",
-  USUARIOS = "usuarios",
+  USUARIOS = "users",
 }
 
 export enum TipoAcceso {
@@ -31,18 +31,19 @@ export enum TipoAcceso {
 
 export enum ApiEndpoints {
   ACCESOS = "accesos",
+  APLICACIONES = "aplicaciones",
   BITACORA = "bitacora",
   COMPONENTES = "componentes",
-  APLICACIONES = "aplicaciones",
   EMPRESAS = "empresas",
+  HABILITAR_EMPRESAS = "empresas/habilitar",
+  HABILITAR_MODULOS = "modulos/habilitar",
+  HABILITAR_ROLES = "roles/habilitar",
+  HABILITAR_USERS = "users/habilitar",
   LOGIN = "aut/login",
   MODULOS = "modulos",
   PERSONAS = "personas",
   ROLES = "roles",
-  HABILITAR_ROLES = "roles/habilitar",
-  HABILITAR_MODULOS = "modulos/habilitar",
-  HABILITAR_EMPRESAS = "empresas/habilitar",
-  USUARIOS = "usuarios",
+  USERS = "users",
 }
 
 export enum Messages {

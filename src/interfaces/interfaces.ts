@@ -19,9 +19,9 @@ export interface Persona {
   fecha_nacimiento?: string;
   foto?: string;
   habilitado?: boolean;
-  nombre_completo?: string;
+  nombre_completo: string;
   nombre?: string;
-  persona_id?: number;
+  persona_id: number;
   telefono?: string;
   ubicacion?: string;
   updated_at?: number;
@@ -41,11 +41,12 @@ export interface User {
   id: number;
   created_at: number;
   email: string;
-  habilitado: boolean;
+  habilitado: number;
   name: string;
   persona_id: number;
   updated_at: number;
   // persona: Persona;
+  roles: Rol[];
 }
 
 export interface Operacion {
