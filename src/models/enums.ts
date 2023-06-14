@@ -41,8 +41,10 @@ export enum ApiEndpoints {
   HABILITAR_USERS = "users/habilitar",
   LOGIN = "aut/login",
   MODULOS = "modulos",
+  MODULOS_BY_APP = "modulos/app",
   PERSONAS = "personas",
   ROLES = "roles",
+  ROLES_ACCESOS = "roles/accesos",
   USERS = "users",
 }
 
