@@ -35,6 +35,7 @@ export interface Rol {
   created_at?: number;
   updated_at?: number;
   aplicacion: Aplicacion;
+  modulos: Modulo[];
 }
 
 export interface User {
@@ -70,24 +71,27 @@ export interface Aplicacion {
   aplicacion_id: number;
   area?: string;
   base_datos?: string;
+  codigo_nombre: string;
   codigo: string;
   created_at?: number;
   descripcion: string;
   habilitado: number;
   icono: string;
   ip_servidor?: string;
+  modulos: Modulo[];
   nombre: string;
+  roles: Rol[];
   titulo: string;
   updated_at?: number;
   url: string;
   version: string;
-  codigo_nombre: string;
 }
 
 export interface Modulo {
   aplicacion_id: number;
   aplicacion_nombre: string;
   aplicacion: Aplicacion;
+  check: boolean;
   created_at?: number;
   habilitado: number;
   icono: string;
@@ -95,7 +99,7 @@ export interface Modulo {
   modulo_id: number;
   modulo_padre?: number | null;
   nombre: string;
-  SubModulos?: Modulo[] | null;
+  SubModulos: Modulo[];
   titulo: string;
   updated_at?: number;
   url: string;

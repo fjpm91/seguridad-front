@@ -1,10 +1,21 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Button, Container, Snackbar, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  Divider,
+  Snackbar,
+  Typography,
+} from "@mui/material";
 import { useAuth } from "../../../auth/context/useAuth";
 import { BackendResponse, Rol } from "../../../interfaces/interfaces";
 import apiClient from "../../../services/api-client";
-import { ApiEndpoints, ModulosSistema, TipoAcceso } from "../../../models/enums";
+import {
+  ApiEndpoints,
+  ModulosSistema,
+  TipoAcceso,
+} from "../../../models/enums";
 import { RolTable } from "./components";
 
 export const RolesPage = () => {
@@ -33,7 +44,6 @@ export const RolesPage = () => {
       showMessage(data.message);
       return;
     }
-
     setRoles([...data.data]);
   };
 
@@ -46,10 +56,12 @@ export const RolesPage = () => {
     setMessage("");
   };
 
+  const handleNavegarPermisos = (id: number) => {
+    navigate(`/accesos/${id}`);
+  };
+
   const handleHabilitar = async (id: number) => {
-    const rolSeleccionado = roles.find(
-      (rol) => rol.rol_id === id
-    );
+    const rolSeleccionado = roles.find((rol) => rol.rol_id === id);
     if (!rolSeleccionado) return;
 
     try {
@@ -59,7 +71,7 @@ export const RolesPage = () => {
       };
       const { data } = await apiClient.put<BackendResponse>(
         `/${ApiEndpoints.HABILITAR_ROLES}/${id}`,
-        {...datos}
+        { ...datos }
       );
 
       if (!data) {
@@ -97,38 +109,38 @@ export const RolesPage = () => {
         <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
           Roles
         </Typography>
+        <Divider />
 
-        
         {accesos?.some(
-            (acceso) =>
-              acceso.nombre === ModulosSistema.ROLES + TipoAcceso.INSERT
-          ) ? (
-            <Button
-              variant="contained"
-              onClick={() => handleOpen(0)}
-              sx={{ mb: 2 }}
-            >
-              Nuevo Rol
-            </Button>
-          ) : null}
+          (acceso) => acceso.nombre === ModulosSistema.ROLES + TipoAcceso.INSERT
+        ) ? (
+          <Button
+            variant="contained"
+            onClick={() => handleOpen(0)}
+            sx={{ mt: 2, mb: 2 }}
+          >
+            Nuevo Rol
+          </Button>
+        ) : null}
 
-          {roles ? (
-            <RolTable
-              accesos={accesos}
-              roles={roles}
-              handleHabilitar={handleHabilitar}
-              handleOpen={handleOpen}
-            />
-          ) : null}
-        </Container>
+        {roles ? (
+          <RolTable
+            accesos={accesos}
+            roles={roles}
+            handleHabilitar={handleHabilitar}
+            handleOpen={handleOpen}
+            handleNavegarPermisos={handleNavegarPermisos}
+          />
+        ) : null}
+      </Container>
 
-        <Snackbar
-          open={open}
-          autoHideDuration={1500}
-          onClose={() => handleClose()}
-          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-          message={message}
-        ></Snackbar>
+      <Snackbar
+        open={open}
+        autoHideDuration={1500}
+        onClose={() => handleClose()}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+        message={message}
+      ></Snackbar>
     </Box>
   );
 };
