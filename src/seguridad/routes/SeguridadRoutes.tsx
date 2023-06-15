@@ -18,6 +18,7 @@ import { UsuariosPage } from "../pages/usuarios/UsuariosPage";
 import { EmpresaForm } from "../pages/empresas";
 import { UsersForm } from "../pages/usuarios";
 import { RolesAccesosForm } from "../pages/rolesAccesos";
+import { BitacoraPage } from "../pages/bitacora";
 
 export const SeguridadRoutes = () => {
   const [openNavBar, setOpenNavBar] = useState(false);
@@ -81,6 +82,12 @@ export const SeguridadRoutes = () => {
             element={<SeguridadProtectedRoutes url="personas_usuarios_index" />}
           >
             <Route path="personas-usuarios" element={<AplicacionesPage />} />
+          </Route>
+
+          <Route
+            element={<SeguridadProtectedRoutes url="bitacora_index" />}
+          >
+            <Route path="bitacora" element={<BitacoraPage />} />
           </Route>
 
           <Route element={<SeguridadProtectedRoutes url="roles_index" />}>

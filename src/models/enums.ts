@@ -32,7 +32,7 @@ export enum TipoAcceso {
 export enum ApiEndpoints {
   ACCESOS = "accesos",
   APLICACIONES = "aplicaciones",
-  BITACORA = "bitacora",
+  BITACORA = "bitacoras",
   COMPONENTES = "componentes",
   EMPRESAS = "empresas",
   HABILITAR_EMPRESAS = "empresas/habilitar",
