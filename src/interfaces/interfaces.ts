@@ -58,13 +58,13 @@ export interface Operacion {
 }
 
 export interface Bitacora {
-  id: number;
-  usuarioId: number;
-  operacionId: number;
-  tabla: string;
-  tablaId: number;
+  bitacora_id: number;
+  codigo_app: string;
   fecha: Date;
-  // habilitado: boolean;
+  nombre_completo: string;
+  operacion: string;
+  tabla_identificador: number;
+  tabla: string;
 }
 
 export interface Aplicacion {
