@@ -35,6 +35,7 @@ export type AuthContextProps = {
     logged: boolean
   ) => void;
   logout: () => void;
+  toggle: (open: boolean) => void;
 };
 
 export const AuthContext = createContext<AuthContextProps>(

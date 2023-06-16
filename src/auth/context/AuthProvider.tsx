@@ -37,7 +37,9 @@ const init = () => {
   const rol = JSON.parse(localStorage.getItem(StorageKeys.ROL) || "{}");
   const user = JSON.parse(localStorage.getItem(StorageKeys.USER) || "{}");
   const storageToken = localStorage.getItem(StorageKeys.USER_TOKEN);
-  const logged = JSON.parse(localStorage.getItem(StorageKeys.LOGGED) || 'false');
+  const logged = JSON.parse(
+    localStorage.getItem(StorageKeys.LOGGED) || "false"
+  );
   const token = storageToken ? storageToken : "";
   const open = false;
 
@@ -50,7 +52,7 @@ const init = () => {
     rol,
     user,
     token,
-    logged
+    logged,
   };
 };
 
@@ -75,7 +77,26 @@ export const AuthProvider = ({ children }: Props) => {
   ) => {
     dispatch({
       type: "[AUTH] login",
-      payload: { accesos, aplicacion, modulos, open, persona, rol, token, user, logged },
+      payload: {
+        accesos,
+        aplicacion,
+        modulos,
+        open,
+        persona,
+        rol,
+        token,
+        user,
+        logged,
+      },
+    });
+  };
+
+  const toggle = (open: boolean) => {
+    dispatch({
+      type: "[AUTH] toggle",
+      payload: {
+        open,
+      },
     });
   };
 
@@ -85,7 +106,7 @@ export const AuthProvider = ({ children }: Props) => {
   };
 
   return (
-    <AuthContext.Provider value={{ authState, login, logout }}>
+    <AuthContext.Provider value={{ authState, login, logout, toggle }}>
       {children}
     </AuthContext.Provider>
   );

@@ -51,3 +51,36 @@ export enum ApiEndpoints {
 export enum Messages {
   NO_SE_PUDO_COMPLETAR = "No se pudo completar la operación"
 }
+
+// export enum IconNames {
+//   Add = 'Add',
+//   AddCircle = 'AddCircle',
+//   AddPhoto = 'AddPhotoAlternateIcon',
+//   Android = 'Android',
+//   Apple = 'Apple',
+//   Apps = 'Apps',
+//   Archive = 'Archive',
+//   AttachFile = 'AttachFile',
+//   Backup = 'Backup',
+//   Block = 'Block',
+//   Bolt = 'Bolt',
+//   Bookmark = 'Bookmark',
+//   Build = 'Build',
+//   Business = 'Business',
+//   CalendarMonthIcon = 'CalendarMonthIcon',
+//   Call = 'Call',
+//   CameraAlt = 'CameraAlt',
+//   Check = 'Check',
+//   CLOCK = 'AccessTime',
+//   Close = 'Close',
+//   Coffee = 'Coffee',
+//   Computer = 'Computer',
+//   ContentCopy = 'ContentCopy',
+//   ContentCut = 'ContentCut',
+//   ContentPaste = 'ContentPaste',
+//   Home = 'Home',
+//   Man = 'Accessibility',
+//   PeopleAlt = 'PeopleAlt',
+//   Extension = 'Extension',
+//   Wallet = 'AccountBalanceWalletIcon',
+// }

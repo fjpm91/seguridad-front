@@ -24,7 +24,7 @@ interface Props {
   rol: Rol | null | undefined;
   user: User | null;
   modulos: Modulo[] | null | undefined;
-  onOpenClose: () => void;
+  onCloseSideBar: () => void;
 }
 
 export function SideBar({
@@ -33,11 +33,11 @@ export function SideBar({
   persona,
   rol,
   modulos,
-  onOpenClose,
+  onCloseSideBar,
 }: Props) {
   return (
     <>
-      <Drawer anchor="left" open={open} onClose={() => onOpenClose()}>
+      <Drawer anchor="left" open={open} onClose={onCloseSideBar}>
         <List>
           {/* Usuario */}
           <ListItem disablePadding>
@@ -60,6 +60,7 @@ export function SideBar({
               <CollapsableItem key={modulo?.modulo_id} modulo={modulo} />
             ) : null
           )}
+
           <Divider />
           <ListItem disablePadding>
             <ListItemButton>

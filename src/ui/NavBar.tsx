@@ -4,6 +4,7 @@ import { AppBar, Button, IconButton, Toolbar, Typography } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { AuthContext } from "../auth";
 import { Aplicacion } from "../interfaces/interfaces";
+import { Logout } from "@mui/icons-material";
 
 interface Props {
   aplicacion: Aplicacion | null | undefined;
@@ -41,15 +42,39 @@ export const NavBar = ({ aplicacion, onOpen }: Props) => {
           <Typography
             variant="h6"
             component="div"
-            sx={{ flexGrow: 1 }}
+            sx={{ flexGrow: 1, display: { xs: "none", md: "block" } }}
             onClick={() => navigate("/")}
           >
             {aplicacion?.nombre}
           </Typography>
 
-          <Button onClick={onLogout} color="inherit">
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{ flexGrow: 1, display: { xs: "block", md: "none" } }}
+            onClick={() => navigate("/")}
+          >
+            {aplicacion?.codigo}
+          </Typography>
+
+          <Button
+            sx={{ display: { xs: "none", sm: "block" } }}
+            onClick={onLogout}
+            color="inherit"
+          >
             Cerrar sesión
           </Button>
+
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="logout"
+            sx={{ display: { sm: "none", xs: "block" } }}
+            onClick={onLogout}
+          >
+            <Logout />
+          </IconButton>
         </Toolbar>
       </AppBar>
     </>

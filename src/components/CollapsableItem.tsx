@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Collapse,
   List,
@@ -6,35 +7,32 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import MailIcon from "@mui/icons-material/Mail";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { Modulo } from "../interfaces/interfaces";
-import { useNavigate } from "react-router-dom";
-// import { Modulo } from "./SideBarList";
+import { DynamicMenuIcon } from ".";
 
 interface Props {
   modulo: Modulo | null;
 }
 
 const CollapsableItem = ({ modulo }: Props) => {
-  const [open, setOpen] = useState(false);
+  const [foldItem, setFoldItem] = useState(false);
   const navigate = useNavigate();
 
   const handleClick = (event?: Modulo | undefined | null) => {
     if (!event) return;
-    event.menu && event?.SubModulos?.length !== 0 ? setOpen(!open) : navigate(event?.url ?? "/");
+    event.menu && event?.SubModulos?.length !== 0 ? setFoldItem(!open) : navigate(event?.url ?? "/");
   };
 
   return (
     <>
       <ListItemButton onClick={() => handleClick(modulo)}>
         <ListItemIcon>
-          <MailIcon />
+          <DynamicMenuIcon icon={modulo?.icono ? modulo?.icono : "Home"} />
         </ListItemIcon>
         <ListItemText primary={modulo?.titulo} />
         {!!modulo?.SubModulos && modulo.SubModulos.length !== 0 ? (
-          open ? (
+          foldItem ? (
             <ExpandLess />
           ) : (
             <ExpandMore />
@@ -42,7 +40,7 @@ const CollapsableItem = ({ modulo }: Props) => {
         ) : null}
       </ListItemButton>
       {!!modulo?.SubModulos && modulo.SubModulos.length === 0 ? null : (
-        <Collapse in={open} timeout="auto" unmountOnExit>
+        <Collapse in={foldItem} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
             {modulo?.SubModulos?.map((subModulo) => (
               <ListItemButton
@@ -51,7 +49,9 @@ const CollapsableItem = ({ modulo }: Props) => {
                 onClick={() => handleClick(subModulo)}
               >
                 <ListItemIcon>
-                  {modulo.modulo_id % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  <DynamicMenuIcon
+                    icon={modulo?.icono ? modulo?.icono : "Home"}
+                  />
                 </ListItemIcon>
                 <ListItemText primary={subModulo.titulo} />
               </ListItemButton>
