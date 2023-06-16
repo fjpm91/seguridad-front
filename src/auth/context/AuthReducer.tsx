@@ -20,10 +20,16 @@ type AuthAction =
         rol: Rol;
         token: string;
         user: User;
-        logged: boolean
+        logged: boolean;
       };
     }
-  | { type: "[AUTH] logout" };
+  | { type: "[AUTH] logout" }
+  | {
+      type: "[AUTH] toggle";
+      payload: {
+        open: boolean;
+      };
+    };
 
 export const authReducer = (state: AppAuthState, action: AuthAction) => {
   switch (action.type) {
@@ -38,8 +44,9 @@ export const authReducer = (state: AppAuthState, action: AuthAction) => {
         rol: action.payload.rol,
         token: action.payload.token,
         user: action.payload.user,
-        logged: true
+        logged: true,
       };
+
     case "[AUTH] logout":
       return {
         ...state, // Todo lo que contenia el state anteriormente
@@ -51,7 +58,13 @@ export const authReducer = (state: AppAuthState, action: AuthAction) => {
         rol: null,
         user: null,
         token: "",
-        logged: false
+        logged: false,
+      };
+
+    case "[AUTH] toggle":
+      return {
+        ...state,
+        open: action.payload.open,
       };
 
     default:

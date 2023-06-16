@@ -21,21 +21,24 @@ import { RolesAccesosForm } from "../pages/rolesAccesos";
 import { BitacoraPage } from "../pages/bitacora";
 
 export const SeguridadRoutes = () => {
-  const [openNavBar, setOpenNavBar] = useState(false);
-  const { authState } = useContext(AuthContext);
+  // const [openNavBar, setOpenNavBar] = useState(false);
+  const { authState, toggle } = useContext(AuthContext);
 
   const { aplicacion, modulos, persona, rol, user } = authState;
   return (
     <>
-      <NavBar aplicacion={aplicacion} onOpen={() => setOpenNavBar(!openNavBar)} />
+      <NavBar
+        aplicacion={aplicacion}
+        onOpen={() => toggle(!authState.open)}
+      />
       <SideBar
         aplicacion={aplicacion}
-        open={openNavBar}
+        open={authState.open}
         persona={persona}
         rol={rol}
         user={user}
         modulos={modulos}
-        onOpenClose={() => setOpenNavBar(false)}
+        onCloseSideBar={() => toggle(false)}
       />
 
       <div>
@@ -44,7 +47,9 @@ export const SeguridadRoutes = () => {
             <Route path="inicio" element={<InicioPage />} />
           </Route>
 
-          <Route element={<SeguridadProtectedRoutes url="roles_accesos_index" />}>
+          <Route
+            element={<SeguridadProtectedRoutes url="roles_accesos_index" />}
+          >
             <Route path="roles-accesos" element={<RolesAccesosPage />} />
           </Route>
 
@@ -84,9 +89,7 @@ export const SeguridadRoutes = () => {
             <Route path="personas-usuarios" element={<AplicacionesPage />} />
           </Route>
 
-          <Route
-            element={<SeguridadProtectedRoutes url="bitacora_index" />}
-          >
+          <Route element={<SeguridadProtectedRoutes url="bitacora_index" />}>
             <Route path="bitacora" element={<BitacoraPage />} />
           </Route>
 

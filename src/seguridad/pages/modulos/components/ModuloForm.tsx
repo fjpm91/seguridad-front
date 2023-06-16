@@ -22,9 +22,12 @@ import {
   Modulo,
 } from "../../../../interfaces/interfaces";
 import { ApiEndpoints, Messages } from "../../../../models/enums";
+import { IconNames } from "../../../../models/iconNames";
+import { DynamicMenuIcon } from "../../../../components";
 
 const regMultipleSpaces = /  +/g;
 const regYspaces = /\sy\s/gi;
+const iconos = [...IconNames];
 
 export const ModuloForm = () => {
   const { id } = useParams();
@@ -65,6 +68,7 @@ export const ModuloForm = () => {
     setValue("titulo", data.titulo);
     if (data.modulo_padre) setValue("modulo_padre", data.modulo_padre);
     if (data.icono) setValue("icono", data.icono);
+    if (data.menu) setValue("menu", data.menu);
   };
 
   const getModulos = async () => {
@@ -376,11 +380,49 @@ export const ModuloForm = () => {
 
             {/* Icono */}
             <Grid item xs={12} sm={6} md={4} lg={3} sx={{ pr: "16px" }}>
-              <TextField
+              {/* <TextField
                 {...register("icono")}
                 label="Icono"
                 defaultValue="..."
                 sx={{ width: "100%" }}
+              /> */}
+
+              <Controller
+                name="icono"
+                control={control}
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <Autocomplete
+                      value={
+                        value
+                          ? iconos.find((option) => value === option.name) ??
+                            null
+                          : null
+                      }
+                      getOptionLabel={(option) => option.name}
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props}>
+                          <DynamicMenuIcon icon={option.name} /> &nbsp;{" "}
+                          {option.name}
+                        </Box>
+                      )}
+                      onChange={(event: any, newValue) =>
+                        onChange(newValue ? newValue.name : null)
+                      }
+                      options={iconos}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Icono"
+                          inputProps={{
+                            ...params.inputProps,
+                          }}
+                        />
+                      )}
+                    />
+                  );
+                }}
               />
             </Grid>
 
@@ -434,7 +476,13 @@ export const ModuloForm = () => {
                   <FormControlLabel
                     control={
                       <Checkbox
-                        onChange={(e) => field.onChange(e.target.checked)}
+                        onChange={(e) => {
+                          console.log(
+                            "🚀 ~ file: ModuloForm.tsx:485 ~ ModuloForm ~ e:",
+                            e
+                          );
+                          field.onChange(e.target.checked);
+                        }}
                         checked={field.value || false}
                       />
                     }
