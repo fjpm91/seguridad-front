@@ -4,7 +4,11 @@ import { useEffect, useState } from "react";
 import { BackendResponse, User } from "../../../interfaces/interfaces";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../../../services/api-client";
-import { ApiEndpoints, ModulosSistema, TipoAcceso } from "../../../models/enums";
+import {
+  ApiEndpoints,
+  ModulosSistema,
+  TipoAcceso,
+} from "../../../models/enums";
 import { UsersTable } from ".";
 
 export const UsuariosPage = () => {
@@ -39,6 +43,10 @@ export const UsuariosPage = () => {
 
   const handleOpen = (id: number) => {
     navigate(`/users/${id}`);
+  };
+
+  const handleOpenUsuarioRol = (id: number) => {
+    navigate(`/usuario-rol/${id ? id : 0}`);
   };
 
   const handleClose = () => {
@@ -104,13 +112,22 @@ export const UsuariosPage = () => {
             (acceso) =>
               acceso.nombre === ModulosSistema.USUARIOS + TipoAcceso.INSERT
           ) ? (
-            <Button
-              variant="contained"
-              onClick={() => handleOpen(0)}
-              sx={{ mb: 2 }}
-            >
-              Nuevo Usuario
-            </Button>
+            <>
+              <Button
+                variant="contained"
+                onClick={() => handleOpen(0)}
+                sx={{ mb: 2 }}
+              >
+                Nuevo Usuario
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={() => handleOpenUsuarioRol(0)}
+                sx={{ mb: 2, ml: 1 }}
+              >
+                Asignar Usuario Rol
+              </Button>
+            </>
           ) : null}
 
           {users ? (
@@ -133,4 +150,4 @@ export const UsuariosPage = () => {
       </Box>
     </>
   );
-}
+};

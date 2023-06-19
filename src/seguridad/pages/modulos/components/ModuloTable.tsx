@@ -38,8 +38,8 @@ export const ModuloTable = ({
         // enableColumnFilter: false,
       },
       {
-        accessorKey: "url",
-        header: "Url",
+        accessorKey: "nombre",
+        header: "Nombre",
         // enableColumnFilter: false,
       },
       {

@@ -100,8 +100,8 @@ export const AplicacionesPage = () => {
       <Box
         sx={{
           backgroundColor: "grey.100",
-          height: "100vh",
-          padding: "1rem",
+          height: "calc(100vh - 64px)",
+          // padding: "1rem",
         }}
       >
         <Container>

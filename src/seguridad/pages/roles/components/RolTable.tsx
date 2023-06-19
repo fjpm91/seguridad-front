@@ -84,12 +84,12 @@ export const RolTable = ({
           >
             <Edit />
           </IconButton>
-          <IconButton
+          {/* <IconButton
             color="primary"
             onClick={() => handleNavegarPermisos(row.original.rol_id)}
           >
             <Https />
-          </IconButton>
+          </IconButton> */}
         </Box>,
       ]}
     />

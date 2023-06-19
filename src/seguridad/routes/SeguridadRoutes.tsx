@@ -19,6 +19,7 @@ import { EmpresaForm } from "../pages/empresas";
 import { UsersForm } from "../pages/usuarios";
 import { RolesAccesosForm } from "../pages/rolesAccesos";
 import { BitacoraPage } from "../pages/bitacora";
+import { UsuarioRolForm } from "../pages/usuarioRol";
 
 export const SeguridadRoutes = () => {
   // const [openNavBar, setOpenNavBar] = useState(false);
@@ -101,6 +102,15 @@ export const SeguridadRoutes = () => {
           <Route element={<SeguridadProtectedRoutes url="users_index" />}>
             <Route path="users" element={<UsuariosPage />} />
             <Route path="users/:id" element={<UsersForm />} />
+          </Route>
+
+          {/* <Route element={<SeguridadProtectedRoutes url="usuario_rol_index" />}>
+            <Route path="usuario-rol" element={<UsuariosPage />} />
+            <Route path="usuario-rol/:id" element={<UsuarioRolForm />} />
+          </Route> */}
+
+          <Route element={<SeguridadProtectedRoutes url="usuario_rol_insert" />}>
+            <Route path="usuario-rol/:id" element={<UsuarioRolForm />} />
           </Route>
 
           <Route path="/" element={<Navigate to="/inicio" />} />

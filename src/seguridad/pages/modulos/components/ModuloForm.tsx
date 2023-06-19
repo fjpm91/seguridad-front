@@ -71,10 +71,11 @@ export const ModuloForm = () => {
     if (data.menu) setValue("menu", data.menu);
   };
 
-  const getModulos = async () => {
-    const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.MODULOS}`
-    );
+  const getModulos = async (codigo_app?: string) => {
+    const fullRoute = codigo_app
+      ? `/${ApiEndpoints.MODULOS_BY_APP}/${codigo_app}`
+      : `/${ApiEndpoints.MODULOS}`;
+    const { data } = await apiClient.get<BackendResponse>(fullRoute);
 
     if (!data) {
       showMessage(Messages.NO_SE_PUDO_COMPLETAR);
@@ -161,15 +162,15 @@ export const ModuloForm = () => {
 
     const datos = {
       ...formData,
-      user: user?.id,
       codigo_app: import.meta.env.VITE_CODIGO_APP,
-      nombre: nombreModuloHijo,
       habilitado: formData.habilitado ? formData.habilitado : 0,
+      icono: formData.icono ? formData.icono : "Home",
       menu: formData.menu ? formData.menu : 0,
+      nombre: nombreModuloHijo,
       url: urlModuloHijo,
+      user: user?.id,
     };
     console.log("🚀 ~ file: ModuloForm.tsx:110 ~ store ~ datos:", datos);
-    // return;
 
     try {
       const { data } = await apiClient.post<BackendResponse>(
@@ -330,7 +331,7 @@ export const ModuloForm = () => {
                 required
                 label="URL"
                 helperText="La URL del Modulo es obligatoria"
-                defaultValue="/..."
+                defaultValue="..."
                 sx={{ width: "100%" }}
               />
             </Grid>
@@ -360,6 +361,7 @@ export const ModuloForm = () => {
                       )}
                       onChange={(event: any, newValue) => {
                         onChange(newValue ? newValue.aplicacion_id : null);
+                        getModulos(newValue?.codigo);
                       }}
                       options={aplicaciones}
                       renderInput={(params) => (
