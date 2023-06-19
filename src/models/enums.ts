@@ -46,6 +46,7 @@ export enum ApiEndpoints {
   ROLES = "roles",
   ROLES_ACCESOS = "roles/accesos",
   USERS = "users",
+  USUARIO_ROL = "usuario-rol",
 }
 
 export enum Messages {
