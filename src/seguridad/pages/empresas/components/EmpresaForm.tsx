@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../../../auth/context/useAuth";
@@ -11,6 +11,7 @@ import {
   Button,
   Checkbox,
   Container,
+  Divider,
   FormControlLabel,
   Grid,
   Snackbar,
@@ -66,7 +67,6 @@ export const EmpresaForm = () => {
       codigo_app: import.meta.env.VITE_CODIGO_APP,
       habilitado: formData.habilitado ? formData.habilitado : 0,
     };
-    // return;
 
     try {
       const { data } = await apiClient.post<BackendResponse>(
@@ -100,7 +100,6 @@ export const EmpresaForm = () => {
       habilitado: formData.habilitado ? formData.habilitado : 0,
     };
     console.log("🚀 ~ file: EmpresaForm.tsx:91 ~ update ~ datos:", datos);
-    // return;
 
     try {
       const { data } = await apiClient.put<BackendResponse>(
@@ -165,6 +164,7 @@ export const EmpresaForm = () => {
               >
                 Formulario de Empresas
               </Typography>
+              <Divider />
             </Grid>
 
             {/* Id */}

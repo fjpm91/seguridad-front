@@ -1,4 +1,4 @@
-import { Box, Container, Typography } from "@mui/material";
+import { Box, Container, Divider, Typography } from "@mui/material";
 
 export const PersonasPage = () => {
   return (
@@ -7,7 +7,8 @@ export const PersonasPage = () => {
         <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
           Personas
         </Typography>
+        <Divider />
       </Container>
     </Box>
   );
-}
+};

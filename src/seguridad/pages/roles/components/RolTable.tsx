@@ -11,6 +11,8 @@ import { Rol, RolAcceso } from "../../../../interfaces/interfaces";
 import { MRT_Localization_ES } from "material-react-table/locales/es";
 import { IconoHabilitado } from "../../../../components";
 import { Edit, Https } from "@mui/icons-material";
+import useAutorizado from "../../../../hooks/useAutorizado";
+import { ModulosSistema, TipoAcceso } from "../../../../models/enums";
 
 interface Props {
   accesos: RolAcceso[] | null;
@@ -27,6 +29,11 @@ export const RolTable = ({
   handleOpen,
   handleNavegarPermisos,
 }: Props) => {
+  const { allowed } = useAutorizado(
+    ModulosSistema.ROLES + TipoAcceso.UPDATE,
+    accesos
+  );
+
   const columns = useMemo<MRT_ColumnDef<Rol>[]>(
     () => [
       {
@@ -60,12 +67,13 @@ export const RolTable = ({
     ],
     [roles]
   );
+
   return (
     <MaterialReactTable
       columns={columns}
       data={roles}
       localization={MRT_Localization_ES}
-      enableRowActions
+      enableRowActions={allowed}
       positionActionsColumn="last"
       renderRowActions={({ row }) => [
         <Box
@@ -84,12 +92,6 @@ export const RolTable = ({
           >
             <Edit />
           </IconButton>
-          {/* <IconButton
-            color="primary"
-            onClick={() => handleNavegarPermisos(row.original.rol_id)}
-          >
-            <Https />
-          </IconButton> */}
         </Box>,
       ]}
     />

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { RolAcceso, User } from "../../../../interfaces/interfaces";
 import { MRT_ColumnDef, MaterialReactTable } from "material-react-table";
 import {
@@ -11,6 +11,8 @@ import {
 import { MRT_Localization_ES } from "material-react-table/locales/es";
 import { IconoHabilitado } from "../../../../components";
 import { Edit } from "@mui/icons-material";
+import useAutorizado from "../../../../hooks/useAutorizado";
+import { ModulosSistema, TipoAcceso } from "../../../../models/enums";
 
 interface Props {
   accesos: RolAcceso[] | null;
@@ -25,6 +27,11 @@ export const UsersTable = ({
   handleHabilitar,
   handleOpen,
 }: Props) => {
+  const { allowed } = useAutorizado(
+    ModulosSistema.USUARIOS + TipoAcceso.UPDATE,
+    accesos
+  );
+
   const columns = useMemo<MRT_ColumnDef<User>[]>(
     () => [
       {
@@ -65,7 +72,7 @@ export const UsersTable = ({
       columns={columns}
       data={users}
       localization={MRT_Localization_ES}
-      enableRowActions
+      enableRowActions={allowed}
       positionActionsColumn="last"
       renderRowActions={({ row }) => [
         <Box

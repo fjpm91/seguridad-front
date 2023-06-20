@@ -1,4 +1,11 @@
-import { Box, Button, Container, Snackbar, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  Divider,
+  Snackbar,
+  Typography,
+} from "@mui/material";
 import { useAuth } from "../../../auth/context/useAuth";
 import { useEffect, useState } from "react";
 import { BackendResponse, Empresa } from "../../../interfaces/interfaces";
@@ -96,6 +103,7 @@ export const EmpresasPage = () => {
         <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
           Empresas
         </Typography>
+        <Divider />
 
         {accesos?.some(
           (acceso) =>
@@ -104,7 +112,7 @@ export const EmpresasPage = () => {
           <Button
             variant="contained"
             onClick={() => handleOpen(0)}
-            sx={{ mb: 2 }}
+            sx={{ mb: 2, mt: 2 }}
           >
             Nueva Empresa
           </Button>

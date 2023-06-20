@@ -26,7 +26,6 @@ import { UseToastMessage } from "../../../../hooks/useToastMessage";
 import { ApiEndpoints, Messages } from "../../../../models/enums";
 
 export const RolesAccesosForm = () => {
-  // const { id } = useParams();
   const { authState } = useAuth();
   const [open, setOpen] = useState(false);
   const [rolActual, setRolActual] = useState<Rol | null>(null);
@@ -37,7 +36,7 @@ export const RolesAccesosForm = () => {
   const [roles, setRoles] = useState<Rol[]>([]);
   const [aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
   const { toastMessage, setToastMessage } = UseToastMessage();
-  const { control, register, setValue, handleSubmit } = useForm();
+  const { control, register, setValue, handleSubmit, reset } = useForm();
   const navigate = useNavigate();
   const { user } = authState;
 
@@ -154,7 +153,6 @@ export const RolesAccesosForm = () => {
       codigo_app: import.meta.env.VITE_CODIGO_APP,
     };
     console.log("🚀 ~ file: RolesAccesosForm.tsx:148 ~ store ~ datos:", datos);
-    // return;
 
     try {
       const { data } = await apiClient.post<BackendResponse>(
@@ -171,9 +169,11 @@ export const RolesAccesosForm = () => {
       }
 
       showMessage(data.message);
-      // setTimeout(() => {
-      //   navigate("/users");
-      // }, 1000);
+      setTimeout(() => {
+        // navigate("/users");
+        reset();
+        setModulos([]);
+      }, 1000);
     } catch (error) {
       console.log(error);
     }

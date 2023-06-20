@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Box, Button, Container, Snackbar, Typography } from "@mui/material";
+import { json, useNavigate } from "react-router-dom";
+import {
+  Box,
+  Button,
+  Container,
+  Divider,
+  Snackbar,
+  Typography,
+} from "@mui/material";
 import apiClient from "../../../services/api-client";
 import { useAuth } from "../../../auth/context/useAuth";
 import { Aplicacion, BackendResponse } from "../../../interfaces/interfaces";
@@ -87,6 +94,7 @@ export const AplicacionesPage = () => {
       setAplicaciones(newAplicaciones);
     } catch (error) {
       console.log(error);
+      showMessage(JSON.stringify(error));
     }
   };
 
@@ -101,13 +109,14 @@ export const AplicacionesPage = () => {
         sx={{
           backgroundColor: "grey.100",
           height: "calc(100vh - 64px)",
-          // padding: "1rem",
+          padding: "1rem",
         }}
       >
         <Container>
           <Typography variant="h4" component="div" sx={{ flexGrow: 1, mb: 2 }}>
             Aplicaciones
           </Typography>
+          <Divider />
 
           {accesos?.some(
             (acceso) =>
@@ -116,7 +125,7 @@ export const AplicacionesPage = () => {
             <Button
               variant="contained"
               onClick={() => handleOpen(0)}
-              sx={{ mb: 2 }}
+              sx={{ mb: 2, mt: 2 }}
             >
               Nueva Aplicacion
             </Button>

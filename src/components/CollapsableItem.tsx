@@ -20,7 +20,6 @@ const CollapsableItem = ({ modulo }: Props) => {
   const navigate = useNavigate();
 
   const handleClick = (event?: Modulo | undefined | null) => {
-    console.log("🚀 ~ file: CollapsableItem.tsx:23 ~ handleClick ~ event:", event)
     if (!event) return;
     event.menu && event?.SubModulos?.length !== 0 ? setFoldItem(!foldItem) : navigate(event?.url ?? "/");
   };

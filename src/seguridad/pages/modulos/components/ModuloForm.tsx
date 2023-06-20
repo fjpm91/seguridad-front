@@ -13,6 +13,7 @@ import {
   Checkbox,
   Button,
   Snackbar,
+  Divider,
 } from "@mui/material";
 import { useAuth } from "../../../../auth/context/useAuth";
 import { UseToastMessage } from "../../../../hooks/useToastMessage";
@@ -156,7 +157,6 @@ export const ModuloForm = () => {
       .trim()
       .toLowerCase()
       .replace(regMultipleSpaces, " ")
-      // .replace(regMultipleSlash, " ")
       .replace(regYspaces, "-")
       .replace(" ", replaceValue);
 
@@ -170,7 +170,6 @@ export const ModuloForm = () => {
       url: urlModuloHijo,
       user: user?.id,
     };
-    console.log("🚀 ~ file: ModuloForm.tsx:110 ~ store ~ datos:", datos);
 
     try {
       const { data } = await apiClient.post<BackendResponse>(
@@ -287,6 +286,7 @@ export const ModuloForm = () => {
               >
                 Formulario de Modulos
               </Typography>
+              <Divider />
             </Grid>
 
             {/* Id */}

@@ -1,4 +1,5 @@
 import { Edit } from "@mui/icons-material";
+import { useMemo } from "react";
 import {
   FormGroup,
   FormControlLabel,
@@ -6,11 +7,12 @@ import {
   Box,
   IconButton,
 } from "@mui/material";
-import { Aplicacion, RolAcceso } from "../../../../interfaces/interfaces";
-import { useMemo } from "react";
 import { MaterialReactTable, type MRT_ColumnDef } from "material-react-table";
 import { MRT_Localization_ES } from "material-react-table/locales/es";
 import { IconoHabilitado } from "../../../../components";
+import { Aplicacion, RolAcceso } from "../../../../interfaces/interfaces";
+import { ModulosSistema, TipoAcceso } from "../../../../models/enums";
+import useAutorizado from "../../../../hooks/useAutorizado";
 
 interface Props {
   accesos: RolAcceso[] | null;
@@ -25,6 +27,10 @@ export const AplicacionTable = ({
   handleHabilitar,
   handleOpen,
 }: Props) => {
+  const { allowed } = useAutorizado(
+    ModulosSistema.APLICACIONES + TipoAcceso.UPDATE,
+    accesos
+  );
   const columns = useMemo<MRT_ColumnDef<Aplicacion>[]>(
     () => [
       {
@@ -70,7 +76,7 @@ export const AplicacionTable = ({
       columns={columns}
       data={aplicaciones}
       localization={MRT_Localization_ES}
-      enableRowActions
+      enableRowActions={allowed}
       positionActionsColumn="last"
       renderRowActions={({ row }) => [
         <Box

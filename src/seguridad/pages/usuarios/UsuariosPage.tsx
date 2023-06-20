@@ -1,4 +1,11 @@
-import { Box, Button, Container, Snackbar, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  Divider,
+  Snackbar,
+  Typography,
+} from "@mui/material";
 import { useAuth } from "../../../auth/context/useAuth";
 import { useEffect, useState } from "react";
 import { BackendResponse, User } from "../../../interfaces/interfaces";
@@ -104,15 +111,16 @@ export const UsuariosPage = () => {
         }}
       >
         <Container>
-          <Typography variant="h4" component="div" sx={{ flexGrow: 1, mb: 2 }}>
+          <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
             Usuarios
           </Typography>
+          <Divider />
 
           {accesos?.some(
             (acceso) =>
               acceso.nombre === ModulosSistema.USUARIOS + TipoAcceso.INSERT
           ) ? (
-            <>
+            <Box sx={{ mt: 2 }}>
               <Button
                 variant="contained"
                 onClick={() => handleOpen(0)}
@@ -127,7 +135,7 @@ export const UsuariosPage = () => {
               >
                 Asignar Usuario Rol
               </Button>
-            </>
+            </Box>
           ) : null}
 
           {users ? (

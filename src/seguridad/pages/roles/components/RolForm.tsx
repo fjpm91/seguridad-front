@@ -7,6 +7,7 @@ import {
   Button,
   Checkbox,
   Container,
+  Divider,
   FormControl,
   FormControlLabel,
   Grid,
@@ -197,6 +198,7 @@ export const RolForm = () => {
               >
                 Formulario de Roles
               </Typography>
+              <Divider />
             </Grid>
 
             {/* Id */}
