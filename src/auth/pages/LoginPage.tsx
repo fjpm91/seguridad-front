@@ -6,17 +6,18 @@ import {
   CssBaseline,
   Grid,
   Paper,
+  Snackbar,
   TextField,
   ThemeProvider,
   Typography,
   createTheme,
 } from "@mui/material";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import apiClient from "../../services/api-client";
 import { AuthContext } from "../context";
 import { StorageKeys } from "../../models/enums";
-import { Modulo } from "../../interfaces/interfaces";
+import { BackendResponse, Modulo } from "../../interfaces/interfaces";
 
 const guardarState = (
   accesos: any,
@@ -53,6 +54,8 @@ const ordenarModulos = (modulos: Modulo[]) => {
 };
 
 export const LoginPage = () => {
+  const [message, setMessage] = useState("");
+  const [open, setOpen] = useState(false);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -66,22 +69,23 @@ export const LoginPage = () => {
         return;
       }
 
-      const response = await apiClient.post("/login", {
+      const response = await apiClient.post<BackendResponse>("/login", {
         username: dataForm.get("username"),
         password: dataForm.get("password"),
         codigo_app: import.meta.env.VITE_CODIGO_APP,
       });
 
-      const { data } = response;
-      const { success, message, responseData } = data;
+      if (!response) {
+      }
+
+      const { success, message, data } = response.data;
 
       if (!success) {
-        console.log(message);
+        showMessage(JSON.stringify(message));
         return;
       }
 
-      const { accesos, aplicacion, modulos, persona, rol, token, user } =
-        responseData;
+      const { accesos, aplicacion, modulos, persona, rol, token, user } = data;
       const modulosOrdenados: Modulo[] = ordenarModulos(modulos);
       const open = false;
       guardarState(
@@ -106,9 +110,26 @@ export const LoginPage = () => {
       );
 
       navigate("/");
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
+      const { response } = error;
+      if (response) {
+        const { data } = response;
+        showMessage(data.message);
+        return;
+      }
+      showMessage(JSON.stringify(error));
     }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setMessage("");
+  };
+
+  const showMessage = (text: string = "Operacion correcta") => {
+    setMessage(text);
+    setOpen(true);
   };
 
   const defaultTheme = createTheme();
@@ -188,9 +209,15 @@ export const LoginPage = () => {
           </Box>
         </Grid>
       </Grid>
+      <Snackbar
+        open={open}
+        autoHideDuration={1500}
+        onClose={() => handleClose()}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+        message={message}
+      ></Snackbar>
     </ThemeProvider>
   );
 };
-
 
 // TODO: Agregar por defecto el rol para la ruta /inicio
