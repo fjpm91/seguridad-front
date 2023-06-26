@@ -18,7 +18,7 @@ export interface Persona {
   empresa_id?: number;
   fecha_nacimiento?: string;
   foto?: string;
-  habilitado?: boolean;
+  habilitado: number;
   nombre_completo: string;
   nombre?: string;
   persona_id: number;
@@ -115,19 +115,21 @@ export interface RolAcceso {
 }
 
 export interface Componente {
-  id: number;
+  componente_id: number;
+  habilitado: number;
   nombre: string;
 }
 
 export interface RolAsignacion {
-  id: number;
-  rolId: number;
-  aplicacionId: number;
-  componenteId: number;
+  rol_asignacion_id: number;
+  rol_id: number;
+  aplicacion_id: number;
+  componente_id: number;
   nombre: string;
-  visible: boolean;
-  habilitado: boolean;
-  editable: boolean;
+  rol: string;
+  visible: number;
+  habilitado: number;
+  editable: number;
 }
 
 export interface AuhtUser {

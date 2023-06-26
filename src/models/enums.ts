@@ -19,6 +19,7 @@ export enum ModulosSistema {
   MODULOS = "modulos",
   PERSONAS = "personas",
   ROLES = "roles",
+  ROL_ASIGNACION = "rol_asignacion",
   USUARIOS = "users",
 }
 
@@ -32,17 +33,22 @@ export enum TipoAcceso {
 export enum ApiEndpoints {
   ACCESOS = "accesos",
   APLICACIONES = "aplicaciones",
+  APLICACIONES_CON_ROLES = "aplicaciones?habilitado=1&roles=1",
   BITACORA = "bitacoras",
   COMPONENTES = "componentes",
   EMPRESAS = "empresas",
+  HABILITAR_COMPONENTES = "componentes/habilitar",
   HABILITAR_EMPRESAS = "empresas/habilitar",
   HABILITAR_MODULOS = "modulos/habilitar",
+  HABILITAR_PERSONAS = "personas/habilitar",
   HABILITAR_ROLES = "roles/habilitar",
+  HABILITAR_ROL_ASIGNACION = "rol-asignaciones/habilitar",
   HABILITAR_USERS = "users/habilitar",
   LOGIN = "aut/login",
   MODULOS = "modulos",
   MODULOS_BY_APP = "modulos/app",
   PERSONAS = "personas",
+  ROL_ASIGNACION = "rol-asignaciones",
   ROLES = "roles",
   ROLES_ACCESOS = "roles/accesos",
   USERS = "users",
@@ -50,7 +56,8 @@ export enum ApiEndpoints {
 }
 
 export enum Messages {
-  NO_SE_PUDO_COMPLETAR = "No se pudo completar la operación"
+  NO_SE_PUDO_COMPLETAR = "No se pudo completar la operación",
+  OPERACION_CORRECTA = "Operación correcta",
 }
 
 // export enum IconNames {

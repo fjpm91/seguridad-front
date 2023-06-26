@@ -1,38 +1,42 @@
 import {
   Box,
-  Button,
   Container,
-  Divider,
-  Snackbar,
   Typography,
+  Divider,
+  Button,
+  Snackbar,
 } from "@mui/material";
-import { useAuth } from "../../../auth/context/useAuth";
 import { useEffect, useState } from "react";
-import { BackendResponse, Componente } from "../../../interfaces/interfaces";
 import { useNavigate } from "react-router-dom";
-import apiClient from "../../../services/api-client";
+import { useAuth } from "../../../auth/context/useAuth";
+import {
+  Componente,
+  BackendResponse,
+  RolAsignacion,
+} from "../../../interfaces/interfaces";
 import {
   ApiEndpoints,
   ModulosSistema,
   TipoAcceso,
 } from "../../../models/enums";
-import { ComponentsTable } from ".";
+import apiClient from "../../../services/api-client";
+import { RolAsignacionTable } from ".";
 
-export const ComponentesPage = () => {
+export const RolAsignacionPage = () => {
   const { authState } = useAuth();
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const [componentes, setComponentes] = useState<Componente[]>([]);
+  const [rolAsignaciones, setRolAsignaciones] = useState<RolAsignacion[]>([]);
   const navigate = useNavigate();
   const { accesos, user } = authState;
 
   useEffect(() => {
-    getComponentes();
+    getRolAsignacion();
   }, []);
 
-  const getComponentes = async () => {
+  const getRolAsignacion = async () => {
     const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.COMPONENTES}`
+      `/${ApiEndpoints.ROL_ASIGNACION}`
     );
 
     if (!data) {
@@ -45,20 +49,16 @@ export const ComponentesPage = () => {
       return;
     }
 
-    setComponentes([...data.data]);
+    setRolAsignaciones([...data.data]);
   };
 
   const handleOpen = (id: number) => {
-    navigate(`/componentes/${id}`);
+    navigate(`/rol-asignacion/${id}`);
   };
 
   const handleClose = () => {
     setOpen(false);
     setMessage("");
-  };
-
-  const handleAsignar = (id: number) => {
-    navigate(`/rol-asignacion/${id}`);
   };
 
   const handleHabilitar = async (id: number) => {
@@ -68,7 +68,7 @@ export const ComponentesPage = () => {
         codigo_app: import.meta.env.VITE_CODIGO_APP,
       };
       const { data } = await apiClient.put<BackendResponse>(
-        `/${ApiEndpoints.HABILITAR_COMPONENTES}/${id}`,
+        `/${ApiEndpoints.HABILITAR_ROL_ASIGNACION}/${id}`,
         datos
       );
 
@@ -83,14 +83,42 @@ export const ComponentesPage = () => {
       }
 
       const componenteModificado = data.data as Componente;
-      const newComponentes = componentes.map((componente) => {
+      const newComponentes = rolAsignaciones.map((componente) => {
         if (componente.componente_id === componenteModificado.componente_id) {
           componente.habilitado = componenteModificado.habilitado;
         }
         return componente;
       });
       showMessage(data.message);
-      setComponentes(newComponentes);
+      setRolAsignaciones(newComponentes);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleEliminar = async (id: number) => {
+    try {
+      const datos = {
+        user: user?.id,
+        codigo_app: import.meta.env.VITE_CODIGO_APP,
+      };
+      const { data } = await apiClient.post<BackendResponse>(
+        `/${ApiEndpoints.ROL_ASIGNACION}/${id}`,
+        datos
+      );
+
+      if (!data) {
+        showMessage("No se pudo completar la operación");
+        return;
+      }
+
+      if (!data.success) {
+        showMessage(data.message);
+        return;
+      }
+
+      showMessage(data.message);
+      getRolAsignacion();
     } catch (error) {
       console.log(error);
     }
@@ -111,7 +139,7 @@ export const ComponentesPage = () => {
     >
       <Container>
         <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
-          Componentes
+          Rol Asignacion
         </Typography>
         <Divider />
 
@@ -124,17 +152,17 @@ export const ComponentesPage = () => {
             onClick={() => handleOpen(0)}
             sx={{ mb: 2, mt: 2 }}
           >
-            Nuevo Componente
+            Nuevo Rol Asignacion
           </Button>
         ) : null}
 
-        {componentes ? (
-          <ComponentsTable
+        {rolAsignaciones ? (
+          <RolAsignacionTable
             accesos={accesos}
-            componentes={componentes}
+            rolAsignaciones={rolAsignaciones}
             handleHabilitar={handleHabilitar}
             handleOpen={handleOpen}
-            handleAsignar={handleAsignar}
+            handleEliminar={handleEliminar}
           />
         ) : null}
       </Container>

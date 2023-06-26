@@ -181,7 +181,7 @@ export const UsuarioRolForm = () => {
                 component="div"
                 sx={{ flexGrow: 1, mb: 2 }}
               >
-                Formulario de Roles
+                Asignación de Roles
               </Typography>
             </Grid>
 

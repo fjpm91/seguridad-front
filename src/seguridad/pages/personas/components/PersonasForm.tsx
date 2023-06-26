@@ -1,143 +1,52 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../../../auth/context/useAuth";
+import { BackendResponse, Persona } from "../../../../interfaces/interfaces";
 import { UseToastMessage } from "../../../../hooks/useToastMessage";
 import { Controller, useForm } from "react-hook-form";
 import apiClient from "../../../../services/api-client";
-import {
-  BackendResponse,
-  Persona,
-  Rol,
-  User,
-} from "../../../../interfaces/interfaces";
-import { ApiEndpoints, Messages } from "../../../../models/enums";
+import { ApiEndpoints } from "../../../../models/enums";
 import {
   Autocomplete,
   Box,
-  Button,
   Checkbox,
   Container,
   Divider,
   FormControlLabel,
   Grid,
-  List,
-  ListItem,
-  ListItemText,
   Snackbar,
   TextField,
   Typography,
 } from "@mui/material";
 
-export const UsersForm = () => {
+export const PersonasForm = () => {
   const { id } = useParams();
   const { authState } = useAuth();
   const [open, setOpen] = useState(false);
   const [personas, setPersonas] = useState<Persona[]>([]);
-  const [userRoles, setUserRoles] = useState<Rol[]>([]);
   const { toastMessage, setToastMessage } = UseToastMessage();
   const { control, register, setValue, handleSubmit } = useForm();
   const navigate = useNavigate();
   const { user } = authState;
 
   useEffect(() => {
-    getPersonas();
-    getUserById();
+    getPersonaById();
   }, []);
 
-  const getUserById = async () => {
+  const getPersonaById = async () => {
     if (!id || id === "0") return;
 
     const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.USERS}/${id}`
+      `/${ApiEndpoints.PERSONAS}/${id}`
     );
 
     if (!data) return;
-    const userdata = data.data as User;
-    setUserRoles(userdata.roles);
-    setValue("id", userdata.id);
-    setValue("name", userdata.name);
+    const userdata = data.data as Persona;
     setValue("persona_id", userdata.persona_id);
-    setValue("email", userdata.email);
-    setValue("persona_id", userdata.persona_id);
-  };
-
-  const getPersonas = async () => {
-    const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.PERSONAS}`
-    );
-
-    if (!data) {
-      showMessage(Messages.NO_SE_PUDO_COMPLETAR);
-      return;
-    }
-
-    if (!data.success) {
-      showMessage(data.message);
-      return;
-    }
-
-    setPersonas([...data.data]);
-  };
-
-  const store = async (formData: any) => {
-    const datos = { ...formData };
-
-    try {
-      const { data } = await apiClient.post<BackendResponse>(
-        `/${ApiEndpoints.USERS}`,
-        {
-          ...datos,
-          user: user?.id,
-          codigo_app: import.meta.env.VITE_CODIGO_APP,
-        }
-      );
-      if (!data) {
-        showMessage(Messages.NO_SE_PUDO_COMPLETAR);
-        return;
-      }
-      if (!data.success) {
-        showMessage(data.message);
-        return;
-      }
-
-      showMessage(data.message);
-      setTimeout(() => {
-        navigate("/users");
-      }, 1000);
-    } catch (error) {
-      console.log("🚀 ~ file: AplicacionForm.tsx:55 ~ store ~ error:", error);
-    }
-  };
-
-  const update = async (formData: any) => {
-    const datos = {
-      ...formData,
-      user: user?.id,
-      codigo_app: import.meta.env.VITE_CODIGO_APP,
-    };
-    if (datos.area === "...") datos.area = null;
-    if (datos.url === "...") datos.url = null;
-    if (datos.descripcion === "...") datos.descripcion = null;
-    if (datos.base_datos === "...") datos.base_datos = null;
-    if (datos.icono === "...") datos.icono = null;
-
-    try {
-      const { data } = await apiClient.put<BackendResponse>(
-        `/${ApiEndpoints.APLICACIONES}/${id}`,
-        datos
-      );
-      if (!data) {
-        showMessage(Messages.NO_SE_PUDO_COMPLETAR);
-        return;
-      }
-
-      showMessage(data.message);
-      setTimeout(() => {
-        navigate("/users");
-      }, 1000);
-    } catch (error) {
-      console.log("🚀 ~ file: AplicacionForm.tsx:55 ~ store ~ error:", error);
-    }
+    setValue("nombre", userdata.nombre);
+    setValue("apellido_paterno", userdata.apellido_paterno);
+    setValue("apellido_materno", userdata.apellido_materno);
+    setValue("correo", userdata.correo);
   };
 
   const cancel = () => navigate("/users");
@@ -148,11 +57,7 @@ export const UsersForm = () => {
   };
 
   const submitForm = (event: any) => {
-    if (id === "0") {
-      store(event);
-    } else {
-      update(event);
-    }
+    console.log("🚀 ~ file: PersonasForm.tsx:50 ~ submitForm ~ event:", event);
   };
 
   const showMessage = (text: string = "Operacion correcta") => {
@@ -285,34 +190,6 @@ export const UsersForm = () => {
                   />
                 )}
               />
-            </Grid>
-
-            {/* Roles */}
-            <Grid item xs={12} sm={4} sx={{ pr: "16px" }}>
-              <Typography variant="body2">Roles del usuario</Typography>
-              <Divider />
-              <List>
-                {userRoles.map((rol) => (
-                  <ListItem key={rol.rol_id}>
-                    <ListItemText primary={rol.nombre} />
-                  </ListItem>
-                ))}
-              </List>
-            </Grid>
-          </Grid>
-
-          {/* Botones */}
-          <Grid container spacing={2}>
-            <Grid item>
-              <Button size="medium" variant="contained" type="submit">
-                Guardar
-              </Button>
-            </Grid>
-
-            <Grid item>
-              <Button size="medium" variant="outlined" onClick={cancel}>
-                Cancelar
-              </Button>
             </Grid>
           </Grid>
         </Box>

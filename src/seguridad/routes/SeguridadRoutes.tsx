@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AuthContext } from "../../auth";
 import {
@@ -20,6 +20,8 @@ import { UsersForm } from "../pages/usuarios";
 import { RolesAccesosForm } from "../pages/rolesAccesos";
 import { BitacoraPage } from "../pages/bitacora";
 import { UsuarioRolForm } from "../pages/usuarioRol";
+import { ComponentsForm } from "../pages/componentes";
+import { RolAsignacionForm, RolAsignacionPage } from "../pages/rolAsignacion";
 
 export const SeguridadRoutes = () => {
   // const [openNavBar, setOpenNavBar] = useState(false);
@@ -28,10 +30,7 @@ export const SeguridadRoutes = () => {
   const { aplicacion, modulos, persona, rol, user } = authState;
   return (
     <>
-      <NavBar
-        aplicacion={aplicacion}
-        onOpen={() => toggle(!authState.open)}
-      />
+      <NavBar aplicacion={aplicacion} onOpen={() => toggle(!authState.open)} />
       <SideBar
         aplicacion={aplicacion}
         open={authState.open}
@@ -78,6 +77,7 @@ export const SeguridadRoutes = () => {
 
           <Route element={<SeguridadProtectedRoutes url="componentes_index" />}>
             <Route path="componentes" element={<ComponentesPage />} />
+            <Route path="componentes/:id" element={<ComponentsForm />} />
           </Route>
 
           <Route element={<SeguridadProtectedRoutes url="personas_index" />}>
@@ -99,17 +99,26 @@ export const SeguridadRoutes = () => {
             <Route path="roles/:id" element={<RolForm />} />
           </Route>
 
-          <Route element={<SeguridadProtectedRoutes url="users_index" />}>
-            <Route path="users" element={<UsuariosPage />} />
-            <Route path="users/:id" element={<UsersForm />} />
+          <Route element={<SeguridadProtectedRoutes url="roles_index" />}>
+            <Route path="roles" element={<RolesPage />} />
+            <Route path="roles/:id" element={<RolForm />} />
           </Route>
 
-          {/* <Route element={<SeguridadProtectedRoutes url="usuario_rol_index" />}>
-            <Route path="usuario-rol" element={<UsuariosPage />} />
-            <Route path="usuario-rol/:id" element={<UsuarioRolForm />} />
-          </Route> */}
+          <Route
+            element={<SeguridadProtectedRoutes url="rol_asignacion_index" />}
+          >
+            <Route path="rol-asignacion" element={<RolAsignacionPage />} />
+            <Route path="rol-asignacion/:id" element={<RolAsignacionForm />} />
+          </Route>
 
-          <Route element={<SeguridadProtectedRoutes url="usuario_rol_insert" />}>
+          <Route element={<SeguridadProtectedRoutes url="users_index" />}>
+            <Route path="users" element={<UsuariosPage />} />
+            <Route path="usuario-rol/:id" element={<UsuarioRolForm />} />
+          </Route>
+
+          <Route
+            element={<SeguridadProtectedRoutes url="usuario_rol_insert" />}
+          >
             <Route path="usuario-rol/:id" element={<UsuarioRolForm />} />
           </Route>
 
