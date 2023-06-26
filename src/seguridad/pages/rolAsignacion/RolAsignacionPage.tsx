@@ -5,6 +5,12 @@ import {
   Divider,
   Button,
   Snackbar,
+  Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -13,9 +19,11 @@ import {
   Componente,
   BackendResponse,
   RolAsignacion,
+  Aplicacion,
 } from "../../../interfaces/interfaces";
 import {
   ApiEndpoints,
+  Messages,
   ModulosSistema,
   TipoAcceso,
 } from "../../../models/enums";
@@ -26,18 +34,24 @@ export const RolAsignacionPage = () => {
   const { authState } = useAuth();
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
+  const [aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
+  const [aplicacionSeleccionada, setAplicacionSeleccionada] =
+    useState<string>("0");
   const [rolAsignaciones, setRolAsignaciones] = useState<RolAsignacion[]>([]);
   const navigate = useNavigate();
   const { accesos, user } = authState;
 
   useEffect(() => {
+    getAplicaciones();
     getRolAsignacion();
   }, []);
 
-  const getRolAsignacion = async () => {
-    const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.ROL_ASIGNACION}`
-    );
+  const getRolAsignacion = async (aplicacion_id?: string) => {
+    const fullRoute =
+      aplicacion_id && aplicacion_id !== "0"
+        ? `/${ApiEndpoints.ROL_ASIGNACION}?aplicacion-id=${aplicacion_id}`
+        : `/${ApiEndpoints.ROL_ASIGNACION}`;
+    const { data } = await apiClient.get<BackendResponse>(fullRoute);
 
     if (!data) {
       showMessage("No se pudo completar la operacion");
@@ -50,6 +64,24 @@ export const RolAsignacionPage = () => {
     }
 
     setRolAsignaciones([...data.data]);
+  };
+
+  const getAplicaciones = async () => {
+    const { data } = await apiClient.get<BackendResponse>(
+      `/${ApiEndpoints.APLICACIONES_CON_ROLES}`
+    );
+
+    if (!data) {
+      showMessage(Messages.NO_SE_PUDO_COMPLETAR);
+      return;
+    }
+
+    if (!data.success) {
+      showMessage(data.message);
+      return;
+    }
+
+    setAplicaciones([...data.data]);
   };
 
   const handleOpen = (id: number) => {
@@ -124,6 +156,11 @@ export const RolAsignacionPage = () => {
     }
   };
 
+  const handleChange = (event: SelectChangeEvent) => {
+    setAplicacionSeleccionada(event.target.value);
+    getRolAsignacion(event.target.value);
+  };
+
   const showMessage = (text: string = "Operacion correcta") => {
     setMessage(text);
     setOpen(true);
@@ -155,6 +192,34 @@ export const RolAsignacionPage = () => {
             Nuevo Rol Asignacion
           </Button>
         ) : null}
+
+        <Grid container spacing={2} sx={{ mb: 2 }}>
+          {/* Aplicación */}
+          <Grid item xs={12} sm={3} sx={{ pr: "16px" }}>
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">Aplicación</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={aplicacionSeleccionada}
+                label="Aplicación"
+                onChange={handleChange}
+              >
+                <MenuItem value={0} key={0}>
+                  Seleccionar
+                </MenuItem>
+                {aplicaciones.map((aplicacion) => (
+                  <MenuItem
+                    value={aplicacion.aplicacion_id}
+                    key={aplicacion.aplicacion_id}
+                  >
+                    {aplicacion.codigo}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
 
         {rolAsignaciones ? (
           <RolAsignacionTable

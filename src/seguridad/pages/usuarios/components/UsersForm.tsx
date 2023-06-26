@@ -20,6 +20,7 @@ import {
   Divider,
   FormControlLabel,
   Grid,
+  IconButton,
   List,
   ListItem,
   ListItemText,
@@ -27,6 +28,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { Delete } from "@mui/icons-material";
 
 export const UsersForm = () => {
   const { id } = useParams();
@@ -109,10 +111,40 @@ export const UsersForm = () => {
     }
   };
 
+  const handleEliminar = async (rol_id: number) => {
+    try {
+      const datos = {
+        user_id: id,
+        rol_id: rol_id,
+        codigo_app: import.meta.env.VITE_CODIGO_APP,
+      };
+      const { data } = await apiClient.post<BackendResponse>(
+        `/${ApiEndpoints.ELIMINAR_USUARIO_ROL}`,
+        datos
+      );
+
+      if (!data) {
+        showMessage("No se pudo completar la operación");
+        return;
+      }
+
+      if (!data.success) {
+        showMessage(data.message);
+        return;
+      }
+
+      showMessage(data.message);
+      getUserById();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const update = async (formData: any) => {
     const datos = {
       ...formData,
       user: user?.id,
+      user_id: id,
       codigo_app: import.meta.env.VITE_CODIGO_APP,
     };
     if (datos.area === "...") datos.area = null;
@@ -123,11 +155,17 @@ export const UsersForm = () => {
 
     try {
       const { data } = await apiClient.put<BackendResponse>(
-        `/${ApiEndpoints.APLICACIONES}/${id}`,
+        `/${ApiEndpoints.USERS}/${id}`,
         datos
       );
+
       if (!data) {
         showMessage(Messages.NO_SE_PUDO_COMPLETAR);
+        return;
+      }
+
+      if (!data.success) {
+        showMessage(data.message);
         return;
       }
 
@@ -295,6 +333,13 @@ export const UsersForm = () => {
                 {userRoles.map((rol) => (
                   <ListItem key={rol.rol_id}>
                     <ListItemText primary={rol.nombre} />
+
+                    <IconButton
+                      color="error"
+                      onClick={() => handleEliminar(rol.rol_id)}
+                    >
+                      <Delete />
+                    </IconButton>
                   </ListItem>
                 ))}
               </List>

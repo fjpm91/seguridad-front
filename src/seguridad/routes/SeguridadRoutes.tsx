@@ -113,6 +113,7 @@ export const SeguridadRoutes = () => {
 
           <Route element={<SeguridadProtectedRoutes url="users_index" />}>
             <Route path="users" element={<UsuariosPage />} />
+            <Route path="users/:id" element={<UsersForm />} />
             <Route path="usuario-rol/:id" element={<UsuarioRolForm />} />
           </Route>
 
