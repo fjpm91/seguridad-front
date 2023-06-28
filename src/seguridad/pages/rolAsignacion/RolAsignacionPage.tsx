@@ -193,8 +193,8 @@ export const RolAsignacionPage = () => {
           </Button>
         ) : null}
 
-        <Grid container spacing={2} sx={{ mb: 2 }}>
-          {/* Aplicación */}
+        {/* Aplicación */}
+        {/* <Grid container spacing={2} sx={{ mb: 2 }}>
           <Grid item xs={12} sm={3} sx={{ pr: "16px" }}>
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">Aplicación</InputLabel>
@@ -219,7 +219,7 @@ export const RolAsignacionPage = () => {
               </Select>
             </FormControl>
           </Grid>
-        </Grid>
+        </Grid> */}
 
         {rolAsignaciones ? (
           <RolAsignacionTable
