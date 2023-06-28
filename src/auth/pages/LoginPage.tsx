@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import {
+  Alert,
   Avatar,
   Box,
   Button,
   CssBaseline,
   Grid,
   Paper,
-  Snackbar,
   TextField,
   ThemeProvider,
   Typography,
@@ -55,7 +55,7 @@ const ordenarModulos = (modulos: Modulo[]) => {
 
 export const LoginPage = () => {
   const [message, setMessage] = useState("");
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -122,14 +122,9 @@ export const LoginPage = () => {
     }
   };
 
-  const handleClose = () => {
-    setOpen(false);
-    setMessage("");
-  };
-
   const showMessage = (text: string = "Operacion correcta") => {
     setMessage(text);
-    setOpen(true);
+    // setOpen(true);
   };
 
   const defaultTheme = createTheme();
@@ -205,17 +200,16 @@ export const LoginPage = () => {
               >
                 Iniciar sesión
               </Button>
+
+              {message && (
+                <Alert severity="error" sx={{ mt: 3 }}>
+                  {message}
+                </Alert>
+              )}
             </Box>
           </Box>
         </Grid>
       </Grid>
-      <Snackbar
-        open={open}
-        autoHideDuration={1500}
-        onClose={() => handleClose()}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        message={message}
-      ></Snackbar>
     </ThemeProvider>
   );
 };

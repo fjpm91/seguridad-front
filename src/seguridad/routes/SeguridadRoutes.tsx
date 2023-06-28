@@ -19,7 +19,7 @@ import { EmpresaForm } from "../pages/empresas";
 import { UsersForm } from "../pages/usuarios";
 import { RolesAccesosForm } from "../pages/rolesAccesos";
 import { BitacoraPage } from "../pages/bitacora";
-import { UsuarioRolForm } from "../pages/usuarioRol";
+import { UsuarioRolBaseForm, UsuarioRolForm } from "../pages/usuarioRol";
 import { ComponentsForm } from "../pages/componentes";
 import { RolAsignacionForm, RolAsignacionPage } from "../pages/rolAsignacion";
 
@@ -115,6 +115,7 @@ export const SeguridadRoutes = () => {
             <Route path="users" element={<UsuariosPage />} />
             <Route path="users/:id" element={<UsersForm />} />
             <Route path="usuario-rol/:id" element={<UsuarioRolForm />} />
+            <Route path="usuario-rol-base" element={<UsuarioRolBaseForm />} />
           </Route>
 
           <Route

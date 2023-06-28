@@ -56,6 +56,10 @@ export const UsuariosPage = () => {
     navigate(`/usuario-rol/${id ? id : 0}`);
   };
 
+  const handleOpenUsuarioRolBase = () => {
+    navigate(`/usuario-rol-base`);
+  };
+
   const handleClose = () => {
     setOpen(false);
     setMessage("");
@@ -129,12 +133,21 @@ export const UsuariosPage = () => {
               >
                 Nuevo Usuario
               </Button>
+
               <Button
                 variant="outlined"
                 onClick={() => handleOpenUsuarioRol(0)}
                 sx={{ mb: 2, ml: 1 }}
               >
                 Asignar Usuario Rol
+              </Button>
+
+              <Button
+                variant="outlined"
+                onClick={() => handleOpenUsuarioRolBase()}
+                sx={{ mb: 2, ml: 1 }}
+              >
+                Asignar Rol Base
               </Button>
             </Box>
           ) : null}
