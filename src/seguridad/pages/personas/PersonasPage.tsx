@@ -49,7 +49,7 @@ export const PersonasPage = () => {
   };
 
   const handleOpen = (id: number) => {
-    navigate(`/users/${id}`);
+    navigate(`/personas/${id}`);
   };
 
   const handleClose = () => {

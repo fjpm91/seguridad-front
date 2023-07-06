@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { MRT_Localization_ES } from "material-react-table/locales/es";
 import { IconoHabilitado } from "../../../../components";
-import { Edit, Settings } from "@mui/icons-material";
+import { Edit } from "@mui/icons-material";
 
 interface Props {
   accesos: RolAcceso[] | null;
@@ -26,7 +26,6 @@ export const ComponentsTable = ({
   accesos,
   componentes,
   handleHabilitar,
-  handleAsignar,
   handleOpen,
 }: Props) => {
   const { allowed } = useAutorizado(

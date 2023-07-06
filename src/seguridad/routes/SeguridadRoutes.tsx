@@ -22,6 +22,9 @@ import { BitacoraPage } from "../pages/bitacora";
 import { UsuarioRolBaseForm, UsuarioRolForm } from "../pages/usuarioRol";
 import { ComponentsForm } from "../pages/componentes";
 import { RolAsignacionForm, RolAsignacionPage } from "../pages/rolAsignacion";
+import { UnidadNegocioForm, UnidadNegocioPage } from "../pages/unidadNegocio";
+import { DivisionForm, DivisionPage } from "../pages/division";
+import { PersonasForm } from "../pages/personas";
 
 export const SeguridadRoutes = () => {
   // const [openNavBar, setOpenNavBar] = useState(false);
@@ -82,6 +85,7 @@ export const SeguridadRoutes = () => {
 
           <Route element={<SeguridadProtectedRoutes url="personas_index" />}>
             <Route path="personas" element={<PersonasPage />} />
+            <Route path="personas/:id" element={<PersonasForm />} />
           </Route>
 
           <Route
@@ -122,6 +126,21 @@ export const SeguridadRoutes = () => {
             element={<SeguridadProtectedRoutes url="usuario_rol_insert" />}
           >
             <Route path="usuario-rol/:id" element={<UsuarioRolForm />} />
+          </Route>
+
+          <Route
+            element={<SeguridadProtectedRoutes url="unidades_negocio_index" />}
+          >
+            <Route path="unidades-negocio" element={<UnidadNegocioPage />} />
+            <Route
+              path="unidades-negocio/:id"
+              element={<UnidadNegocioForm />}
+            />
+          </Route>
+
+          <Route element={<SeguridadProtectedRoutes url="divisiones_index" />}>
+            <Route path="divisiones" element={<DivisionPage />} />
+            <Route path="divisiones/:id" element={<DivisionForm />} />
           </Route>
 
           <Route path="/" element={<Navigate to="/inicio" />} />

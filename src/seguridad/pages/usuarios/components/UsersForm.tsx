@@ -233,7 +233,7 @@ export const UsersForm = () => {
             </Grid>
 
             {/* Id */}
-            <Grid item xs={12} sm={4} md={2} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={4} md={3} sx={{ pr: "16px" }}>
               <TextField
                 {...register("id")}
                 label="Id"
@@ -244,7 +244,7 @@ export const UsersForm = () => {
             </Grid>
 
             {/* Personas */}
-            <Grid item xs={12} sm={6} md={5} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={6} md={6} sx={{ pr: "16px" }}>
               <Controller
                 name="persona_id"
                 rules={{ required: true }}
@@ -266,7 +266,7 @@ export const UsersForm = () => {
                           {option.nombre_completo}
                         </Box>
                       )}
-                      onChange={(event: any, newValue) => {
+                      onChange={(_event: any, newValue) => {
                         onChange(newValue ? newValue.persona_id : null);
                       }}
                       options={personas}

@@ -14,6 +14,8 @@ export interface Persona {
   ci_origen?: string;
   ci?: string;
   correo?: string;
+  ciudad: string;
+  codigo: number;
   created_at?: number;
   empresa_id?: number;
   fecha_nacimiento?: string;
@@ -25,6 +27,7 @@ export interface Persona {
   telefono?: string;
   ubicacion?: string;
   updated_at?: number;
+  unidad_negocio_id: number;
 }
 
 export interface Rol {
@@ -36,6 +39,27 @@ export interface Rol {
   updated_at?: number;
   aplicacion: Aplicacion;
   modulos: Modulo[];
+}
+
+export interface UnidadNegocio {
+  empresa_id: number;
+  nombre: string;
+  unidad_negocio_id: number;
+  empresa: Empresa;
+  habilitado: number;
+  division: Division;
+  check: boolean;
+}
+
+export interface CentroCosto {
+  centro_costo_id: number;
+  nombre: string;
+  unidad_negocio_id: number;
+}
+export interface Division {
+  division_id: number;
+  nombre: string;
+  unidades_negocio: UnidadNegocio[];
 }
 
 export interface User {
@@ -153,11 +177,3 @@ export interface BackendResponse {
   message: string;
   data: any;
 }
-
-// export interface AppAuthState {
-//     user?: User,
-//     aplicacion?: Aplicacion,
-//     rol?: Rol,
-//     modulos?: Modulo[],
-//     token?: string;
-// }

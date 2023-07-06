@@ -1,39 +1,39 @@
+import {
+  Box,
+  Container,
+  Typography,
+  Divider,
+  Button,
+  Snackbar,
+} from "@mui/material";
 import { useEffect, useState } from "react";
-import { useAuth } from "../../../auth/context/useAuth";
-import { BackendResponse, Modulo } from "../../../interfaces/interfaces";
 import { useNavigate } from "react-router-dom";
-import apiClient from "../../../services/api-client";
+import { useAuth } from "../../../auth/context/useAuth";
+import { BackendResponse, UnidadNegocio } from "../../../interfaces/interfaces";
 import {
   ApiEndpoints,
   Messages,
   ModulosSistema,
   TipoAcceso,
 } from "../../../models/enums";
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  Snackbar,
-  Typography,
-} from "@mui/material";
-import { ModuloTable } from "./components";
+import apiClient from "../../../services/api-client";
+import { UnidadNegocioTable } from ".";
 
-export const ModulosPage = () => {
+export const UnidadNegocioPage = () => {
   const { authState } = useAuth();
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const [modulos, setModulos] = useState<Modulo[]>([]);
+  const [unidadesNegocio, setUnidadesNegocio] = useState<UnidadNegocio[]>([]);
   const { accesos, user } = authState;
   const navigate = useNavigate();
 
   useEffect(() => {
-    getModulos();
+    getUnidadesNegocio();
   }, []);
 
-  const getModulos = async () => {
+  const getUnidadesNegocio = async () => {
     const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.MODULOS}`
+      `/${ApiEndpoints.UNIDAD_NEGOCIO}`
     );
 
     if (!data) {
@@ -45,12 +45,11 @@ export const ModulosPage = () => {
       showMessage(data.message);
       return;
     }
-
-    setModulos([...data.data]);
+    setUnidadesNegocio([...data.data]);
   };
 
   const handleOpen = (id: number) => {
-    navigate(`/${ApiEndpoints.MODULOS}/${id}`);
+    navigate(`/${ApiEndpoints.UNIDAD_NEGOCIO}/${id}`);
   };
 
   const handleClose = () => {
@@ -59,10 +58,10 @@ export const ModulosPage = () => {
   };
 
   const handleHabilitar = async (id: number) => {
-    const moduloSeleccionado = modulos.find(
-      (modulo) => modulo.modulo_id === id
+    const unidadSeleccionada = unidadesNegocio.find(
+      (unidad) => unidad.unidad_negocio_id === id
     );
-    if (!moduloSeleccionado) return;
+    if (!unidadSeleccionada) return;
 
     try {
       const datos = {
@@ -70,7 +69,7 @@ export const ModulosPage = () => {
         codigo_app: import.meta.env.VITE_CODIGO_APP,
       };
       const { data } = await apiClient.put<BackendResponse>(
-        `/${ApiEndpoints.HABILITAR_MODULOS}/${id}`,
+        `/${ApiEndpoints.HABILITAR_ROLES}/${id}`,
         { ...datos }
       );
 
@@ -84,15 +83,15 @@ export const ModulosPage = () => {
         return;
       }
 
-      const modulosModificado = data.data as Modulo;
-      const newModulo = modulos.map((modulo) => {
-        if (modulo.modulo_id === modulosModificado.modulo_id) {
-          modulo.habilitado = modulosModificado.habilitado;
+      const unidadModificada = data.data as UnidadNegocio;
+      const newAplicaciones = unidadesNegocio.map((unidad) => {
+        if (unidad.unidad_negocio_id === unidadModificada.unidad_negocio_id) {
+          unidad.habilitado = unidadModificada.habilitado;
         }
-        return modulo;
+        return unidad;
       });
       showMessage(data.message);
-      setModulos(newModulo);
+      setUnidadesNegocio(newAplicaciones);
     } catch (error) {
       console.log(error);
     }
@@ -107,27 +106,26 @@ export const ModulosPage = () => {
     <Box sx={{ backgroundColor: "grey.50", height: "100vh", padding: "1rem" }}>
       <Container>
         <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
-          Modulos
+          Unidades de Negocio
         </Typography>
         <Divider />
 
         {accesos?.some(
-          (acceso) =>
-            acceso.nombre === ModulosSistema.MODULOS + TipoAcceso.INSERT
+          (acceso) => acceso.nombre === ModulosSistema.ROLES + TipoAcceso.INSERT
         ) ? (
           <Button
             variant="contained"
             onClick={() => handleOpen(0)}
-            sx={{ mb: 2, mt: 2 }}
+            sx={{ mt: 2, mb: 2 }}
           >
-            Nuevo Modulo
+            Nueva Unidad de Negocio
           </Button>
         ) : null}
 
-        {modulos ? (
-          <ModuloTable
+        {unidadesNegocio ? (
+          <UnidadNegocioTable
             accesos={accesos}
-            modulos={modulos}
+            unidades={unidadesNegocio}
             handleHabilitar={handleHabilitar}
             handleOpen={handleOpen}
           />

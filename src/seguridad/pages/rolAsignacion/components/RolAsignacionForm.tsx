@@ -34,7 +34,7 @@ export const RolAsignacionForm = () => {
   const [roles, setRoles] = useState<Rol[]>([]);
   const [aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
   const { toastMessage, setToastMessage } = UseToastMessage();
-  const { control, register, setValue, handleSubmit, reset } = useForm();
+  const { control, register, setValue, handleSubmit } = useForm();
   const navigate = useNavigate();
   const { user } = authState;
 
@@ -274,7 +274,7 @@ export const RolAsignacionForm = () => {
                           {option.nombre}
                         </Box>
                       )}
-                      onChange={(event: any, newValue) => {
+                      onChange={(_event: any, newValue) => {
                         onChange(newValue ? newValue.componente_id : null);
                       }}
                       options={componentes}
@@ -317,7 +317,7 @@ export const RolAsignacionForm = () => {
                           {option.nombre}
                         </Box>
                       )}
-                      onChange={(event: any, newValue) => {
+                      onChange={(_event: any, newValue) => {
                         onChange(newValue ? newValue.aplicacion_id : null);
                         setRolesByApp(newValue ? newValue : null);
                       }}
@@ -360,7 +360,7 @@ export const RolAsignacionForm = () => {
                           {option.nombre}
                         </Box>
                       )}
-                      onChange={(event: any, newValue) => {
+                      onChange={(_event: any, newValue) => {
                         onChange(newValue ? newValue.rol_id : null);
                       }}
                       options={roles}

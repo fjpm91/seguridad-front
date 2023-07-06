@@ -5,12 +5,6 @@ import {
   Divider,
   Button,
   Snackbar,
-  Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  SelectChangeEvent,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -34,9 +28,9 @@ export const RolAsignacionPage = () => {
   const { authState } = useAuth();
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const [aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
-  const [aplicacionSeleccionada, setAplicacionSeleccionada] =
-    useState<string>("0");
+  const [_aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
+  // const [aplicacionSeleccionada, setAplicacionSeleccionada] =
+  //   useState<string>("0");
   const [rolAsignaciones, setRolAsignaciones] = useState<RolAsignacion[]>([]);
   const navigate = useNavigate();
   const { accesos, user } = authState;
@@ -154,11 +148,6 @@ export const RolAsignacionPage = () => {
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const handleChange = (event: SelectChangeEvent) => {
-    setAplicacionSeleccionada(event.target.value);
-    getRolAsignacion(event.target.value);
   };
 
   const showMessage = (text: string = "Operacion correcta") => {

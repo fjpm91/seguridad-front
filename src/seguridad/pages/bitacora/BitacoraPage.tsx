@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../../auth/context/useAuth";
 import { BackendResponse, Bitacora } from "../../../interfaces/interfaces";
-import { useNavigate } from "react-router-dom";
 import { ApiEndpoints } from "../../../models/enums";
 import apiClient from "../../../services/api-client";
 import { Box, Container, Divider, Snackbar, Typography } from "@mui/material";
@@ -12,8 +11,7 @@ export const BitacoraPage = () => {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [bitacoras, setBitacoras] = useState<Bitacora[]>([]);
-  const navigate = useNavigate();
-  const { accesos, user } = authState;
+  const { accesos } = authState;
 
   useEffect(() => {
     getBitacoras();
@@ -35,10 +33,6 @@ export const BitacoraPage = () => {
     }
 
     setBitacoras([...data.data]);
-  };
-
-  const handleOpen = (id: number) => {
-    navigate(`/empresas/${id}`);
   };
 
   const handleClose = () => {

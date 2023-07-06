@@ -33,13 +33,7 @@ const iconos = [...IconNames];
 export const ModuloForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const {
-    control,
-    register,
-    setValue,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const { control, register, setValue, handleSubmit } = useForm();
   const { authState } = useAuth();
   const [aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
   const [modulos, setModulos] = useState<Modulo[]>([]);
@@ -359,7 +353,7 @@ export const ModuloForm = () => {
                           {option.codigo_nombre}
                         </Box>
                       )}
-                      onChange={(event: any, newValue) => {
+                      onChange={(_event: any, newValue) => {
                         onChange(newValue ? newValue.aplicacion_id : null);
                         getModulos(newValue?.codigo);
                       }}
@@ -409,7 +403,7 @@ export const ModuloForm = () => {
                           {option.name}
                         </Box>
                       )}
-                      onChange={(event: any, newValue) =>
+                      onChange={(_event: any, newValue) =>
                         onChange(newValue ? newValue.name : null)
                       }
                       options={iconos}
@@ -450,7 +444,7 @@ export const ModuloForm = () => {
                           {option.aplicacion_nombre}
                         </Box>
                       )}
-                      onChange={(event: any, newValue) =>
+                      onChange={(_event: any, newValue) =>
                         onChange(newValue ? newValue.modulo_id : null)
                       }
                       options={modulos}

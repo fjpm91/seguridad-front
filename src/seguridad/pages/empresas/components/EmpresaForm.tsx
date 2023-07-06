@@ -22,13 +22,7 @@ import {
 export const EmpresaForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const {
-    control,
-    register,
-    setValue,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const { control, register, setValue, handleSubmit } = useForm();
   const { authState } = useAuth();
   const [open, setOpen] = useState(false);
   const { toastMessage, setToastMessage } = UseToastMessage();

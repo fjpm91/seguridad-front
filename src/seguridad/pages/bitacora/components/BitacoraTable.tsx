@@ -8,10 +8,7 @@ interface Props {
   bitacoras: Bitacora[];
 }
 
-export const BitacoraTable = ({
-  accesos,
-  bitacoras,
-}: Props) => {
+export const BitacoraTable = ({ bitacoras }: Props) => {
   const columns = useMemo<MRT_ColumnDef<Bitacora>[]>(
     () => [
       {

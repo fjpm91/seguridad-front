@@ -35,24 +35,16 @@ export const PersonasTable = ({
   const columns = useMemo<MRT_ColumnDef<Persona>[]>(
     () => [
       {
-        accessorKey: "persona_id",
-        header: "Id",
+        accessorKey: "codigo",
+        header: "Codigo",
       },
       {
-        accessorKey: "nombre",
+        accessorKey: "nombre_completo",
         header: "Nombre",
       },
       {
-        accessorKey: "apellido_paterno",
-        header: "Ap. Paterno",
-      },
-      {
-        accessorKey: "apellido_materno",
-        header: "Ap. Materno",
-      },
-      {
-        accessorKey: "correo",
-        header: "Correo",
+        accessorKey: "cargo",
+        header: "Cargo",
       },
       {
         accessorKey: "habilitado",

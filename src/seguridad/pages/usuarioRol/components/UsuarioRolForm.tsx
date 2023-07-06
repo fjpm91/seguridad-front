@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import apiClient from "../../../../services/api-client";
 import { BackendResponse, Rol, User } from "../../../../interfaces/interfaces";
 import { ApiEndpoints, Messages } from "../../../../models/enums";
@@ -8,7 +8,6 @@ import {
   Autocomplete,
   Box,
   Button,
-  Checkbox,
   Container,
   Grid,
   Snackbar,
@@ -22,12 +21,12 @@ export const UsuarioRolForm = () => {
   const { id } = useParams();
   const { authState } = useAuth();
   const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
+  const [_message, setMessage] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const [roles, setRoles] = useState<Rol[]>([]);
   const navigate = useNavigate();
-  const { accesos, user } = authState;
-  const { control, register, setValue, handleSubmit } = useForm();
+  const { user } = authState;
+  const { control, register, handleSubmit } = useForm();
   const { toastMessage, setToastMessage } = UseToastMessage();
 
   useEffect(() => {
@@ -217,7 +216,7 @@ export const UsuarioRolForm = () => {
                           {option.name}
                         </Box>
                       )}
-                      onChange={(event: any, newValue) =>
+                      onChange={(_event: any, newValue) =>
                         onChange(newValue ? newValue.id : null)
                       }
                       options={users}
@@ -258,7 +257,7 @@ export const UsuarioRolForm = () => {
                           {option.nombre}
                         </Box>
                       )}
-                      onChange={(event: any, newValue) =>
+                      onChange={(_event: any, newValue) =>
                         onChange(newValue ? newValue.rol_id : null)
                       }
                       options={roles}

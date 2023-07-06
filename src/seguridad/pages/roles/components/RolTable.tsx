@@ -10,7 +10,7 @@ import { useMemo } from "react";
 import { Rol, RolAcceso } from "../../../../interfaces/interfaces";
 import { MRT_Localization_ES } from "material-react-table/locales/es";
 import { IconoHabilitado } from "../../../../components";
-import { Edit, Https } from "@mui/icons-material";
+import { Edit } from "@mui/icons-material";
 import useAutorizado from "../../../../hooks/useAutorizado";
 import { ModulosSistema, TipoAcceso } from "../../../../models/enums";
 
@@ -27,7 +27,6 @@ export const RolTable = ({
   roles,
   handleHabilitar,
   handleOpen,
-  handleNavegarPermisos,
 }: Props) => {
   const { allowed } = useAutorizado(
     ModulosSistema.ROLES + TipoAcceso.UPDATE,

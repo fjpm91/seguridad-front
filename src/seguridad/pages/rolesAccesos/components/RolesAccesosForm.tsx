@@ -36,7 +36,7 @@ export const RolesAccesosForm = () => {
   const [roles, setRoles] = useState<Rol[]>([]);
   const [aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
   const { toastMessage, setToastMessage } = UseToastMessage();
-  const { control, register, setValue, handleSubmit, reset } = useForm();
+  const { control, handleSubmit, reset } = useForm();
   const navigate = useNavigate();
   const { user } = authState;
 
@@ -120,8 +120,6 @@ export const RolesAccesosForm = () => {
     });
     setModulos([...mods]);
     if (codigo !== rolActual?.aplicacion.codigo) return;
-    // setValoresModulos();
-    // markCheckedModulos();
   };
 
   const getAplicaciones = async () => {
@@ -252,7 +250,7 @@ export const RolesAccesosForm = () => {
                           {option.nombre}
                         </Box>
                       )}
-                      onChange={(event: any, newValue) => {
+                      onChange={(_event: any, newValue) => {
                         onChange(newValue ? newValue.aplicacion_id : null);
                         getModulosPorAplicacion(newValue?.codigo);
                         getAplicacionById(newValue?.aplicacion_id);
@@ -296,7 +294,7 @@ export const RolesAccesosForm = () => {
                           {option.nombre}
                         </Box>
                       )}
-                      onChange={(event: any, newValue) => {
+                      onChange={(_event: any, newValue) => {
                         onChange(newValue ? newValue.rol_id : null);
                         getRolById(newValue?.rol_id);
                         resetCheckedModulos();

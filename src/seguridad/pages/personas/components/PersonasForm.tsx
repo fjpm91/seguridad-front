@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../../../../auth/context/useAuth";
-import { BackendResponse, Persona } from "../../../../interfaces/interfaces";
+import {
+  BackendResponse,
+  Persona,
+  UnidadNegocio,
+} from "../../../../interfaces/interfaces";
 import { UseToastMessage } from "../../../../hooks/useToastMessage";
 import { Controller, useForm } from "react-hook-form";
 import apiClient from "../../../../services/api-client";
-import { ApiEndpoints } from "../../../../models/enums";
+import { ApiEndpoints, Messages } from "../../../../models/enums";
 import {
   Autocomplete,
   Box,
+  Button,
   Checkbox,
   Container,
   Divider,
@@ -18,20 +21,37 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useNavigate, useParams } from "react-router-dom";
 
 export const PersonasForm = () => {
   const { id } = useParams();
-  const { authState } = useAuth();
-  const [open, setOpen] = useState(false);
-  const [personas, setPersonas] = useState<Persona[]>([]);
-  const { toastMessage, setToastMessage } = UseToastMessage();
-  const { control, register, setValue, handleSubmit } = useForm();
   const navigate = useNavigate();
-  const { user } = authState;
+  const { control, register, setValue, handleSubmit } = useForm();
+  const [open, setOpen] = useState(false);
+  const { toastMessage, setToastMessage } = UseToastMessage();
+  const [unidades, setUnidadesNegocio] = useState<UnidadNegocio[]>([]);
 
   useEffect(() => {
+    getUnidadesNegocio();
     getPersonaById();
   }, []);
+
+  const getUnidadesNegocio = async () => {
+    const { data } = await apiClient.get<BackendResponse>(
+      `/${ApiEndpoints.UNIDAD_NEGOCIO}`
+    );
+
+    if (!data) {
+      showMessage(Messages.NO_SE_PUDO_COMPLETAR);
+      return;
+    }
+
+    if (!data.success) {
+      showMessage(data.message);
+      return;
+    }
+    setUnidadesNegocio([...data.data]);
+  };
 
   const getPersonaById = async () => {
     if (!id || id === "0") return;
@@ -40,16 +60,26 @@ export const PersonasForm = () => {
       `/${ApiEndpoints.PERSONAS}/${id}`
     );
 
-    if (!data) return;
+    if (!data) {
+      showMessage(Messages.NO_SE_PUDO_COMPLETAR);
+      return;
+    }
+
+    if (!data.success) {
+      showMessage(Messages.NO_SE_PUDO_COMPLETAR);
+      return;
+    }
+
     const userdata = data.data as Persona;
     setValue("persona_id", userdata.persona_id);
-    setValue("nombre", userdata.nombre);
+    setValue("codigo", userdata.codigo);
+    setValue("nombre_completo", userdata.nombre_completo);
+    setValue("cargo", userdata.cargo);
+    setValue("ubicacion", userdata.ubicacion);
     setValue("apellido_paterno", userdata.apellido_paterno);
     setValue("apellido_materno", userdata.apellido_materno);
-    setValue("correo", userdata.correo);
+    setValue("unidad_negocio_id", userdata.unidad_negocio_id);
   };
-
-  const cancel = () => navigate("/users");
 
   const handleClose = () => {
     setOpen(false);
@@ -64,6 +94,8 @@ export const PersonasForm = () => {
     setToastMessage(text);
     setOpen(true);
   };
+
+  const cancel = () => navigate("/personas");
 
   return (
     <Box
@@ -100,9 +132,9 @@ export const PersonasForm = () => {
             </Grid>
 
             {/* Id */}
-            <Grid item xs={12} sm={4} md={2} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={2} sx={{ pr: "16px" }}>
               <TextField
-                {...register("id")}
+                {...register("persona_id")}
                 label="Id"
                 defaultValue="0"
                 disabled
@@ -110,11 +142,54 @@ export const PersonasForm = () => {
               />
             </Grid>
 
-            {/* Personas */}
+            {/* Codigo */}
+            <Grid item xs={12} sm={3} md={2} sx={{ pr: "16px" }}>
+              <TextField
+                {...register("codigo")}
+                label="Codigo"
+                defaultValue="0"
+                disabled={id ? true : false}
+                sx={{ width: "100%", pr: "16px" }}
+              />
+            </Grid>
+
+            {/* Nombre Completo */}
+            <Grid item xs={12} sm={5} md={4} sx={{ pr: "16px" }}>
+              <TextField
+                {...register("nombre_completo")}
+                label="Nombre Completo"
+                defaultValue="..."
+                disabled={id ? true : false}
+                sx={{ width: "100%", pr: "16px" }}
+              />
+            </Grid>
+
+            {/* Cargo */}
+            <Grid item xs={12} sm={5} md={4} sx={{ pr: "16px" }}>
+              <TextField
+                {...register("cargo")}
+                label="Cargo"
+                defaultValue="..."
+                disabled={id ? true : false}
+                sx={{ width: "100%", pr: "16px" }}
+              />
+            </Grid>
+
+            {/* Ciudad */}
+            <Grid item xs={12} sm={5} md={4} sx={{ pr: "16px" }}>
+              <TextField
+                {...register("ubicacion")}
+                label="Ciudad"
+                defaultValue="..."
+                disabled={id ? true : false}
+                sx={{ width: "100%", pr: "16px" }}
+              />
+            </Grid>
+
+            {/* Unidad de Negocio */}
             <Grid item xs={12} sm={6} md={5} sx={{ pr: "16px" }}>
               <Controller
-                name="persona_id"
-                rules={{ required: true }}
+                name="unidad_negocio_id"
                 control={control}
                 render={({ field }) => {
                   const { onChange, value } = field;
@@ -122,26 +197,25 @@ export const PersonasForm = () => {
                     <Autocomplete
                       value={
                         value
-                          ? personas.find(
-                              (option) => value === option.persona_id
+                          ? unidades.find(
+                              (option) => value === option.unidad_negocio_id
                             ) ?? null
                           : null
                       }
-                      getOptionLabel={(option) => option.nombre_completo}
+                      getOptionLabel={(option) => option.nombre}
                       renderOption={(props, option) => (
                         <Box component="li" {...props}>
-                          {option.nombre_completo}
+                          {option.nombre}
                         </Box>
                       )}
-                      onChange={(event: any, newValue) => {
-                        onChange(newValue ? newValue.persona_id : null);
+                      onChange={(_event: any, newValue) => {
+                        onChange(newValue ? newValue.unidad_negocio_id : null);
                       }}
-                      options={personas}
+                      options={unidades}
                       renderInput={(params) => (
                         <TextField
                           {...params}
-                          label="Personas *"
-                          helperText="La Personas es obligatoria"
+                          label="Unidad de Negocio"
                           inputProps={{
                             ...params.inputProps,
                           }}
@@ -150,26 +224,6 @@ export const PersonasForm = () => {
                     />
                   );
                 }}
-              />
-            </Grid>
-
-            {/* Username */}
-            <Grid item xs={12} sm={4} sx={{ pr: "16px" }}>
-              <TextField
-                {...register("name")}
-                label="Username"
-                defaultValue="xxx"
-                sx={{ width: "100%", pr: "16px" }}
-              />
-            </Grid>
-
-            {/* Email */}
-            <Grid item xs={12} sm={4} sx={{ pr: "16px" }}>
-              <TextField
-                {...register("email")}
-                label="Email"
-                defaultValue="email@empacar.com.bo"
-                sx={{ width: "100%", pr: "16px" }}
               />
             </Grid>
 
@@ -190,6 +244,21 @@ export const PersonasForm = () => {
                   />
                 )}
               />
+            </Grid>
+          </Grid>
+
+          {/* Botones */}
+          <Grid container spacing={2}>
+            <Grid item>
+              <Button size="medium" variant="contained" type="submit">
+                Guardar
+              </Button>
+            </Grid>
+
+            <Grid item>
+              <Button size="medium" variant="outlined" onClick={cancel}>
+                Cancelar
+              </Button>
             </Grid>
           </Grid>
         </Box>

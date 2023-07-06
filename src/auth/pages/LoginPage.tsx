@@ -55,7 +55,6 @@ const ordenarModulos = (modulos: Modulo[]) => {
 
 export const LoginPage = () => {
   const [message, setMessage] = useState("");
-  // const [open, setOpen] = useState(false);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -213,5 +212,3 @@ export const LoginPage = () => {
     </ThemeProvider>
   );
 };
-
-// TODO: Agregar por defecto el rol para la ruta /inicio

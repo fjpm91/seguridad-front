@@ -1,63 +1,53 @@
 import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { useParams, useNavigate } from "react-router-dom";
 import {
-  Autocomplete,
   Box,
-  Button,
-  Checkbox,
   Container,
-  Divider,
-  FormControlLabel,
   Grid,
-  Snackbar,
-  TextField,
   Typography,
+  Divider,
+  TextField,
+  FormControlLabel,
+  Checkbox,
+  Button,
+  Snackbar,
+  Autocomplete,
 } from "@mui/material";
-import { useAuth } from "../../../../auth/context/useAuth";
-import apiClient from "../../../../services/api-client";
-import {
-  Aplicacion,
-  BackendResponse,
-  Rol,
-} from "../../../../interfaces/interfaces";
+import { Controller, useForm } from "react-hook-form";
+import { useNavigate, useParams } from "react-router-dom";
 import { UseToastMessage } from "../../../../hooks/useToastMessage";
+import {
+  Empresa,
+  BackendResponse,
+  Division,
+} from "../../../../interfaces/interfaces";
 import { ApiEndpoints, Messages } from "../../../../models/enums";
+import apiClient from "../../../../services/api-client";
+import { useAuth } from "../../../../auth/context/useAuth";
 
-export const RolForm = () => {
+export const UnidadNegocioForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
+  const [divisiones, setDivisiones] = useState<Division[]>([]);
   const { control, register, setValue, handleSubmit } = useForm();
   const { authState } = useAuth();
-  const [aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
   const [open, setOpen] = useState(false);
   const { toastMessage, setToastMessage } = UseToastMessage();
   const { user } = authState;
 
   useEffect(() => {
-    getAplicaciones();
-    getRolById();
+    getEmpresas();
+    getDivisiones();
+    getunidadNegocioById();
   }, []);
 
-  const getRolById = async () => {
-    if (!id || id === "0") return;
-
-    const { data } = await apiClient.get<Rol>(`/${ApiEndpoints.ROLES}/${id}`);
-
-    if (!data) return;
-    setValue("rol_id", data.rol_id);
-    setValue("nombre", data.nombre);
-    setValue("habilitado", data.habilitado === 1 ? true : false);
-    setValue("codigo_app", data.aplicacion.codigo);
-  };
-
-  const getAplicaciones = async () => {
+  const getEmpresas = async () => {
     const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.APLICACIONES}`
+      `/${ApiEndpoints.EMPRESAS}`
     );
 
     if (!data) {
-      showMessage("No se pudo completar la operacion");
+      showMessage(Messages.NO_SE_PUDO_COMPLETAR);
       return;
     }
 
@@ -66,28 +56,68 @@ export const RolForm = () => {
       return;
     }
 
-    const apps: Aplicacion[] = (data.data as Aplicacion[]).map((aplicacion) => {
-      return {
-        ...aplicacion,
-        codigo_nombre: `${aplicacion.codigo} - ${aplicacion.nombre}`,
-      };
-    });
-    setAplicaciones([...apps]);
+    setEmpresas([...data.data]);
+  };
+
+  const getDivisiones = async () => {
+    const { data } = await apiClient.get<BackendResponse>(
+      `/${ApiEndpoints.DIVISIONES}`
+    );
+
+    if (!data) {
+      showMessage(Messages.NO_SE_PUDO_COMPLETAR);
+      return;
+    }
+
+    if (!data.success) {
+      showMessage(data.message);
+      return;
+    }
+
+    setDivisiones([...data.data]);
+  };
+
+  const getunidadNegocioById = async () => {
+    if (!id || id === "0") return;
+
+    const { data: response } = await apiClient.get<BackendResponse>(
+      `/${ApiEndpoints.UNIDAD_NEGOCIO}/${id}`
+    );
+
+    if (!response) return;
+
+    if (!response.success) {
+      showMessage(response.message);
+      return;
+    }
+
+    const { data } = response;
+    setValue("unidad_negocio_id", data.unidad_negocio_id);
+    setValue("empresa_id", data.empresa.empresa_id);
+    setValue("division_id", data.division_id);
+    setValue("nombre", data.nombre);
+    setValue("habilitado", data.habilitado === 1 ? true : false);
+  };
+
+  const submitForm = (event: any) => {
+    if (id === "0") {
+      store(event);
+    } else {
+      update(event);
+    }
   };
 
   const store = async (formData: any) => {
-    const aplicacionSeleccionada = aplicaciones.find(
-      (ap) => ap.codigo === formData.codigo_app
-    );
     const datos = {
       ...formData,
-      aplicacion_id: aplicacionSeleccionada?.aplicacion_id,
       user: user?.id,
+      codigo_app: import.meta.env.VITE_CODIGO_APP,
+      habilitado: formData.habilitado ? formData.habilitado : 0,
     };
 
     try {
       const { data } = await apiClient.post<BackendResponse>(
-        `/${ApiEndpoints.ROLES}`,
+        `/${ApiEndpoints.UNIDAD_NEGOCIO}`,
         { ...datos }
       );
       if (!data) {
@@ -101,61 +131,50 @@ export const RolForm = () => {
 
       showMessage(data.message);
       setTimeout(() => {
-        navigate("/roles");
+        navigate("/unidad-negocio");
       }, 1000);
     } catch (error) {
-      console.log("🚀 ~ file: AplicacionForm.tsx:55 ~ store ~ error:", error);
       showMessage(JSON.stringify(error));
     }
   };
 
   const update = async (formData: any) => {
-    const aplicacionSeleccionada = aplicaciones.find(
-      (ap) => ap.codigo === formData.codigo_app
-    );
     const datos = {
       ...formData,
-      aplicacion_id: aplicacionSeleccionada?.aplicacion_id,
       user: user?.id,
+      codigo_app: import.meta.env.VITE_CODIGO_APP,
+      habilitado: formData.habilitado ? formData.habilitado : 0,
     };
-    console.log("🚀 ~ file: RolForm.tsx:120 ~ update ~ datos:", datos);
-    // return;
+
     try {
-      const { data } = await apiClient.put<BackendResponse>(
-        `/${ApiEndpoints.ROLES}/${id}`,
+      const { data: response } = await apiClient.put<BackendResponse>(
+        `/${ApiEndpoints.UNIDAD_NEGOCIO}/${id}`,
         datos
       );
-      if (!data) {
+      if (!response) {
         showMessage(Messages.NO_SE_PUDO_COMPLETAR);
         return;
       }
 
-      showMessage(data.message);
+      if (!response.success) {
+        showMessage(response.message);
+        return;
+      }
+
+      showMessage(response.message);
       setTimeout(() => {
-        navigate("/roles");
+        navigate("/unidad-negocio");
       }, 1000);
     } catch (error) {
-      console.log("🚀 ~ file: AplicacionForm.tsx:55 ~ store ~ error:", error);
       showMessage(JSON.stringify(error));
     }
   };
 
-  const cancel = () => navigate("/roles");
+  const cancel = () => navigate("/unidades-negocio");
 
   const handleClose = () => {
     setOpen(false);
     setToastMessage("");
-  };
-
-  const submitForm = (event: any) => {
-    // console.log("🚀 ~ file: RolForm.tsx:139 ~ submitForm ~ event:", event);
-    // return;
-
-    if (id === "0") {
-      store(event);
-    } else {
-      update(event);
-    }
   };
 
   const showMessage = (text: string = "Operacion correcta") => {
@@ -192,38 +211,25 @@ export const RolForm = () => {
                 component="div"
                 sx={{ flexGrow: 1, mb: 2 }}
               >
-                Formulario de Roles
+                Formulario de Unidades de Negocio
               </Typography>
               <Divider />
             </Grid>
 
-            {/* Id */}
-            <Grid item xs={12} sm={4} md={3} lg={2} sx={{ pr: "16px" }}>
+            {/* ID */}
+            <Grid item xs={12} sm={3} md={2} sx={{ pr: "16px" }}>
               <TextField
-                {...register("rol_id")}
+                {...register("unidad_negocio_id")}
                 label="Id"
                 defaultValue="0"
-                disabled
                 sx={{ width: "100%", pr: "16px" }}
               />
             </Grid>
 
-            {/* Nombre */}
-            <Grid item xs={12} md={6} sx={{ pr: "16px" }}>
-              <TextField
-                {...register("nombre", { required: true })}
-                required
-                label="Nombre"
-                helperText="El Nombre del Rol es obligatorio"
-                defaultValue="Nombre Rol"
-                sx={{ width: "100%" }}
-              />
-            </Grid>
-
-            {/* Aplicacion */}
+            {/* Empresa */}
             <Grid item xs={12} sm={6} md={4} lg={3} sx={{ pr: "16px" }}>
               <Controller
-                name="codigo_app"
+                name="empresa_id"
                 rules={{ required: true }}
                 control={control}
                 render={({ field }) => {
@@ -232,25 +238,79 @@ export const RolForm = () => {
                     <Autocomplete
                       value={
                         value
-                          ? aplicaciones.find(
-                              (option) => value === option.codigo
+                          ? empresas.find(
+                              (option) => value === option.empresa_id
                             ) ?? null
                           : null
                       }
-                      getOptionLabel={(option) => option.codigo}
+                      getOptionLabel={(option) => option.nombre}
                       renderOption={(props, option) => (
                         <Box component="li" {...props}>
-                          {option.codigo_nombre}
+                          {option.nombre}
                         </Box>
                       )}
                       onChange={(_event: any, newValue) =>
-                        onChange(newValue ? newValue.codigo : null)
+                        onChange(newValue ? newValue.empresa_id : null)
                       }
-                      options={aplicaciones}
+                      options={empresas}
                       renderInput={(params) => (
                         <TextField
                           {...params}
-                          label="Seleccionar aplicación"
+                          label="Seleccionar empresa"
+                          inputProps={{
+                            ...params.inputProps,
+                          }}
+                        />
+                      )}
+                    />
+                  );
+                }}
+              />
+            </Grid>
+
+            {/* Nombre Unidad */}
+            <Grid item xs={12} md={5} sx={{ pr: "16px" }}>
+              <TextField
+                {...register("nombre", { required: true })}
+                required
+                label="Nombre Unidad"
+                helperText="El Nombre de la Unidad de Negocio es obligatorio"
+                defaultValue="Nombre Unidad"
+                sx={{ width: "100%" }}
+              />
+            </Grid>
+
+            {/* Division */}
+            <Grid item xs={12} sm={6} md={4} lg={3} sx={{ pr: "16px" }}>
+              <Controller
+                name="division_id"
+                rules={{ required: true }}
+                control={control}
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <Autocomplete
+                      value={
+                        value
+                          ? divisiones.find(
+                              (option) => value === option.division_id
+                            ) ?? null
+                          : null
+                      }
+                      getOptionLabel={(option) => option.nombre}
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props}>
+                          {option.nombre}
+                        </Box>
+                      )}
+                      onChange={(_event: any, newValue) =>
+                        onChange(newValue ? newValue.division_id : null)
+                      }
+                      options={divisiones}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Division"
                           inputProps={{
                             ...params.inputProps,
                           }}
@@ -263,7 +323,7 @@ export const RolForm = () => {
             </Grid>
 
             {/* Habilitado */}
-            <Grid item xs={12} sm={4} md={3} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={3} sx={{ pr: "16px" }}>
               <Controller
                 name="habilitado"
                 control={control}

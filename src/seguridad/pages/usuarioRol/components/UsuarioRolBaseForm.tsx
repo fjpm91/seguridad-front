@@ -28,9 +28,9 @@ export const UsuarioRolBaseForm = () => {
   const [roles, setRoles] = useState<Rol[]>([]);
   const [aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
   const navigate = useNavigate();
-  const { accesos, user } = authState;
-  const { control, register, handleSubmit } = useForm();
-  const { toastMessage, setToastMessage } = UseToastMessage();
+  const { user } = authState;
+  const { control, handleSubmit } = useForm();
+  const { setToastMessage } = UseToastMessage();
 
   useEffect(() => {
     getAplicaciones();
