@@ -3,13 +3,13 @@ import {
   Button,
   Container,
   Divider,
+  Modal,
   Snackbar,
   Typography,
 } from "@mui/material";
 import { useAuth } from "../../../auth/context/useAuth";
 import { useEffect, useState } from "react";
 import { BackendResponse, Persona } from "../../../interfaces/interfaces";
-import { useNavigate } from "react-router-dom";
 import apiClient from "../../../services/api-client";
 import {
   ApiEndpoints,
@@ -17,14 +17,15 @@ import {
   TipoAcceso,
 } from "../../../models/enums";
 import { PersonasTable } from ".";
+import { ModalImportarPersonas } from "./components/ModalImportarPersonas";
 
 export const PersonasPage = () => {
   const { authState } = useAuth();
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [personas, setPersonas] = useState<Persona[]>([]);
-  const navigate = useNavigate();
   const { accesos, user } = authState;
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
     getPersonas();
@@ -49,7 +50,8 @@ export const PersonasPage = () => {
   };
 
   const handleOpen = (id: number) => {
-    navigate(`/personas/${id}`);
+    console.log("🚀 ~ file: PersonasPage.tsx:53 ~ handleOpen ~ id:", id);
+    setShow(true);
   };
 
   const handleClose = () => {
@@ -97,6 +99,10 @@ export const PersonasPage = () => {
     setOpen(true);
   };
 
+  const handleCloseModal = () => {
+    setShow(false);
+  };
+
   return (
     <Box sx={{ backgroundColor: "grey.100", height: "100%", padding: "1rem" }}>
       <Container>
@@ -109,15 +115,17 @@ export const PersonasPage = () => {
           (acceso) =>
             acceso.nombre === ModulosSistema.USUARIOS + TipoAcceso.INSERT
         ) ? (
-          <Box sx={{ mt: 2 }}>
-            <Button
-              variant="contained"
-              onClick={() => handleOpen(0)}
-              sx={{ mb: 2 }}
-            >
-              Importar Personas
-            </Button>
-          </Box>
+          <>
+            <Box sx={{ mt: 2 }}>
+              <Button
+                variant="contained"
+                onClick={() => handleOpen(0)}
+                sx={{ mb: 2 }}
+              >
+                Importar Personas
+              </Button>
+            </Box>
+          </>
         ) : null}
 
         {personas ? (
@@ -137,6 +145,16 @@ export const PersonasPage = () => {
         anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
         message={message}
       ></Snackbar>
+
+      <Modal
+        disableEnforceFocus
+        open={show}
+        onClose={handleCloseModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <ModalImportarPersonas />
+      </Modal>
     </Box>
   );
 };
