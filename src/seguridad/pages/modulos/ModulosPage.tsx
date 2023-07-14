@@ -9,20 +9,16 @@ import {
   ModulosSistema,
   TipoAcceso,
 } from "../../../models/enums";
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  Snackbar,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Container, Divider, Typography } from "@mui/material";
 import { ModuloTable } from "./components";
 
-export const ModulosPage = () => {
+interface Props {
+  setOpen: (open: boolean) => void;
+  setToastMessage: (toastMessage: string) => void;
+}
+
+export const ModulosPage = ({ setOpen, setToastMessage }: Props) => {
   const { authState } = useAuth();
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
   const [modulos, setModulos] = useState<Modulo[]>([]);
   const { accesos, user } = authState;
   const navigate = useNavigate();
@@ -51,11 +47,6 @@ export const ModulosPage = () => {
 
   const handleOpen = (id: number) => {
     navigate(`/${ApiEndpoints.MODULOS}/${id}`);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setMessage("");
   };
 
   const handleHabilitar = async (id: number) => {
@@ -99,7 +90,7 @@ export const ModulosPage = () => {
   };
 
   const showMessage = (text: string = "Operacion correcta") => {
-    setMessage(text);
+    setToastMessage(text);
     setOpen(true);
   };
 
@@ -133,14 +124,6 @@ export const ModulosPage = () => {
           />
         ) : null}
       </Container>
-
-      <Snackbar
-        open={open}
-        autoHideDuration={1500}
-        onClose={() => handleClose()}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        message={message}
-      ></Snackbar>
     </Box>
   );
 };

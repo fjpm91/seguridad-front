@@ -1,13 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  Snackbar,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Container, Divider, Typography } from "@mui/material";
 import apiClient from "../../../services/api-client";
 import { useAuth } from "../../../auth/context/useAuth";
 import { Aplicacion, BackendResponse } from "../../../interfaces/interfaces";
@@ -18,10 +11,13 @@ import {
 } from "../../../models/enums";
 import { AplicacionTable } from "./components";
 
-export const AplicacionesPage = () => {
+interface Props {
+  setOpen: (open: boolean) => void;
+  setToastMessage: (toastMessage: string) => void;
+}
+
+export const AplicacionesPage = ({ setOpen, setToastMessage }: Props) => {
   const { authState } = useAuth();
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
   const [aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
   const navigate = useNavigate();
   const { accesos, user } = authState;
@@ -50,11 +46,6 @@ export const AplicacionesPage = () => {
 
   const handleOpen = (id: number) => {
     navigate(`/aplicaciones/${id}`);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setMessage("");
   };
 
   const handleHabilitar = async (id: number) => {
@@ -99,7 +90,7 @@ export const AplicacionesPage = () => {
   };
 
   const showMessage = (text: string = "Operacion correcta") => {
-    setMessage(text);
+    setToastMessage(text);
     setOpen(true);
   };
 
@@ -140,14 +131,6 @@ export const AplicacionesPage = () => {
             />
           ) : null}
         </Container>
-
-        <Snackbar
-          open={open}
-          autoHideDuration={1500}
-          onClose={() => handleClose()}
-          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-          message={message}
-        ></Snackbar>
       </Box>
     </>
   );

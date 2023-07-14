@@ -12,11 +12,9 @@ import {
   FormControlLabel,
   Checkbox,
   Button,
-  Snackbar,
   Divider,
 } from "@mui/material";
 import { useAuth } from "../../../../auth/context/useAuth";
-import { UseToastMessage } from "../../../../hooks/useToastMessage";
 import {
   Aplicacion,
   BackendResponse,
@@ -30,15 +28,24 @@ const regMultipleSpaces = /  +/g;
 const regYspaces = /\sy\s/gi;
 const iconos = [...IconNames];
 
-export const ModuloForm = () => {
+interface Props {
+  setOpen: (open: boolean) => void;
+  setToastMessage: (toastMessage: string) => void;
+}
+
+export const ModuloForm = ({ setOpen, setToastMessage }: Props) => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { control, register, setValue, handleSubmit } = useForm();
+  const {
+    control,
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const { authState } = useAuth();
   const [aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
   const [modulos, setModulos] = useState<Modulo[]>([]);
-  const [open, setOpen] = useState(false);
-  const { toastMessage, setToastMessage } = UseToastMessage();
   const { user } = authState;
 
   useEffect(() => {
@@ -237,12 +244,7 @@ export const ModuloForm = () => {
     }
   };
 
-  const cancel = () => navigate("/modulos");
-
-  const handleClose = () => {
-    setOpen(false);
-    setToastMessage("");
-  };
+  const cancel = () => navigate(`/${ApiEndpoints.MODULOS}`);
 
   const showMessage = (text: string = "Operacion correcta") => {
     setToastMessage(text);
@@ -297,37 +299,94 @@ export const ModuloForm = () => {
             {/* Titulo */}
             <Grid item xs={12} md={6} sx={{ pr: "16px" }}>
               <TextField
-                {...register("titulo", { required: true })}
+                {...register("titulo", {
+                  required: true,
+                  minLength: { value: 3, message: "error message" },
+                })}
                 required
                 label="Titulo"
-                helperText="El Titulo del Modulo es obligatorio"
-                defaultValue="Titulo Modulo"
+                defaultValue="--"
+                error={
+                  errors.titulo?.type === "required" ||
+                  errors.titulo?.type === "minLength"
+                    ? true
+                    : false
+                }
                 sx={{ width: "100%" }}
               />
+              {(errors.titulo?.type === "required" ||
+                errors.titulo?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  El titulo del modulo es obligatorio
+                </Typography>
+              )}
             </Grid>
 
             {/* Nombre */}
             <Grid item xs={12} md={6} sx={{ pr: "16px" }}>
               <TextField
-                {...register("nombre", { required: true })}
+                {...register("nombre", {
+                  required: true,
+                  minLength: { value: 3, message: "error message" },
+                })}
                 required
                 label="Nombre"
-                helperText="El Nombre del Modulo es obligatorio"
-                defaultValue="Nombre Modulo"
+                defaultValue="--"
+                error={
+                  errors.nombre?.type === "required" ||
+                  errors.nombre?.type === "minLength"
+                    ? true
+                    : false
+                }
                 sx={{ width: "100%" }}
               />
+              {(errors.nombre?.type === "required" ||
+                errors.nombre?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  El nombre del modulo es obligatorio
+                </Typography>
+              )}
             </Grid>
 
             {/* URL */}
             <Grid item xs={12} sm={6} md={4} lg={3} sx={{ pr: "16px" }}>
               <TextField
-                {...register("url", { required: true })}
+                {...register("url", {
+                  required: true,
+                  minLength: { value: 3, message: "error message" },
+                })}
                 required
                 label="URL"
-                helperText="La URL del Modulo es obligatoria"
-                defaultValue="..."
+                defaultValue="--"
+                error={
+                  errors.url?.type === "required" ||
+                  errors.url?.type === "minLength"
+                    ? true
+                    : false
+                }
                 sx={{ width: "100%" }}
               />
+              {(errors.url?.type === "required" ||
+                errors.url?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  La url del modulo es obligatorio
+                </Typography>
+              )}
             </Grid>
 
             {/* Aplicacion */}
@@ -361,8 +420,12 @@ export const ModuloForm = () => {
                       renderInput={(params) => (
                         <TextField
                           {...params}
-                          label="Aplicación *"
-                          helperText="La Aplicación es obligatoria"
+                          label="Aplicacion *"
+                          error={
+                            errors.aplicacion_id?.type === "required"
+                              ? true
+                              : false
+                          }
                           inputProps={{
                             ...params.inputProps,
                           }}
@@ -372,6 +435,17 @@ export const ModuloForm = () => {
                   );
                 }}
               />
+              {(errors.aplicacion_id?.type === "required" ||
+                errors.aplicacion_id?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  La aplicacion es obligatoria
+                </Typography>
+              )}
             </Grid>
 
             {/* Icono */}
@@ -524,14 +598,6 @@ export const ModuloForm = () => {
           </Grid>
         </Box>
       </Container>
-
-      <Snackbar
-        open={open}
-        autoHideDuration={2000}
-        onClose={() => handleClose()}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        message={toastMessage}
-      ></Snackbar>
     </Box>
   );
 };

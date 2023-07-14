@@ -4,7 +4,6 @@ import {
   Persona,
   UnidadNegocio,
 } from "../../../../interfaces/interfaces";
-import { UseToastMessage } from "../../../../hooks/useToastMessage";
 import { Controller, useForm } from "react-hook-form";
 import apiClient from "../../../../services/api-client";
 import { ApiEndpoints, Messages } from "../../../../models/enums";
@@ -17,18 +16,20 @@ import {
   Divider,
   FormControlLabel,
   Grid,
-  Snackbar,
   TextField,
   Typography,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 
-export const PersonasForm = () => {
+interface Props {
+  setOpen: (open: boolean) => void;
+  setToastMessage: (toastMessage: string) => void;
+}
+
+export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { control, register, setValue, handleSubmit } = useForm();
-  const [open, setOpen] = useState(false);
-  const { toastMessage, setToastMessage } = UseToastMessage();
   const [unidades, setUnidadesNegocio] = useState<UnidadNegocio[]>([]);
 
   useEffect(() => {
@@ -79,11 +80,6 @@ export const PersonasForm = () => {
     setValue("apellido_paterno", userdata.apellido_paterno);
     setValue("apellido_materno", userdata.apellido_materno);
     setValue("unidad_negocio_id", userdata.unidad_negocio_id);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setToastMessage("");
   };
 
   const submitForm = (event: any) => {
@@ -263,14 +259,6 @@ export const PersonasForm = () => {
           </Grid>
         </Box>
       </Container>
-
-      <Snackbar
-        open={open}
-        autoHideDuration={2000}
-        onClose={() => handleClose()}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        message={toastMessage}
-      ></Snackbar>
     </Box>
   );
 };

@@ -4,7 +4,6 @@ import {
   Container,
   Divider,
   Modal,
-  Snackbar,
   Typography,
 } from "@mui/material";
 import { useAuth } from "../../../auth/context/useAuth";
@@ -19,10 +18,13 @@ import {
 import { PersonasTable } from ".";
 import { ModalImportarPersonas } from "./components/ModalImportarPersonas";
 
-export const PersonasPage = () => {
+interface Props {
+  setOpen: (open: boolean) => void;
+  setToastMessage: (toastMessage: string) => void;
+}
+
+export const PersonasPage = ({ setOpen, setToastMessage }: Props) => {
   const { authState } = useAuth();
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
   const [personas, setPersonas] = useState<Persona[]>([]);
   const { accesos, user } = authState;
   const [show, setShow] = useState(false);
@@ -52,11 +54,6 @@ export const PersonasPage = () => {
   const handleOpen = (id: number) => {
     console.log("🚀 ~ file: PersonasPage.tsx:53 ~ handleOpen ~ id:", id);
     setShow(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setMessage("");
   };
 
   const handleHabilitar = async (id: number) => {
@@ -95,7 +92,7 @@ export const PersonasPage = () => {
   };
 
   const showMessage = (text: string = "Operacion correcta") => {
-    setMessage(text);
+    setToastMessage(text);
     setOpen(true);
   };
 
@@ -137,14 +134,6 @@ export const PersonasPage = () => {
           />
         ) : null}
       </Container>
-
-      <Snackbar
-        open={open}
-        autoHideDuration={1500}
-        onClose={() => handleClose()}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        message={message}
-      ></Snackbar>
 
       <Modal
         disableEnforceFocus

@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../../../auth/context/useAuth";
-import { UseToastMessage } from "../../../../hooks/useToastMessage";
 import { Controller, useForm } from "react-hook-form";
 import apiClient from "../../../../services/api-client";
 import { BackendResponse, Componente } from "../../../../interfaces/interfaces";
@@ -14,17 +13,25 @@ import {
   Divider,
   FormControlLabel,
   Grid,
-  Snackbar,
   TextField,
   Typography,
 } from "@mui/material";
 
-export const ComponentsForm = () => {
+interface Props {
+  setOpen: (open: boolean) => void;
+  setToastMessage: (toastMessage: string) => void;
+}
+
+export const ComponentsForm = ({ setOpen, setToastMessage }: Props) => {
   const { id } = useParams();
   const { authState } = useAuth();
-  const [open, setOpen] = useState(false);
-  const { toastMessage, setToastMessage } = UseToastMessage();
-  const { control, register, setValue, handleSubmit } = useForm();
+  const {
+    control,
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const navigate = useNavigate();
   const { user } = authState;
 
@@ -69,7 +76,7 @@ export const ComponentsForm = () => {
 
       showMessage(data.message);
       setTimeout(() => {
-        navigate("/componentes");
+        cancel();
       }, 1000);
     } catch (error) {
       showMessage(JSON.stringify(error));
@@ -95,19 +102,14 @@ export const ComponentsForm = () => {
 
       showMessage(data.message);
       setTimeout(() => {
-        navigate("/componentes");
+        cancel();
       }, 1000);
     } catch (error) {
       showMessage(JSON.stringify(error));
     }
   };
 
-  const cancel = () => navigate("/componentes");
-
-  const handleClose = () => {
-    setOpen(false);
-    setToastMessage("");
-  };
+  const cancel = () => navigate(`/${ApiEndpoints.COMPONENTES}`);
 
   const submitForm = (event: any) => {
     if (id === "0") {
@@ -170,11 +172,32 @@ export const ComponentsForm = () => {
             {/* Nombre */}
             <Grid item xs={12} sm={4} sx={{ pr: "16px" }}>
               <TextField
-                {...register("nombre")}
+                {...register("nombre", {
+                  required: true,
+                  minLength: { value: 3, message: "error message" },
+                })}
+                required
                 label="Nombre"
-                defaultValue="xxx"
+                defaultValue="--"
+                error={
+                  errors.nombre?.type === "required" ||
+                  errors.nombre?.type === "minLength"
+                    ? true
+                    : false
+                }
                 sx={{ width: "100%", pr: "16px" }}
               />
+              {(errors.nombre?.type === "required" ||
+                errors.nombre?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  El nombre del componente es obligatorio
+                </Typography>
+              )}
             </Grid>
 
             {/* Habilitado */}
@@ -213,14 +236,6 @@ export const ComponentsForm = () => {
           </Grid>
         </Box>
       </Container>
-
-      <Snackbar
-        open={open}
-        autoHideDuration={2000}
-        onClose={() => handleClose()}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        message={toastMessage}
-      ></Snackbar>
     </Box>
   );
 };

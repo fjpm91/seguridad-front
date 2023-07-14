@@ -9,11 +9,9 @@ import {
   FormControlLabel,
   Checkbox,
   Button,
-  Snackbar,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import { UseToastMessage } from "../../../../hooks/useToastMessage";
 import {
   BackendResponse,
   UnidadNegocio,
@@ -23,15 +21,18 @@ import { ApiEndpoints, Messages } from "../../../../models/enums";
 import apiClient from "../../../../services/api-client";
 import { useAuth } from "../../../../auth/context/useAuth";
 
-export const DivisionForm = () => {
+interface Props {
+  setOpen: (open: boolean) => void;
+  setToastMessage: (toastMessage: string) => void;
+}
+
+export const DivisionForm = ({ setOpen, setToastMessage }: Props) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { authState } = useAuth();
   const { register, setValue, handleSubmit } = useForm();
   const [unidadesNegocio, setUnidadesNegocio] = useState<UnidadNegocio[]>([]);
   const [divisionActual, setDivisionActual] = useState<Division | null>(null);
-  const [open, setOpen] = useState(false);
-  const { toastMessage, setToastMessage } = UseToastMessage();
   const { user } = authState;
 
   useEffect(() => {
@@ -160,11 +161,6 @@ export const DivisionForm = () => {
   };
 
   const cancel = () => navigate("/divisiones");
-
-  const handleClose = () => {
-    setOpen(false);
-    setToastMessage("");
-  };
 
   const showMessage = (text: string = "Operacion correcta") => {
     setToastMessage(text);
@@ -321,14 +317,6 @@ export const DivisionForm = () => {
           </Grid>
         </Box>
       </Container>
-
-      <Snackbar
-        open={open}
-        autoHideDuration={2000}
-        onClose={() => handleClose()}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        message={toastMessage}
-      ></Snackbar>
     </Box>
   );
 };

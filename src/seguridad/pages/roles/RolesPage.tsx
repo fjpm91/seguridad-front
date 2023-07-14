@@ -1,13 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  Snackbar,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Container, Divider, Typography } from "@mui/material";
 import { useAuth } from "../../../auth/context/useAuth";
 import { BackendResponse, Rol } from "../../../interfaces/interfaces";
 import apiClient from "../../../services/api-client";
@@ -18,10 +11,13 @@ import {
 } from "../../../models/enums";
 import { RolTable } from "./components";
 
-export const RolesPage = () => {
+interface Props {
+  setOpen: (open: boolean) => void;
+  setToastMessage: (toastMessage: string) => void;
+}
+
+export const RolesPage = ({ setOpen, setToastMessage }: Props) => {
   const { authState } = useAuth();
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
   const [roles, setRoles] = useState<Rol[]>([]);
   const { accesos, user } = authState;
   const navigate = useNavigate();
@@ -49,11 +45,6 @@ export const RolesPage = () => {
 
   const handleOpen = (id: number) => {
     navigate(`/${ApiEndpoints.ROLES}/${id}`);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setMessage("");
   };
 
   const handleNavegarPermisos = (id: number) => {
@@ -99,7 +90,7 @@ export const RolesPage = () => {
   };
 
   const showMessage = (text: string = "Operacion correcta") => {
-    setMessage(text);
+    setToastMessage(text);
     setOpen(true);
   };
 
@@ -133,14 +124,6 @@ export const RolesPage = () => {
           />
         ) : null}
       </Container>
-
-      <Snackbar
-        open={open}
-        autoHideDuration={1500}
-        onClose={() => handleClose()}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        message={message}
-      ></Snackbar>
     </Box>
   );
 };

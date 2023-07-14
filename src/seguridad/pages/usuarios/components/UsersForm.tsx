@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../../../auth/context/useAuth";
-import { UseToastMessage } from "../../../../hooks/useToastMessage";
 import { Controller, useForm } from "react-hook-form";
 import apiClient from "../../../../services/api-client";
 import {
@@ -24,20 +23,28 @@ import {
   List,
   ListItem,
   ListItemText,
-  Snackbar,
   TextField,
   Typography,
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 
-export const UsersForm = () => {
+interface Props {
+  setOpen: (open: boolean) => void;
+  setToastMessage: (toastMessage: string) => void;
+}
+
+export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
   const { id } = useParams();
   const { authState } = useAuth();
-  const [open, setOpen] = useState(false);
   const [personas, setPersonas] = useState<Persona[]>([]);
   const [userRoles, setUserRoles] = useState<Rol[]>([]);
-  const { toastMessage, setToastMessage } = UseToastMessage();
-  const { control, register, setValue, handleSubmit } = useForm();
+  const {
+    control,
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const navigate = useNavigate();
   const { user } = authState;
 
@@ -104,7 +111,7 @@ export const UsersForm = () => {
 
       showMessage(data.message);
       setTimeout(() => {
-        navigate("/users");
+        cancel();
       }, 1000);
     } catch (error) {
       console.log("🚀 ~ file: AplicacionForm.tsx:55 ~ store ~ error:", error);
@@ -171,19 +178,14 @@ export const UsersForm = () => {
 
       showMessage(data.message);
       setTimeout(() => {
-        navigate("/users");
+        cancel();
       }, 1000);
     } catch (error) {
       console.log("🚀 ~ file: AplicacionForm.tsx:55 ~ store ~ error:", error);
     }
   };
 
-  const cancel = () => navigate("/users");
-
-  const handleClose = () => {
-    setOpen(false);
-    setToastMessage("");
-  };
+  const cancel = () => navigate(`/${ApiEndpoints.USERS}`);
 
   const submitForm = (event: any) => {
     if (id === "0") {
@@ -274,7 +276,11 @@ export const UsersForm = () => {
                         <TextField
                           {...params}
                           label="Personas *"
-                          helperText="La Personas es obligatoria"
+                          error={
+                            errors.persona_id?.type === "required"
+                              ? true
+                              : false
+                          }
                           inputProps={{
                             ...params.inputProps,
                           }}
@@ -284,16 +290,48 @@ export const UsersForm = () => {
                   );
                 }}
               />
+              {(errors.persona_id?.type === "required" ||
+                errors.persona_id?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  La persona es obligatoria
+                </Typography>
+              )}
             </Grid>
 
             {/* Username */}
             <Grid item xs={12} sm={4} sx={{ pr: "16px" }}>
               <TextField
-                {...register("name")}
+                {...register("name", {
+                  required: true,
+                  minLength: { value: 3, message: "error message" },
+                })}
+                required
                 label="Username"
-                defaultValue="xxx"
+                defaultValue="--"
+                error={
+                  errors.name?.type === "required" ||
+                  errors.name?.type === "minLength"
+                    ? true
+                    : false
+                }
                 sx={{ width: "100%", pr: "16px" }}
               />
+              {(errors.name?.type === "required" ||
+                errors.name?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  El Username es obligatorio
+                </Typography>
+              )}
             </Grid>
 
             {/* Email */}
@@ -362,14 +400,6 @@ export const UsersForm = () => {
           </Grid>
         </Box>
       </Container>
-
-      <Snackbar
-        open={open}
-        autoHideDuration={2000}
-        onClose={() => handleClose()}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        message={toastMessage}
-      ></Snackbar>
     </Box>
   );
 };

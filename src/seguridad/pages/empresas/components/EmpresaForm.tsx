@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../../../auth/context/useAuth";
 import { BackendResponse, Empresa } from "../../../../interfaces/interfaces";
-import { UseToastMessage } from "../../../../hooks/useToastMessage";
 import apiClient from "../../../../services/api-client";
 import { ApiEndpoints, Messages } from "../../../../models/enums";
 import {
@@ -14,18 +13,26 @@ import {
   Divider,
   FormControlLabel,
   Grid,
-  Snackbar,
   TextField,
   Typography,
 } from "@mui/material";
 
-export const EmpresaForm = () => {
+interface Props {
+  setOpen: (open: boolean) => void;
+  setToastMessage: (toastMessage: string) => void;
+}
+
+export const EmpresaForm = ({ setOpen, setToastMessage }: Props) => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { control, register, setValue, handleSubmit } = useForm();
+  const {
+    control,
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const { authState } = useAuth();
-  const [open, setOpen] = useState(false);
-  const { toastMessage, setToastMessage } = UseToastMessage();
   const { user } = authState;
 
   useEffect(() => {
@@ -78,7 +85,7 @@ export const EmpresaForm = () => {
 
       showMessage(data.message);
       setTimeout(() => {
-        navigate("/empresas");
+        cancel();
       }, 1000);
     } catch (error) {
       console.log("🚀 ~ file: EmpresaForm.tsx:79 ~ store ~ error:", error);
@@ -107,7 +114,7 @@ export const EmpresaForm = () => {
 
       showMessage(data.message);
       setTimeout(() => {
-        navigate("/empresas");
+        cancel();
       }, 1000);
     } catch (error) {
       console.log("🚀 ~ file: EmpresaForm.tsx:109 ~ update ~ error:", error);
@@ -115,12 +122,7 @@ export const EmpresaForm = () => {
     }
   };
 
-  const cancel = () => navigate("/empresas");
-
-  const handleClose = () => {
-    setOpen(false);
-    setToastMessage("");
-  };
+  const cancel = () => navigate(`/${ApiEndpoints.EMPRESAS}`);
 
   const showMessage = (text: string = "Operacion correcta") => {
     setToastMessage(text);
@@ -175,13 +177,32 @@ export const EmpresaForm = () => {
             {/* Nombre */}
             <Grid item xs={12} md={6} sx={{ pr: "16px" }}>
               <TextField
-                {...register("nombre", { required: true })}
+                {...register("nombre", {
+                  required: true,
+                  minLength: { value: 3, message: "error message" },
+                })}
                 required
                 label="Nombre"
-                helperText="El Nombre de la Empresa es obligatorio"
-                defaultValue="Nombre Empresa"
+                defaultValue="--"
+                error={
+                  errors.nombre?.type === "required" ||
+                  errors.nombre?.type === "minLength"
+                    ? true
+                    : false
+                }
                 sx={{ width: "100%" }}
               />
+              {(errors.nombre?.type === "required" ||
+                errors.nombre?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  El nombre de la empresa es obligatorio
+                </Typography>
+              )}
             </Grid>
 
             {/* Habilitado */}
@@ -220,14 +241,6 @@ export const EmpresaForm = () => {
           </Grid>
         </Box>
       </Container>
-
-      <Snackbar
-        open={open}
-        autoHideDuration={2000}
-        onClose={() => handleClose()}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        message={toastMessage}
-      ></Snackbar>
     </Box>
   );
 };

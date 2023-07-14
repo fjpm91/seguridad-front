@@ -10,7 +10,6 @@ import {
   Divider,
   FormControlLabel,
   Grid,
-  Snackbar,
   TextField,
   Typography,
 } from "@mui/material";
@@ -21,17 +20,19 @@ import {
   BackendResponse,
   Rol,
 } from "../../../../interfaces/interfaces";
-import { UseToastMessage } from "../../../../hooks/useToastMessage";
 import { ApiEndpoints, Messages } from "../../../../models/enums";
 
-export const RolForm = () => {
+interface Props {
+  setOpen: (open: boolean) => void;
+  setToastMessage: (toastMessage: string) => void;
+}
+
+export const RolForm = ({ setOpen, setToastMessage }: Props) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { control, register, setValue, handleSubmit } = useForm();
   const { authState } = useAuth();
   const [aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
-  const [open, setOpen] = useState(false);
-  const { toastMessage, setToastMessage } = UseToastMessage();
   const { user } = authState;
 
   useEffect(() => {
@@ -141,11 +142,6 @@ export const RolForm = () => {
   };
 
   const cancel = () => navigate("/roles");
-
-  const handleClose = () => {
-    setOpen(false);
-    setToastMessage("");
-  };
 
   const submitForm = (event: any) => {
     // console.log("🚀 ~ file: RolForm.tsx:139 ~ submitForm ~ event:", event);
@@ -298,14 +294,6 @@ export const RolForm = () => {
           </Grid>
         </Box>
       </Container>
-
-      <Snackbar
-        open={open}
-        autoHideDuration={2000}
-        onClose={() => handleClose()}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        message={toastMessage}
-      ></Snackbar>
     </Box>
   );
 };

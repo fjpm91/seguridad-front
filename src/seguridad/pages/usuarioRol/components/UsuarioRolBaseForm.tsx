@@ -13,6 +13,7 @@ import {
   Box,
   Button,
   Container,
+  Divider,
   Grid,
   Snackbar,
   TextField,
@@ -29,7 +30,11 @@ export const UsuarioRolBaseForm = () => {
   const [aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
   const navigate = useNavigate();
   const { user } = authState;
-  const { control, handleSubmit } = useForm();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const { setToastMessage } = UseToastMessage();
 
   useEffect(() => {
@@ -163,6 +168,7 @@ export const UsuarioRolBaseForm = () => {
               >
                 Asignación de Rol Base
               </Typography>
+              <Divider />
             </Grid>
 
             {/* Aplicacion */}
@@ -197,6 +203,11 @@ export const UsuarioRolBaseForm = () => {
                         <TextField
                           {...params}
                           label="Seleccionar aplicación"
+                          error={
+                            errors.codigo_app?.type === "required"
+                              ? true
+                              : false
+                          }
                           inputProps={{
                             ...params.inputProps,
                           }}
@@ -206,6 +217,17 @@ export const UsuarioRolBaseForm = () => {
                   );
                 }}
               />
+              {(errors.codigo_app?.type === "required" ||
+                errors.codigo_app?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  La aplicacion es obligatoria
+                </Typography>
+              )}
             </Grid>
 
             {/* Rol */}
@@ -238,6 +260,9 @@ export const UsuarioRolBaseForm = () => {
                         <TextField
                           {...params}
                           label="Seleccionar Rol"
+                          error={
+                            errors.rol_id?.type === "required" ? true : false
+                          }
                           inputProps={{
                             ...params.inputProps,
                           }}
@@ -247,6 +272,17 @@ export const UsuarioRolBaseForm = () => {
                   );
                 }}
               />
+              {(errors.rol_id?.type === "required" ||
+                errors.rol_id?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  El rol es obligatorio
+                </Typography>
+              )}
             </Grid>
           </Grid>
 
