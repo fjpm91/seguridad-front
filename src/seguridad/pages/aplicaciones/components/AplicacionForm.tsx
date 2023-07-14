@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -8,7 +8,6 @@ import {
   Container,
   FormControlLabel,
   Grid,
-  Snackbar,
   TextField,
   Typography,
 } from "@mui/material";
@@ -16,14 +15,22 @@ import apiClient from "../../../../services/api-client";
 import { useAuth } from "../../../../auth/context/useAuth";
 import { Aplicacion, BackendResponse } from "../../../../interfaces/interfaces";
 import { ApiEndpoints, Messages } from "../../../../models/enums";
-import { UseToastMessage } from "../../../../hooks/useToastMessage";
 
-export const AplicacionForm = () => {
+interface Props {
+  setOpen: (open: boolean) => void;
+  setToastMessage: (toastMessage: string) => void;
+}
+
+export const AplicacionForm = ({ setOpen, setToastMessage }: Props) => {
   const { id } = useParams();
   const { authState } = useAuth();
-  const [open, setOpen] = useState(false);
-  const { toastMessage, setToastMessage } = UseToastMessage();
-  const { control, register, setValue, handleSubmit } = useForm();
+  const {
+    control,
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const navigate = useNavigate();
   const { user } = authState;
 
@@ -82,7 +89,7 @@ export const AplicacionForm = () => {
 
       showMessage(data.message);
       setTimeout(() => {
-        navigate("/aplicaciones");
+        cancel();
       }, 1000);
     } catch (error) {
       console.log("🚀 ~ file: AplicacionForm.tsx:55 ~ store ~ error:", error);
@@ -113,19 +120,14 @@ export const AplicacionForm = () => {
 
       showMessage(data.message);
       setTimeout(() => {
-        navigate("/aplicaciones");
+        cancel();
       }, 1000);
     } catch (error) {
       console.log("🚀 ~ file: AplicacionForm.tsx:55 ~ store ~ error:", error);
     }
   };
 
-  const cancel = () => navigate("/aplicaciones");
-
-  const handleClose = () => {
-    setOpen(false);
-    setToastMessage("");
-  };
+  const cancel = () => navigate(`/${ApiEndpoints.APLICACIONES}`);
 
   const submitForm = (event: any) => {
     if (id === "0") {
@@ -187,13 +189,32 @@ export const AplicacionForm = () => {
             {/* Codigo */}
             <Grid item xs={12} sm={6} md={4} lg={3} sx={{ pr: "16px" }}>
               <TextField
-                {...register("codigo", { required: true })}
+                {...register("codigo", {
+                  required: true,
+                  minLength: { value: 3, message: "error message" },
+                })}
                 required
                 label="Codigo"
-                helperText="El Código de la Aplicación es obligatorio"
-                defaultValue="APP"
+                defaultValue="--"
+                error={
+                  errors.codigo?.type === "required" ||
+                  errors.codigo?.type === "minLength"
+                    ? true
+                    : false
+                }
                 sx={{ width: "100%" }}
               />
+              {(errors.codigo?.type === "required" ||
+                errors.codigo?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  El codigo de la aplicacion es obligatorio
+                </Typography>
+              )}
             </Grid>
 
             {/* Version */}
@@ -230,25 +251,81 @@ export const AplicacionForm = () => {
             {/* Nombre */}
             <Grid item xs={12} md={6} sx={{ pr: "16px" }}>
               <TextField
-                {...register("nombre", { required: true })}
+                {...register("nombre", {
+                  required: true,
+                  minLength: { value: 4, message: "error message" },
+                })}
                 required
                 label="Nombre"
-                helperText="El Nombre de la Aplicación es obligatorio"
-                defaultValue="Sistema"
+                error={
+                  errors.nombre?.type === "required" ||
+                  errors.nombre?.type === "minLength"
+                    ? true
+                    : false
+                }
+                defaultValue="App"
                 sx={{ width: "100%" }}
               />
+              {errors.codigo?.type === "required" && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  El nombre de la aplicacion es obligatorio
+                </Typography>
+              )}
+              {errors.codigo?.type === "minLength" && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  El nombre de la aplicacion debe ser mayor a 3 caracteres
+                </Typography>
+              )}
             </Grid>
 
             {/* Titulo */}
             <Grid item xs={12} md={6} sx={{ pr: "16px" }}>
               <TextField
-                {...register("titulo", { required: true })}
+                {...register("titulo", {
+                  required: true,
+                  minLength: { value: 4, message: "error message" },
+                })}
                 required
                 label="Titulo"
-                helperText="El Título de la Aplicación es obligatorio"
-                defaultValue="Titulo"
+                error={
+                  errors.titulo?.type === "required" ||
+                  errors.titulo?.type === "minLength"
+                    ? true
+                    : false
+                }
+                defaultValue="App"
                 sx={{ width: "100%" }}
               />
+              {errors.titulo?.type === "required" && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  El titulo de la aplicacion es obligatorio
+                </Typography>
+              )}
+              {errors.titulo?.type === "minLength" && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  El titulo de la aplicacion debe ser mayor a 3 caracteres
+                </Typography>
+              )}
             </Grid>
 
             {/* Url */}
@@ -328,14 +405,6 @@ export const AplicacionForm = () => {
           </Grid>
         </Box>
       </Container>
-
-      <Snackbar
-        open={open}
-        autoHideDuration={2000}
-        onClose={() => handleClose()}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        message={toastMessage}
-      ></Snackbar>
     </Box>
   );
 };

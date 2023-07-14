@@ -10,24 +10,29 @@ import {
   Button,
   Container,
   Grid,
-  Snackbar,
   TextField,
   Typography,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
-import { UseToastMessage } from "../../../../hooks/useToastMessage";
 
-export const UsuarioRolForm = () => {
+interface Props {
+  setOpen: (open: boolean) => void;
+  setToastMessage: (toastMessage: string) => void;
+}
+
+export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
   const { id } = useParams();
   const { authState } = useAuth();
-  const [open, setOpen] = useState(false);
-  const [_message, setMessage] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const [roles, setRoles] = useState<Rol[]>([]);
   const navigate = useNavigate();
   const { user } = authState;
-  const { control, register, handleSubmit } = useForm();
-  const { toastMessage, setToastMessage } = UseToastMessage();
+  const {
+    control,
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   useEffect(() => {
     getUsers();
@@ -130,11 +135,6 @@ export const UsuarioRolForm = () => {
 
   const cancel = () => navigate("/users");
 
-  const handleClose = () => {
-    setOpen(false);
-    setToastMessage("");
-  };
-
   const submitForm = (event: any) => {
     // console.log("🚀 ~ file: RolForm.tsx:139 ~ submitForm ~ event:", event);
     // return;
@@ -147,7 +147,7 @@ export const UsuarioRolForm = () => {
   };
 
   const showMessage = (text: string = "Operacion correcta") => {
-    setMessage(text);
+    setToastMessage(text);
     setOpen(true);
   };
 
@@ -223,16 +223,24 @@ export const UsuarioRolForm = () => {
                       renderInput={(params) => (
                         <TextField
                           {...params}
-                          label="Usuario"
+                          label="Usuario *"
                           inputProps={{
                             ...params.inputProps,
                           }}
+                          error={
+                            errors.user_id?.type === "required" ? true : false
+                          }
                         />
                       )}
                     />
                   );
                 }}
               />
+              {errors.user_id?.type === "required" && (
+                <Typography color={"#d32f2f"} paddingTop={1} fontSize={12.5}>
+                  El Usuario es obligatorio
+                </Typography>
+              )}
             </Grid>
 
             {/* Rol */}
@@ -264,16 +272,24 @@ export const UsuarioRolForm = () => {
                       renderInput={(params) => (
                         <TextField
                           {...params}
-                          label="Seleccionar Rol"
+                          label="Rol *"
                           inputProps={{
                             ...params.inputProps,
                           }}
+                          error={
+                            errors.rol_id?.type === "required" ? true : false
+                          }
                         />
                       )}
                     />
                   );
                 }}
               />
+              {errors.rol_id?.type === "required" && (
+                <Typography color={"#d32f2f"} paddingTop={1} fontSize={12.5}>
+                  El Rol es obligatorio
+                </Typography>
+              )}
             </Grid>
           </Grid>
 
@@ -293,14 +309,6 @@ export const UsuarioRolForm = () => {
           </Grid>
         </Box>
       </Container>
-
-      <Snackbar
-        open={open}
-        autoHideDuration={2000}
-        onClose={() => handleClose()}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        message={toastMessage}
-      ></Snackbar>
     </Box>
   );
 };

@@ -1,11 +1,4 @@
-import {
-  Box,
-  Container,
-  Typography,
-  Divider,
-  Button,
-  Snackbar,
-} from "@mui/material";
+import { Box, Container, Typography, Divider, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../auth/context/useAuth";
@@ -19,10 +12,13 @@ import {
 import apiClient from "../../../services/api-client";
 import { UnidadNegocioTable } from ".";
 
-export const UnidadNegocioPage = () => {
+interface Props {
+  setOpen: (open: boolean) => void;
+  setToastMessage: (toastMessage: string) => void;
+}
+
+export const UnidadNegocioPage = ({ setOpen, setToastMessage }: Props) => {
   const { authState } = useAuth();
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
   const [unidadesNegocio, setUnidadesNegocio] = useState<UnidadNegocio[]>([]);
   const { accesos, user } = authState;
   const navigate = useNavigate();
@@ -50,11 +46,6 @@ export const UnidadNegocioPage = () => {
 
   const handleOpen = (id: number) => {
     navigate(`/${ApiEndpoints.UNIDAD_NEGOCIO}/${id}`);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setMessage("");
   };
 
   const handleHabilitar = async (id: number) => {
@@ -98,7 +89,7 @@ export const UnidadNegocioPage = () => {
   };
 
   const showMessage = (text: string = "Operacion correcta") => {
-    setMessage(text);
+    setToastMessage(text);
     setOpen(true);
   };
 
@@ -131,14 +122,6 @@ export const UnidadNegocioPage = () => {
           />
         ) : null}
       </Container>
-
-      <Snackbar
-        open={open}
-        autoHideDuration={1500}
-        onClose={() => handleClose()}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        message={message}
-      ></Snackbar>
     </Box>
   );
 };

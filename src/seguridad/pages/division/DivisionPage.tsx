@@ -1,11 +1,4 @@
-import {
-  Box,
-  Container,
-  Typography,
-  Divider,
-  Button,
-  Snackbar,
-} from "@mui/material";
+import { Box, Container, Typography, Divider, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../auth/context/useAuth";
@@ -19,10 +12,13 @@ import {
 import apiClient from "../../../services/api-client";
 import { DivisionTable } from ".";
 
-export const DivisionPage = () => {
+interface Props {
+  setOpen: (open: boolean) => void;
+  setToastMessage: (toastMessage: string) => void;
+}
+
+export const DivisionPage = ({ setOpen, setToastMessage }: Props) => {
   const { authState } = useAuth();
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
   const [divisiones, setDivisiones] = useState<Division[]>([]);
   const { accesos } = authState;
   const navigate = useNavigate();
@@ -52,13 +48,8 @@ export const DivisionPage = () => {
     navigate(`/${ApiEndpoints.DIVISIONES}/${id}`);
   };
 
-  const handleClose = () => {
-    setOpen(false);
-    setMessage("");
-  };
-
   const showMessage = (text: string = "Operacion correcta") => {
-    setMessage(text);
+    setToastMessage(text);
     setOpen(true);
   };
 
@@ -92,14 +83,6 @@ export const DivisionPage = () => {
           />
         ) : null}
       </Container>
-
-      <Snackbar
-        open={open}
-        autoHideDuration={1500}
-        onClose={() => handleClose()}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        message={message}
-      ></Snackbar>
     </Box>
   );
 };

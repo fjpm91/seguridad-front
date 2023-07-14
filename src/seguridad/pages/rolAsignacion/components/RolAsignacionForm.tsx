@@ -22,19 +22,27 @@ import {
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import { UseToastMessage } from "../../../../hooks/useToastMessage";
 import { ApiEndpoints, Messages } from "../../../../models/enums";
 import apiClient from "../../../../services/api-client";
 
-export const RolAsignacionForm = () => {
+interface Props {
+  setOpen: (open: boolean) => void;
+  setToastMessage: (toastMessage: string) => void;
+}
+
+export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
   const { id } = useParams();
   const { authState } = useAuth();
-  const [open, setOpen] = useState(false);
   const [componentes, setComponentes] = useState<Componente[]>([]);
   const [roles, setRoles] = useState<Rol[]>([]);
   const [aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
-  const { toastMessage, setToastMessage } = UseToastMessage();
-  const { control, register, setValue, handleSubmit } = useForm();
+  const {
+    control,
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const navigate = useNavigate();
   const { user } = authState;
 
@@ -188,11 +196,6 @@ export const RolAsignacionForm = () => {
 
   const cancel = () => navigate("/rol-asignacion");
 
-  const handleClose = () => {
-    setOpen(false);
-    setToastMessage("");
-  };
-
   const submitForm = (event: any) => {
     if (id === "0") {
       store(event);
@@ -255,7 +258,7 @@ export const RolAsignacionForm = () => {
             <Grid item xs={12} sm={6} md={5} sx={{ pr: "16px" }}>
               <Controller
                 name="componente_id"
-                // rules={{ required: true }}
+                rules={{ required: true }}
                 control={control}
                 render={({ field }) => {
                   const { onChange, value } = field;
@@ -282,7 +285,11 @@ export const RolAsignacionForm = () => {
                         <TextField
                           {...params}
                           label="Componente *"
-                          helperText="El Componente es obligatorio"
+                          error={
+                            errors.componente_id?.type === "required"
+                              ? true
+                              : false
+                          }
                           inputProps={{
                             ...params.inputProps,
                           }}
@@ -292,13 +299,24 @@ export const RolAsignacionForm = () => {
                   );
                 }}
               />
+              {(errors.componente_id?.type === "required" ||
+                errors.componente_id?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  El componente es obligatorio
+                </Typography>
+              )}
             </Grid>
 
-            {/* Aplicaciones */}
+            {/* Aplicacion */}
             <Grid item xs={12} sm={6} md={5} sx={{ pr: "16px" }}>
               <Controller
                 name="aplicacion_id"
-                // rules={{ required: true }}
+                rules={{ required: true }}
                 control={control}
                 render={({ field }) => {
                   const { onChange, value } = field;
@@ -326,7 +344,11 @@ export const RolAsignacionForm = () => {
                         <TextField
                           {...params}
                           label="Aplicacion *"
-                          helperText="La Aplicacion es obligatoria"
+                          error={
+                            errors.aplicacion_id?.type === "required"
+                              ? true
+                              : false
+                          }
                           inputProps={{
                             ...params.inputProps,
                           }}
@@ -336,9 +358,20 @@ export const RolAsignacionForm = () => {
                   );
                 }}
               />
+              {(errors.aplicacion_id?.type === "required" ||
+                errors.aplicacion_id?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  La aplicacion es obligatoria
+                </Typography>
+              )}
             </Grid>
 
-            {/* Roles */}
+            {/* Rol */}
             <Grid item xs={12} sm={6} md={5} sx={{ pr: "16px" }}>
               <Controller
                 name="rol_id"
@@ -368,7 +401,9 @@ export const RolAsignacionForm = () => {
                         <TextField
                           {...params}
                           label="Rol *"
-                          helperText="El Rol es obligatorio"
+                          error={
+                            errors.rol_id?.type === "required" ? true : false
+                          }
                           inputProps={{
                             ...params.inputProps,
                           }}
@@ -378,6 +413,17 @@ export const RolAsignacionForm = () => {
                   );
                 }}
               />
+              {(errors.rol_id?.type === "required" ||
+                errors.rol_id?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  El rol es obligatorio
+                </Typography>
+              )}
             </Grid>
 
             {/* Visible */}
@@ -454,14 +500,6 @@ export const RolAsignacionForm = () => {
           </Grid>
         </Box>
       </Container>
-
-      <Snackbar
-        open={open}
-        autoHideDuration={2000}
-        onClose={() => handleClose()}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        message={toastMessage}
-      ></Snackbar>
     </Box>
   );
 };

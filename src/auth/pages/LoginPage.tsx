@@ -4,6 +4,7 @@ import {
   Avatar,
   Box,
   Button,
+  CircularProgress,
   CssBaseline,
   Grid,
   Paper,
@@ -16,7 +17,7 @@ import { useContext, useState } from "react";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import apiClient from "../../services/api-client";
 import { AuthContext } from "../context";
-import { StorageKeys } from "../../models/enums";
+import { Messages, StorageKeys } from "../../models/enums";
 import { BackendResponse, Modulo } from "../../interfaces/interfaces";
 
 const guardarState = (
@@ -55,10 +56,12 @@ const ordenarModulos = (modulos: Modulo[]) => {
 
 export const LoginPage = () => {
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (event: any) => {
+    setIsLoading(true);
     event.preventDefault();
     const dataForm = new FormData(event.currentTarget);
 
@@ -74,7 +77,11 @@ export const LoginPage = () => {
         codigo_app: import.meta.env.VITE_CODIGO_APP,
       });
 
+      setIsLoading(false);
+
       if (!response) {
+        showMessage(Messages.NO_SE_PUDO_COMPLETAR);
+        return;
       }
 
       const { success, message, data } = response.data;
@@ -111,6 +118,7 @@ export const LoginPage = () => {
       navigate("/");
     } catch (error: any) {
       console.log(error);
+      setIsLoading(false);
       const { response } = error;
       if (response) {
         const { data } = response;
@@ -195,8 +203,10 @@ export const LoginPage = () => {
                 type="submit"
                 fullWidth
                 variant="contained"
+                disabled={isLoading}
                 sx={{ mt: 3, mb: 2 }}
               >
+                {isLoading && <CircularProgress sx={{ mr: 2 }} />}
                 Iniciar sesión
               </Button>
 

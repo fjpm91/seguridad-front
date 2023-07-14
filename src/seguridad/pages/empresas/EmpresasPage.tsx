@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  Snackbar,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Container, Divider, Typography } from "@mui/material";
 import { useAuth } from "../../../auth/context/useAuth";
 import { useEffect, useState } from "react";
 import { BackendResponse, Empresa } from "../../../interfaces/interfaces";
@@ -18,10 +11,13 @@ import {
 } from "../../../models/enums";
 import { EmpresaTable } from ".";
 
-export const EmpresasPage = () => {
+interface Props {
+  setOpen: (open: boolean) => void;
+  setToastMessage: (toastMessage: string) => void;
+}
+
+export const EmpresasPage = ({ setOpen, setToastMessage }: Props) => {
   const { authState } = useAuth();
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const navigate = useNavigate();
   const { accesos, user } = authState;
@@ -50,11 +46,6 @@ export const EmpresasPage = () => {
 
   const handleOpen = (id: number) => {
     navigate(`/empresas/${id}`);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setMessage("");
   };
 
   const handleHabilitar = async (id: number) => {
@@ -93,7 +84,7 @@ export const EmpresasPage = () => {
   };
 
   const showMessage = (text: string = "Operacion correcta") => {
-    setMessage(text);
+    setToastMessage(text);
     setOpen(true);
   };
 
@@ -127,14 +118,6 @@ export const EmpresasPage = () => {
           />
         ) : null}
       </Container>
-
-      <Snackbar
-        open={open}
-        autoHideDuration={1500}
-        onClose={() => handleClose()}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        message={message}
-      ></Snackbar>
     </Box>
   );
 };

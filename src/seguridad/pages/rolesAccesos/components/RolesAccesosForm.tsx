@@ -10,7 +10,6 @@ import {
   Divider,
   FormControlLabel,
   Grid,
-  Snackbar,
   TextField,
   Typography,
 } from "@mui/material";
@@ -22,12 +21,15 @@ import {
   Modulo,
   Rol,
 } from "../../../../interfaces/interfaces";
-import { UseToastMessage } from "../../../../hooks/useToastMessage";
 import { ApiEndpoints, Messages } from "../../../../models/enums";
 
-export const RolesAccesosForm = () => {
+interface Props {
+  setOpen: (open: boolean) => void;
+  setToastMessage: (toastMessage: string) => void;
+}
+
+export const RolesAccesosForm = ({ setOpen, setToastMessage }: Props) => {
   const { authState } = useAuth();
-  const [open, setOpen] = useState(false);
   const [rolActual, setRolActual] = useState<Rol | null>(null);
   const [aplicacionActual, setAplicacionActual] = useState<Aplicacion | null>(
     null
@@ -35,7 +37,6 @@ export const RolesAccesosForm = () => {
   const [modulos, setModulos] = useState<Modulo[]>([]);
   const [roles, setRoles] = useState<Rol[]>([]);
   const [aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
-  const { toastMessage, setToastMessage } = UseToastMessage();
   const { control, handleSubmit, reset } = useForm();
   const navigate = useNavigate();
   const { user } = authState;
@@ -178,11 +179,6 @@ export const RolesAccesosForm = () => {
   };
 
   const cancel = () => navigate("/roles");
-
-  const handleClose = () => {
-    setOpen(false);
-    setToastMessage("");
-  };
 
   const submitForm = (event: any) => {
     store(event);
@@ -353,14 +349,6 @@ export const RolesAccesosForm = () => {
           </Grid>
         </Box>
       </Container>
-
-      <Snackbar
-        open={open}
-        autoHideDuration={2000}
-        onClose={() => handleClose()}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        message={toastMessage}
-      ></Snackbar>
     </Box>
   );
 };

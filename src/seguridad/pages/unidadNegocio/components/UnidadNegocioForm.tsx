@@ -9,12 +9,10 @@ import {
   FormControlLabel,
   Checkbox,
   Button,
-  Snackbar,
   Autocomplete,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import { UseToastMessage } from "../../../../hooks/useToastMessage";
 import {
   Empresa,
   BackendResponse,
@@ -24,15 +22,18 @@ import { ApiEndpoints, Messages } from "../../../../models/enums";
 import apiClient from "../../../../services/api-client";
 import { useAuth } from "../../../../auth/context/useAuth";
 
-export const UnidadNegocioForm = () => {
+interface Props {
+  setOpen: (open: boolean) => void;
+  setToastMessage: (toastMessage: string) => void;
+}
+
+export const UnidadNegocioForm = ({ setOpen, setToastMessage }: Props) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [divisiones, setDivisiones] = useState<Division[]>([]);
   const { control, register, setValue, handleSubmit } = useForm();
   const { authState } = useAuth();
-  const [open, setOpen] = useState(false);
-  const { toastMessage, setToastMessage } = UseToastMessage();
   const { user } = authState;
 
   useEffect(() => {
@@ -171,11 +172,6 @@ export const UnidadNegocioForm = () => {
   };
 
   const cancel = () => navigate("/unidades-negocio");
-
-  const handleClose = () => {
-    setOpen(false);
-    setToastMessage("");
-  };
 
   const showMessage = (text: string = "Operacion correcta") => {
     setToastMessage(text);
@@ -358,14 +354,6 @@ export const UnidadNegocioForm = () => {
           </Grid>
         </Box>
       </Container>
-
-      <Snackbar
-        open={open}
-        autoHideDuration={2000}
-        onClose={() => handleClose()}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        message={toastMessage}
-      ></Snackbar>
     </Box>
   );
 };

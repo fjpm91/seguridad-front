@@ -1,11 +1,4 @@
-import {
-  Box,
-  Container,
-  Typography,
-  Divider,
-  Button,
-  Snackbar,
-} from "@mui/material";
+import { Box, Container, Typography, Divider, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../auth/context/useAuth";
@@ -24,13 +17,14 @@ import {
 import apiClient from "../../../services/api-client";
 import { RolAsignacionTable } from ".";
 
-export const RolAsignacionPage = () => {
+interface Props {
+  setOpen: (open: boolean) => void;
+  setToastMessage: (toastMessage: string) => void;
+}
+
+export const RolAsignacionPage = ({ setOpen, setToastMessage }: Props) => {
   const { authState } = useAuth();
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
   const [_aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
-  // const [aplicacionSeleccionada, setAplicacionSeleccionada] =
-  //   useState<string>("0");
   const [rolAsignaciones, setRolAsignaciones] = useState<RolAsignacion[]>([]);
   const navigate = useNavigate();
   const { accesos, user } = authState;
@@ -80,11 +74,6 @@ export const RolAsignacionPage = () => {
 
   const handleOpen = (id: number) => {
     navigate(`/rol-asignacion/${id}`);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setMessage("");
   };
 
   const handleHabilitar = async (id: number) => {
@@ -151,7 +140,7 @@ export const RolAsignacionPage = () => {
   };
 
   const showMessage = (text: string = "Operacion correcta") => {
-    setMessage(text);
+    setToastMessage(text);
     setOpen(true);
   };
 
@@ -182,34 +171,6 @@ export const RolAsignacionPage = () => {
           </Button>
         ) : null}
 
-        {/* Aplicación */}
-        {/* <Grid container spacing={2} sx={{ mb: 2 }}>
-          <Grid item xs={12} sm={3} sx={{ pr: "16px" }}>
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">Aplicación</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={aplicacionSeleccionada}
-                label="Aplicación"
-                onChange={handleChange}
-              >
-                <MenuItem value={0} key={0}>
-                  Seleccionar
-                </MenuItem>
-                {aplicaciones.map((aplicacion) => (
-                  <MenuItem
-                    value={aplicacion.aplicacion_id}
-                    key={aplicacion.aplicacion_id}
-                  >
-                    {aplicacion.codigo}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-        </Grid> */}
-
         {rolAsignaciones ? (
           <RolAsignacionTable
             accesos={accesos}
@@ -220,14 +181,6 @@ export const RolAsignacionPage = () => {
           />
         ) : null}
       </Container>
-
-      <Snackbar
-        open={open}
-        autoHideDuration={1500}
-        onClose={() => handleClose()}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        message={message}
-      ></Snackbar>
     </Box>
   );
 };

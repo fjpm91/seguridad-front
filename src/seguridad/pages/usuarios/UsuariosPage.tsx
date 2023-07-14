@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  Snackbar,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Container, Divider, Typography } from "@mui/material";
 import { useAuth } from "../../../auth/context/useAuth";
 import { useEffect, useState } from "react";
 import { BackendResponse, User } from "../../../interfaces/interfaces";
@@ -18,10 +11,13 @@ import {
 } from "../../../models/enums";
 import { UsersTable } from ".";
 
-export const UsuariosPage = () => {
+interface Props {
+  setOpen: (open: boolean) => void;
+  setToastMessage: (toastMessage: string) => void;
+}
+
+export const UsuariosPage = ({ setOpen, setToastMessage }: Props) => {
   const { authState } = useAuth();
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const navigate = useNavigate();
   const { accesos, user } = authState;
@@ -60,11 +56,6 @@ export const UsuariosPage = () => {
     navigate(`/usuario-rol-base`);
   };
 
-  const handleClose = () => {
-    setOpen(false);
-    setMessage("");
-  };
-
   const handleHabilitar = async (id: number) => {
     try {
       const datos = {
@@ -101,7 +92,7 @@ export const UsuariosPage = () => {
   };
 
   const showMessage = (text: string = "Operacion correcta") => {
-    setMessage(text);
+    setToastMessage(text);
     setOpen(true);
   };
 
@@ -161,14 +152,6 @@ export const UsuariosPage = () => {
             />
           ) : null}
         </Container>
-
-        <Snackbar
-          open={open}
-          autoHideDuration={1500}
-          onClose={() => handleClose()}
-          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-          message={message}
-        ></Snackbar>
       </Box>
     </>
   );
