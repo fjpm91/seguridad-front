@@ -30,7 +30,13 @@ interface Props {
 export const RolForm = ({ setOpen, setToastMessage }: Props) => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { control, register, setValue, handleSubmit } = useForm();
+  const {
+    control,
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const { authState } = useAuth();
   const [aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
   const { user } = authState;
@@ -207,13 +213,32 @@ export const RolForm = ({ setOpen, setToastMessage }: Props) => {
             {/* Nombre */}
             <Grid item xs={12} md={6} sx={{ pr: "16px" }}>
               <TextField
-                {...register("nombre", { required: true })}
+                {...register("nombre", {
+                  required: true,
+                  minLength: { value: 3, message: "error message" },
+                })}
                 required
                 label="Nombre"
-                helperText="El Nombre del Rol es obligatorio"
-                defaultValue="Nombre Rol"
+                defaultValue="--"
+                error={
+                  errors.nombre?.type === "required" ||
+                  errors.nombre?.type === "minLength"
+                    ? true
+                    : false
+                }
                 sx={{ width: "100%" }}
               />
+              {(errors.nombre?.type === "required" ||
+                errors.nombre?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  El nombre del rol es obligatorio
+                </Typography>
+              )}
             </Grid>
 
             {/* Aplicacion */}
@@ -246,7 +271,12 @@ export const RolForm = ({ setOpen, setToastMessage }: Props) => {
                       renderInput={(params) => (
                         <TextField
                           {...params}
-                          label="Seleccionar aplicación"
+                          label="Aplicación"
+                          error={
+                            errors.codigo_app?.type === "required"
+                              ? true
+                              : false
+                          }
                           inputProps={{
                             ...params.inputProps,
                           }}
@@ -256,6 +286,17 @@ export const RolForm = ({ setOpen, setToastMessage }: Props) => {
                   );
                 }}
               />
+              {(errors.codigo_app?.type === "required" ||
+                errors.codigo_app?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  La Aplicación es obligatoria
+                </Typography>
+              )}
             </Grid>
 
             {/* Habilitado */}

@@ -68,6 +68,7 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
     setValue("persona_id", userdata.persona_id);
     setValue("email", userdata.email);
     setValue("persona_id", userdata.persona_id);
+    setValue("habilitado", userdata.habilitado === 1 ? true : false);
   };
 
   const getPersonas = async () => {
@@ -363,7 +364,7 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
               />
             </Grid>
 
-            {/* Roles */}
+            {/* Roles del Usuario*/}
             <Grid item xs={12} sm={4} sx={{ pr: "16px" }}>
               <Typography variant="body2">Roles del usuario</Typography>
               <Divider />

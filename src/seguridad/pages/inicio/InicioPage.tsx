@@ -11,6 +11,15 @@ export const InicioPage = () => {
       }}
     >
       <DashboardComponent />
+      {/* <Container>
+        <Box
+          sx={{
+            backgroundColor: "white",
+            minHeight: "400px",
+            padding: "1rem",
+          }}
+        ></Box>
+      </Container> */}
     </Box>
   );
 };
