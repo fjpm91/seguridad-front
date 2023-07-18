@@ -122,7 +122,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                 component="div"
                 sx={{ flexGrow: 1, mb: 2 }}
               >
-                Formulario de Usuarios
+                Formulario de Personass
               </Typography>
               <Divider />
             </Grid>

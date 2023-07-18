@@ -17,6 +17,7 @@ import {
 } from "../../../models/enums";
 import { PersonasTable } from ".";
 import { ModalImportarPersonas } from "./components/ModalImportarPersonas";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   setOpen: (open: boolean) => void;
@@ -28,6 +29,7 @@ export const PersonasPage = ({ setOpen, setToastMessage }: Props) => {
   const [personas, setPersonas] = useState<Persona[]>([]);
   const { accesos, user } = authState;
   const [show, setShow] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getPersonas();
@@ -52,7 +54,10 @@ export const PersonasPage = ({ setOpen, setToastMessage }: Props) => {
   };
 
   const handleOpen = (id: number) => {
-    console.log("🚀 ~ file: PersonasPage.tsx:53 ~ handleOpen ~ id:", id);
+    navigate(`/personas/${id}`);
+  };
+
+  const handleOpenModal = () => {
     setShow(true);
   };
 
@@ -116,7 +121,7 @@ export const PersonasPage = ({ setOpen, setToastMessage }: Props) => {
             <Box sx={{ mt: 2 }}>
               <Button
                 variant="contained"
-                onClick={() => handleOpen(0)}
+                onClick={() => handleOpenModal()}
                 sx={{ mb: 2 }}
               >
                 Importar Personas

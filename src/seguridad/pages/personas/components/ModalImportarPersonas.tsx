@@ -65,7 +65,7 @@ export const ModalImportarPersonas = React.forwardRef((_ref) => {
         >
           <form onSubmit={handleSubmit(store)}>
             {/* <input {...register("uploadFile")} type="file" /> */}
-            <input type="file" {...register("file")} />
+            <input type="file" accept=".xls, .xlsx" {...register("file")} />
 
             <Button variant="contained" type="submit" sx={{ ml: 2 }}>
               {isLoading && <CircularProgress sx={{ mr: 2 }} />}
