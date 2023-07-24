@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   BackendResponse,
+  Empresa,
   Persona,
   UnidadNegocio,
 } from "../../../../interfaces/interfaces";
@@ -20,6 +21,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../../../../auth/context/useAuth";
 
 interface Props {
   setOpen: (open: boolean) => void;
@@ -29,13 +31,41 @@ interface Props {
 export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { control, register, setValue, handleSubmit } = useForm();
+  const {
+    control,
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const [unidades, setUnidadesNegocio] = useState<UnidadNegocio[]>([]);
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
+  const { authState } = useAuth();
+  const { user } = authState;
 
   useEffect(() => {
+    getEmpresas();
     getUnidadesNegocio();
     getPersonaById();
   }, []);
+
+  const getEmpresas = async () => {
+    const { data } = await apiClient.get<BackendResponse>(
+      `/${ApiEndpoints.EMPRESAS}`
+    );
+
+    if (!data) {
+      showMessage(Messages.NO_SE_PUDO_COMPLETAR);
+      return;
+    }
+
+    if (!data.success) {
+      showMessage(data.message);
+      return;
+    }
+
+    setEmpresas([...data.data]);
+  };
 
   const getUnidadesNegocio = async () => {
     const { data } = await apiClient.get<BackendResponse>(
@@ -82,8 +112,39 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
     setValue("unidad_negocio_id", userdata.unidad_negocio_id);
   };
 
-  const submitForm = (event: any) => {
-    console.log("🚀 ~ file: PersonasForm.tsx:50 ~ submitForm ~ event:", event);
+  const submitForm = async (formData: any) => {
+    const datos = {
+      ...formData,
+      user: user?.id,
+      codigo_app: import.meta.env.VITE_CODIGO_APP,
+      habilitado: formData.habilitado ? formData.habilitado : 0,
+    };
+
+    try {
+      const { data } = await apiClient.post<BackendResponse>(
+        `/${ApiEndpoints.PERSONAS}`,
+        { ...datos }
+      );
+      if (!data) {
+        showMessage(Messages.NO_SE_PUDO_COMPLETAR);
+        return;
+      }
+      if (!data.success) {
+        showMessage(data.message);
+        return;
+      }
+
+      showMessage(data.message);
+      setTimeout(() => {
+        cancel();
+      }, 1000);
+    } catch (error) {
+      console.log(
+        "🚀 ~ file: PersonasForm.tsx:115 ~ submitForm ~ error:",
+        error
+      );
+      showMessage(JSON.stringify(error));
+    }
   };
 
   const showMessage = (text: string = "Operacion correcta") => {
@@ -128,7 +189,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Id */}
-            <Grid item xs={12} sm={2} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={3} sx={{ pr: "16px" }}>
               <TextField
                 {...register("persona_id")}
                 label="Id"
@@ -139,51 +200,119 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Codigo */}
-            <Grid item xs={12} sm={3} md={2} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={3} sx={{ pr: "16px" }}>
               <TextField
                 {...register("codigo")}
                 label="Codigo"
                 defaultValue="0"
-                disabled={id ? true : false}
                 sx={{ width: "100%", pr: "16px" }}
               />
             </Grid>
 
-            {/* Nombre Completo */}
-            <Grid item xs={12} sm={5} md={4} sx={{ pr: "16px" }}>
+            {/* Nombre */}
+            <Grid item xs={12} sm={6} sx={{ pr: "16px" }}>
               <TextField
-                {...register("nombre_completo")}
-                label="Nombre Completo"
+                {...register("nombre")}
+                label="Nombre"
                 defaultValue="..."
-                disabled={id ? true : false}
+                sx={{ width: "100%", pr: "16px" }}
+              />
+            </Grid>
+
+            {/* Apellido Paterno */}
+            <Grid item xs={12} sm={6} sx={{ pr: "16px" }}>
+              <TextField
+                {...register("apellido_paterno")}
+                label="Apellido Paterno"
+                defaultValue="..."
+                sx={{ width: "100%", pr: "16px" }}
+              />
+            </Grid>
+
+            {/* Apellido Materno */}
+            <Grid item xs={12} sm={6} sx={{ pr: "16px" }}>
+              <TextField
+                {...register("apellido_materno")}
+                label="Apellido Materno"
+                defaultValue="..."
                 sx={{ width: "100%", pr: "16px" }}
               />
             </Grid>
 
             {/* Cargo */}
-            <Grid item xs={12} sm={5} md={4} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={6} md={4} sx={{ pr: "16px" }}>
               <TextField
                 {...register("cargo")}
                 label="Cargo"
                 defaultValue="..."
-                disabled={id ? true : false}
                 sx={{ width: "100%", pr: "16px" }}
               />
             </Grid>
 
             {/* Ciudad */}
-            <Grid item xs={12} sm={5} md={4} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={6} md={4} sx={{ pr: "16px" }}>
               <TextField
                 {...register("ubicacion")}
                 label="Ciudad"
                 defaultValue="..."
-                disabled={id ? true : false}
                 sx={{ width: "100%", pr: "16px" }}
               />
             </Grid>
 
+            {/* Empresa */}
+            <Grid item xs={12} sm={6} md={4} lg={3} sx={{ pr: "16px" }}>
+              <Controller
+                name="empresa_id"
+                rules={{ required: true }}
+                control={control}
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <Autocomplete
+                      value={
+                        value
+                          ? empresas.find(
+                              (option) => value === option.empresa_id
+                            ) ?? null
+                          : null
+                      }
+                      getOptionLabel={(option) => option.nombre}
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props}>
+                          {option.nombre}
+                        </Box>
+                      )}
+                      onChange={(_event: any, newValue) =>
+                        onChange(newValue ? newValue.empresa_id : null)
+                      }
+                      options={empresas}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Empresa *"
+                          inputProps={{
+                            ...params.inputProps,
+                          }}
+                          error={
+                            errors.empresas_id?.type === "required"
+                              ? true
+                              : false
+                          }
+                        />
+                      )}
+                    />
+                  );
+                }}
+              />
+              {errors.empresas_id?.type === "required" && (
+                <Typography color={"#d32f2f"} paddingTop={1} fontSize={12.5}>
+                  El Usuario es obligatorio
+                </Typography>
+              )}
+            </Grid>
+
             {/* Unidad de Negocio */}
-            <Grid item xs={12} sm={6} md={5} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={6} md={4} sx={{ pr: "16px" }}>
               <Controller
                 name="unidad_negocio_id"
                 control={control}
@@ -198,10 +327,12 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                             ) ?? null
                           : null
                       }
-                      getOptionLabel={(option) => option.nombre}
+                      getOptionLabel={(option) =>
+                        `${option.unidad_negocio_id} - ${option.nombre}`
+                      }
                       renderOption={(props, option) => (
                         <Box component="li" {...props}>
-                          {option.nombre}
+                          {`${option.unidad_negocio_id} - ${option.nombre}`}
                         </Box>
                       )}
                       onChange={(_event: any, newValue) => {

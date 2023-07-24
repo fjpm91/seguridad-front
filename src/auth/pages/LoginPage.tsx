@@ -19,6 +19,7 @@ import apiClient from "../../services/api-client";
 import { AuthContext } from "../context";
 import { Messages, StorageKeys } from "../../models/enums";
 import { BackendResponse, Modulo } from "../../interfaces/interfaces";
+import { useForm } from "react-hook-form";
 
 const guardarState = (
   accesos: any,
@@ -59,21 +60,18 @@ export const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
-  const handleSubmit = async (event: any) => {
-    setIsLoading(true);
-    event.preventDefault();
-    const dataForm = new FormData(event.currentTarget);
-
+  const submitForm = async (formData: any) => {
     try {
-      if (!dataForm.get("username") || !dataForm.get("password")) {
-        console.log("Datos invalidos");
-        return;
-      }
+      setIsLoading(true);
 
       const response = await apiClient.post<BackendResponse>("/login", {
-        username: dataForm.get("username"),
-        password: dataForm.get("password"),
+        ...formData,
         codigo_app: import.meta.env.VITE_CODIGO_APP,
       });
 
@@ -158,65 +156,106 @@ export const LoginPage = () => {
           }}
         />
         <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-          <Box
-            sx={{
-              my: 8,
-              mx: 4,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-              <LockOutlinedIcon />
-            </Avatar>
-            <Typography component="h1" variant="h5">
-              Sistema de Seguridad y Accesos
-            </Typography>
-            <Box
-              component="form"
-              noValidate
-              onSubmit={handleSubmit}
-              sx={{ mt: 1 }}
-            >
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="username"
-                label="Nombre de usuario"
-                name="username"
-                autoComplete="usuario"
-                autoFocus
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Contraseña"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-              />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                disabled={isLoading}
-                sx={{ mt: 3, mb: 2 }}
+          <Grid container>
+            <Grid item xs={12}>
+              <Box
+                sx={{
+                  p: 2,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
               >
-                {isLoading && <CircularProgress sx={{ mr: 2 }} />}
-                Iniciar sesión
-              </Button>
+                <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+                  <LockOutlinedIcon />
+                </Avatar>
 
-              {message && (
-                <Alert severity="error" sx={{ mt: 3 }}>
-                  {message}
-                </Alert>
-              )}
-            </Box>
-          </Box>
+                <Typography component="h1" variant="h5">
+                  Sistema de Seguridad y Accesos
+                </Typography>
+
+                <Box
+                  component="form"
+                  autoComplete="off"
+                  noValidate
+                  onSubmit={handleSubmit(submitForm)}
+                  sx={{ width: "100%", mt: 1 }}
+                >
+                  <TextField
+                    {...register("username", {
+                      required: true,
+                      minLength: { value: 3, message: "error message" },
+                    })}
+                    required
+                    label="Nombre de usuario"
+                    error={
+                      errors.username?.type === "required" ||
+                      errors.username?.type === "minLength"
+                        ? true
+                        : false
+                    }
+                    sx={{ width: "100%" }}
+                  />
+                  {(errors.username?.type === "required" ||
+                    errors.username?.type === "minLength") && (
+                    <Typography
+                      paddingLeft={2}
+                      paddingTop={1}
+                      fontSize={12.5}
+                      color={"#F36892"}
+                    >
+                      El Nombre de usuario es obligatorio
+                    </Typography>
+                  )}
+
+                  <TextField
+                    {...register("password", {
+                      required: true,
+                      minLength: { value: 3, message: "error message" },
+                    })}
+                    required
+                    label="Contraseña"
+                    type="password"
+                    error={
+                      errors.password?.type === "required" ||
+                      errors.password?.type === "minLength"
+                        ? true
+                        : false
+                    }
+                    sx={{ width: "100%", mt: 2 }}
+                  />
+                  {(errors.password?.type === "required" ||
+                    errors.password?.type === "minLength") && (
+                    <Typography
+                      paddingLeft={2}
+                      paddingTop={1}
+                      fontSize={12.5}
+                      color={"#F36892"}
+                    >
+                      La contraseña es obligatoria
+                    </Typography>
+                  )}
+
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    disabled={isLoading}
+                    sx={{ mt: 3, mb: 2 }}
+                  >
+                    {isLoading && <CircularProgress sx={{ mr: 2 }} />}
+                    Iniciar sesión
+                  </Button>
+
+                  {message && (
+                    <Alert severity="error" sx={{ mt: 3 }}>
+                      {message}
+                    </Alert>
+                  )}
+                </Box>
+              </Box>
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
     </ThemeProvider>

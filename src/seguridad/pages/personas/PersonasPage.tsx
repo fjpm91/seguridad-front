@@ -121,6 +121,14 @@ export const PersonasPage = ({ setOpen, setToastMessage }: Props) => {
             <Box sx={{ mt: 2 }}>
               <Button
                 variant="contained"
+                onClick={() => handleOpen(0)}
+                sx={{ mb: 2, mr: 2 }}
+              >
+                Nueva Persona
+              </Button>
+
+              <Button
+                variant="outlined"
                 onClick={() => handleOpenModal()}
                 sx={{ mb: 2 }}
               >
