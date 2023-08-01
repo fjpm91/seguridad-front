@@ -37,7 +37,13 @@ export const RolesAccesosForm = ({ setOpen, setToastMessage }: Props) => {
   const [modulos, setModulos] = useState<Modulo[]>([]);
   const [roles, setRoles] = useState<Rol[]>([]);
   const [aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
-  const { control, handleSubmit, reset } = useForm();
+  const {
+    control,
+    getValues,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
   const navigate = useNavigate();
   const { user } = authState;
 
@@ -193,7 +199,7 @@ export const RolesAccesosForm = ({ setOpen, setToastMessage }: Props) => {
     <Box
       sx={{
         backgroundColor: "grey.100",
-        height: "100vh",
+        minHeight: { xs: "calc(100vh - 56x)", sm: "calc(100vh - 64px)" },
         padding: "1rem",
       }}
     >
@@ -227,7 +233,7 @@ export const RolesAccesosForm = ({ setOpen, setToastMessage }: Props) => {
             <Grid item xs={12} sm={6} md={5} sx={{ pr: "16px" }}>
               <Controller
                 name="aplicacion_id"
-                // rules={{ required: true }}
+                rules={{ required: true }}
                 control={control}
                 render={({ field }) => {
                   const { onChange, value } = field;
@@ -240,10 +246,12 @@ export const RolesAccesosForm = ({ setOpen, setToastMessage }: Props) => {
                             ) ?? null
                           : null
                       }
-                      getOptionLabel={(option) => option.nombre}
+                      getOptionLabel={(option) =>
+                        `${option.codigo} - ${option.nombre}`
+                      }
                       renderOption={(props, option) => (
                         <Box component="li" {...props}>
-                          {option.nombre}
+                          {option.codigo} - {option.nombre}
                         </Box>
                       )}
                       onChange={(_event: any, newValue) => {
@@ -256,23 +264,32 @@ export const RolesAccesosForm = ({ setOpen, setToastMessage }: Props) => {
                         <TextField
                           {...params}
                           label="Aplicacion *"
-                          helperText="La Aplicacion es obligatoria"
                           inputProps={{
                             ...params.inputProps,
                           }}
+                          error={
+                            errors.aplicacion_id?.type === "required"
+                              ? true
+                              : false
+                          }
                         />
                       )}
                     />
                   );
                 }}
               />
+              {errors.aplicacion_id?.type === "required" && (
+                <Typography color={"#d32f2f"} paddingTop={1} fontSize={12.5}>
+                  La Aplicación es obligatoria
+                </Typography>
+              )}
             </Grid>
 
             {/* Roles */}
             <Grid item xs={12} sm={6} md={5} sx={{ pr: "16px" }}>
               <Controller
                 name="rol_id"
-                // rules={{ required: true }}
+                rules={{ required: true }}
                 control={control}
                 render={({ field }) => {
                   const { onChange, value } = field;
@@ -300,16 +317,23 @@ export const RolesAccesosForm = ({ setOpen, setToastMessage }: Props) => {
                         <TextField
                           {...params}
                           label="Rol *"
-                          helperText="El Rol es obligatorio"
                           inputProps={{
                             ...params.inputProps,
                           }}
+                          error={
+                            errors.rol_id?.type === "required" ? true : false
+                          }
                         />
                       )}
                     />
                   );
                 }}
               />
+              {errors.rol_id?.type === "required" && (
+                <Typography color={"#d32f2f"} paddingTop={1} fontSize={12.5}>
+                  El rol es obligatorio
+                </Typography>
+              )}
             </Grid>
 
             {/* Modulos */}

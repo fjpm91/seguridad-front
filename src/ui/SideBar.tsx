@@ -57,7 +57,11 @@ export function SideBar({
           {/* Modulos dinamicos por rol */}
           {modulos?.map((modulo) =>
             modulo.menu ? (
-              <CollapsableItem key={modulo?.modulo_id} modulo={modulo} />
+              <CollapsableItem
+                key={modulo?.modulo_id}
+                modulo={modulo}
+                onCloseSideBar={onCloseSideBar}
+              />
             ) : null
           )}
 

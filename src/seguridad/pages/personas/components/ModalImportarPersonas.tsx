@@ -5,7 +5,7 @@ import apiClient from "../../../../services/api-client";
 import { BackendResponse } from "../../../../interfaces/interfaces";
 import { ApiEndpoints, Messages } from "../../../../models/enums";
 
-export const ModalImportarPersonas = React.forwardRef((_ref) => {
+export const ModalImportarPersonas = React.forwardRef((_, _ref) => {
   const { register, handleSubmit } = useForm();
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");

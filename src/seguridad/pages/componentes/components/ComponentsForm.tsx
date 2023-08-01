@@ -27,6 +27,7 @@ export const ComponentsForm = ({ setOpen, setToastMessage }: Props) => {
   const { authState } = useAuth();
   const {
     control,
+    getValues,
     register,
     setValue,
     handleSubmit,
@@ -128,7 +129,7 @@ export const ComponentsForm = ({ setOpen, setToastMessage }: Props) => {
     <Box
       sx={{
         backgroundColor: "grey.100",
-        height: "100vh",
+        minHeight: { xs: "calc(100vh - 56x)", sm: "calc(100vh - 64px)" },
         padding: "1rem",
       }}
     >
@@ -174,16 +175,22 @@ export const ComponentsForm = ({ setOpen, setToastMessage }: Props) => {
               <TextField
                 {...register("nombre", {
                   required: true,
-                  minLength: { value: 3, message: "error message" },
+                  minLength: { value: 4, message: "error message" },
                 })}
                 required
                 label="Nombre"
-                defaultValue="--"
+                defaultValue="---"
                 error={
                   errors.nombre?.type === "required" ||
                   errors.nombre?.type === "minLength"
                     ? true
                     : false
+                }
+                onFocus={() =>
+                  getValues("nombre") === "---" ? setValue("nombre", "") : null
+                }
+                onBlur={() =>
+                  getValues("nombre") === "" ? setValue("nombre", "---") : null
                 }
                 sx={{ width: "100%", pr: "16px" }}
               />

@@ -13,15 +13,21 @@ import { DynamicMenuIcon } from ".";
 
 interface Props {
   modulo: Modulo | null;
+  onCloseSideBar: () => void;
 }
 
-const CollapsableItem = ({ modulo }: Props) => {
+const CollapsableItem = ({ modulo, onCloseSideBar }: Props) => {
   const [foldItem, setFoldItem] = useState(false);
   const navigate = useNavigate();
 
   const handleClick = (event?: Modulo | undefined | null) => {
     if (!event) return;
-    event.menu && event?.SubModulos?.length !== 0 ? setFoldItem(!foldItem) : navigate(event?.url ?? "/");
+    if (event.menu && event?.SubModulos?.length !== 0) {
+      setFoldItem(!foldItem);
+    } else {
+      navigate(event?.url ?? "/");
+      onCloseSideBar();
+    }
   };
 
   return (

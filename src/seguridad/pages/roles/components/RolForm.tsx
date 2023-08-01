@@ -169,7 +169,7 @@ export const RolForm = ({ setOpen, setToastMessage }: Props) => {
     <Box
       sx={{
         backgroundColor: "grey.100",
-        height: "100vh",
+        minHeight: { xs: "calc(100vh - 56x)", sm: "calc(100vh - 64px)" },
         padding: "1rem",
       }}
     >

@@ -99,7 +99,7 @@ export const AplicacionesPage = ({ setOpen, setToastMessage }: Props) => {
       <Box
         sx={{
           backgroundColor: "grey.100",
-          height: "calc(100vh - 64px)",
+          minHeight: { xs: "calc(100vh - 56x)", sm: "calc(100vh - 64px)" },
           padding: "1rem",
         }}
       >

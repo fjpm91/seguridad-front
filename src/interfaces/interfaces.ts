@@ -70,7 +70,7 @@ export interface User {
   name: string;
   persona_id: number;
   updated_at: number;
-  // persona: Persona;
+  persona: Persona;
   roles: Rol[];
 }
 

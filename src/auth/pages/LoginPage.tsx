@@ -161,6 +161,7 @@ export const LoginPage = () => {
               <Box
                 sx={{
                   p: 2,
+                  mt: 4,
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
@@ -171,7 +172,7 @@ export const LoginPage = () => {
                 </Avatar>
 
                 <Typography component="h1" variant="h5">
-                  Sistema de Seguridad y Accesos
+                  {import.meta.env.VITE_NOMBRE_APP}
                 </Typography>
 
                 <Box

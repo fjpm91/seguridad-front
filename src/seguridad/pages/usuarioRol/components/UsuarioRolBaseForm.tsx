@@ -141,7 +141,7 @@ export const UsuarioRolBaseForm = () => {
     <Box
       sx={{
         backgroundColor: "grey.100",
-        height: "100vh",
+        minHeight: { xs: "calc(100vh - 56x)", sm: "calc(100vh - 64px)" },
         padding: "1rem",
       }}
     >
@@ -172,7 +172,7 @@ export const UsuarioRolBaseForm = () => {
             </Grid>
 
             {/* Aplicacion */}
-            <Grid item xs={12} sm={6} md={4} lg={3} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={6} md={4} sx={{ pr: "16px" }}>
               <Controller
                 name="codigo_app"
                 rules={{ required: true }}
@@ -188,10 +188,10 @@ export const UsuarioRolBaseForm = () => {
                             ) ?? null
                           : null
                       }
-                      getOptionLabel={(option) => option.codigo}
-                      renderOption={(props, option) => (
+                      getOptionLabel={(app) => `${app.codigo} - ${app.nombre}`}
+                      renderOption={(props, app) => (
                         <Box component="li" {...props}>
-                          {option.codigo_nombre}
+                          {app.codigo_nombre} - {app.nombre}
                         </Box>
                       )}
                       onChange={(_event: any, newValue) => {
@@ -231,7 +231,7 @@ export const UsuarioRolBaseForm = () => {
             </Grid>
 
             {/* Rol */}
-            <Grid item xs={12} sm={6} md={4} lg={3} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={6} md={4} sx={{ pr: "16px" }}>
               <Controller
                 name="rol_id"
                 rules={{ required: true }}

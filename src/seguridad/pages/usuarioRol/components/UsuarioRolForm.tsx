@@ -155,7 +155,7 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
     <Box
       sx={{
         backgroundColor: "grey.100",
-        height: "100vh",
+        minHeight: { xs: "calc(100vh - 56x)", sm: "calc(100vh - 64px)" },
         padding: "1rem",
       }}
     >
@@ -196,7 +196,7 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Usuario */}
-            <Grid item xs={12} sm={6} md={4} lg={3} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={6} md={4} sx={{ pr: "16px" }}>
               <Controller
                 name="user_id"
                 rules={{ required: true }}
@@ -213,7 +213,7 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
                       getOptionLabel={(option) => option.name}
                       renderOption={(props, option) => (
                         <Box component="li" {...props}>
-                          {option.name}
+                          {option.name} - {option.persona.nombre_completo}
                         </Box>
                       )}
                       onChange={(_event: any, newValue) =>
@@ -244,7 +244,7 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Rol */}
-            <Grid item xs={12} sm={6} md={4} lg={3} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={6} md={4} sx={{ pr: "16px" }}>
               <Controller
                 name="rol_id"
                 rules={{ required: true }}

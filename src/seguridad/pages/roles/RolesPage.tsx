@@ -95,7 +95,13 @@ export const RolesPage = ({ setOpen, setToastMessage }: Props) => {
   };
 
   return (
-    <Box sx={{ backgroundColor: "grey.50", height: "100vh", padding: "1rem" }}>
+    <Box
+      sx={{
+        backgroundColor: "grey.50",
+        minHeight: { xs: "calc(100vh - 56x)", sm: "calc(100vh - 64px)" },
+        padding: "1rem",
+      }}
+    >
       <Container>
         <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
           Roles

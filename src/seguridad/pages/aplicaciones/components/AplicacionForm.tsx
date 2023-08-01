@@ -26,6 +26,7 @@ export const AplicacionForm = ({ setOpen, setToastMessage }: Props) => {
   const { authState } = useAuth();
   const {
     control,
+    getValues,
     register,
     setValue,
     handleSubmit,
@@ -146,7 +147,7 @@ export const AplicacionForm = ({ setOpen, setToastMessage }: Props) => {
     <Box
       sx={{
         backgroundColor: "grey.100",
-        height: "100vh",
+        minHeight: { xs: "calc(100vh - 56x)", sm: "calc(100vh - 64px)" },
         padding: "1rem",
       }}
     >
@@ -202,6 +203,12 @@ export const AplicacionForm = ({ setOpen, setToastMessage }: Props) => {
                     ? true
                     : false
                 }
+                onFocus={() =>
+                  getValues("codigo") === "--" ? setValue("codigo", "") : null
+                }
+                onBlur={() =>
+                  getValues("codigo") === "" ? setValue("codigo", "--") : null
+                }
                 sx={{ width: "100%" }}
               />
               {(errors.codigo?.type === "required" ||
@@ -212,7 +219,8 @@ export const AplicacionForm = ({ setOpen, setToastMessage }: Props) => {
                   fontSize={12.5}
                   color={"#F36892"}
                 >
-                  El codigo de la aplicacion es obligatorio
+                  El Código de la Aplicación debe ser mayor o igual a 3
+                  caracteres
                 </Typography>
               )}
             </Grid>
@@ -220,13 +228,38 @@ export const AplicacionForm = ({ setOpen, setToastMessage }: Props) => {
             {/* Version */}
             <Grid item xs={12} sm={6} md={4} lg={3} sx={{ pr: "16px" }}>
               <TextField
-                {...register("version", { required: true })}
+                {...register("version", {
+                  required: true,
+                  minLength: { value: 5, message: "error message" },
+                })}
                 required
                 label="Version"
-                helperText="La Versión de la Aplicación es obligatoria"
                 defaultValue="0.0.1"
+                error={
+                  errors.version?.type === "required" ||
+                  errors.version?.type === "minLength"
+                    ? true
+                    : false
+                }
+                onFocus={() =>
+                  getValues("version") === "--" ? setValue("version", "") : null
+                }
+                onBlur={() =>
+                  getValues("version") === "" ? setValue("version", "--") : null
+                }
                 sx={{ width: "100%" }}
               />
+              {(errors.version?.type === "required" ||
+                errors.version?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  La Versión de la Aplicación es obligatoria
+                </Typography>
+              )}
             </Grid>
 
             {/* Habilitado */}
@@ -257,13 +290,19 @@ export const AplicacionForm = ({ setOpen, setToastMessage }: Props) => {
                 })}
                 required
                 label="Nombre"
+                defaultValue="---"
                 error={
                   errors.nombre?.type === "required" ||
                   errors.nombre?.type === "minLength"
                     ? true
                     : false
                 }
-                defaultValue="App"
+                onFocus={() =>
+                  getValues("nombre") === "---" ? setValue("nombre", "") : null
+                }
+                onBlur={() =>
+                  getValues("nombre") === "" ? setValue("nombre", "---") : null
+                }
                 sx={{ width: "100%" }}
               />
               {errors.codigo?.type === "required" && (
@@ -297,13 +336,19 @@ export const AplicacionForm = ({ setOpen, setToastMessage }: Props) => {
                 })}
                 required
                 label="Titulo"
+                defaultValue="---"
                 error={
                   errors.titulo?.type === "required" ||
                   errors.titulo?.type === "minLength"
                     ? true
                     : false
                 }
-                defaultValue="App"
+                onFocus={() =>
+                  getValues("titulo") === "---" ? setValue("titulo", "") : null
+                }
+                onBlur={() =>
+                  getValues("titulo") === "" ? setValue("titulo", "---") : null
+                }
                 sx={{ width: "100%" }}
               />
               {errors.titulo?.type === "required" && (
@@ -313,7 +358,7 @@ export const AplicacionForm = ({ setOpen, setToastMessage }: Props) => {
                   fontSize={12.5}
                   color={"#F36892"}
                 >
-                  El titulo de la aplicacion es obligatorio
+                  El Titulo de la Aplicación es obligatorio
                 </Typography>
               )}
               {errors.titulo?.type === "minLength" && (

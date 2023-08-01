@@ -33,6 +33,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
   const navigate = useNavigate();
   const {
     control,
+    getValues,
     register,
     setValue,
     handleSubmit,
@@ -158,7 +159,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
     <Box
       sx={{
         backgroundColor: "grey.100",
-        height: "100vh",
+        minHeight: { xs: "calc(100vh - 56x)", sm: "calc(100vh - 64px)" },
         padding: "1rem",
       }}
     >
@@ -202,31 +203,111 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
             {/* Codigo */}
             <Grid item xs={12} sm={3} sx={{ pr: "16px" }}>
               <TextField
-                {...register("codigo")}
+                {...register("codigo", { required: true })}
                 label="Codigo"
                 defaultValue="0"
+                error={
+                  errors.codigo?.type === "required" ||
+                  getValues("codigo") === "0"
+                    ? true
+                    : false
+                }
+                onFocus={() =>
+                  getValues("codigo") === "0" ? setValue("codigo", "") : null
+                }
+                onBlur={() =>
+                  getValues("codigo") === "" ? setValue("codigo", "0") : null
+                }
                 sx={{ width: "100%", pr: "16px" }}
               />
+              {(errors.codigo?.type === "required" ||
+                errors.codigo?.type === "minLength" ||
+                getValues("codigo") === "0") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  El Codigo del Usuario es obligatorio
+                </Typography>
+              )}
             </Grid>
 
             {/* Nombre */}
             <Grid item xs={12} sm={6} sx={{ pr: "16px" }}>
               <TextField
-                {...register("nombre")}
+                {...register("nombre", {
+                  required: true,
+                  minLength: { value: 4, message: "error message" },
+                })}
                 label="Nombre"
                 defaultValue="..."
+                error={
+                  errors.nombre?.type === "required" ||
+                  errors.nombre?.type === "minLength"
+                    ? true
+                    : false
+                }
+                onFocus={() =>
+                  getValues("nombre") === "..." ? setValue("nombre", "") : null
+                }
+                onBlur={() =>
+                  getValues("nombre") === "" ? setValue("nombre", "...") : null
+                }
                 sx={{ width: "100%", pr: "16px" }}
               />
+              {(errors.nombre?.type === "required" ||
+                errors.nombre?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  El Nombre es obligatorio
+                </Typography>
+              )}
             </Grid>
 
             {/* Apellido Paterno */}
             <Grid item xs={12} sm={6} sx={{ pr: "16px" }}>
               <TextField
-                {...register("apellido_paterno")}
+                {...register("apellido_paterno", {
+                  required: true,
+                  minLength: { value: 4, message: "error message" },
+                })}
                 label="Apellido Paterno"
                 defaultValue="..."
+                error={
+                  errors.apellido_paterno?.type === "required" ||
+                  errors.apellido_paterno?.type === "minLength"
+                    ? true
+                    : false
+                }
+                onFocus={() =>
+                  getValues("apellido_paterno") === "..."
+                    ? setValue("apellido_paterno", "")
+                    : null
+                }
+                onBlur={() =>
+                  getValues("apellido_paterno") === ""
+                    ? setValue("apellido_paterno", "...")
+                    : null
+                }
                 sx={{ width: "100%", pr: "16px" }}
               />
+              {(errors.apellido_paterno?.type === "required" ||
+                errors.apellido_paterno?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  El Apellido Paterno es obligatorio
+                </Typography>
+              )}
             </Grid>
 
             {/* Apellido Materno */}
@@ -235,6 +316,16 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                 {...register("apellido_materno")}
                 label="Apellido Materno"
                 defaultValue="..."
+                onFocus={() =>
+                  getValues("apellido_materno") === "..."
+                    ? setValue("apellido_materno", "")
+                    : null
+                }
+                onBlur={() =>
+                  getValues("apellido_materno") === ""
+                    ? setValue("apellido_materno", "...")
+                    : null
+                }
                 sx={{ width: "100%", pr: "16px" }}
               />
             </Grid>
@@ -245,6 +336,12 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                 {...register("cargo")}
                 label="Cargo"
                 defaultValue="..."
+                onFocus={() =>
+                  getValues("cargo") === "..." ? setValue("cargo", "") : null
+                }
+                onBlur={() =>
+                  getValues("cargo") === "" ? setValue("cargo", "...") : null
+                }
                 sx={{ width: "100%", pr: "16px" }}
               />
             </Grid>
@@ -255,6 +352,16 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                 {...register("ubicacion")}
                 label="Ciudad"
                 defaultValue="..."
+                onFocus={() =>
+                  getValues("ubicacion") === "..."
+                    ? setValue("ubicacion", "")
+                    : null
+                }
+                onBlur={() =>
+                  getValues("ubicacion") === ""
+                    ? setValue("ubicacion", "...")
+                    : null
+                }
                 sx={{ width: "100%", pr: "16px" }}
               />
             </Grid>
@@ -294,7 +401,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                             ...params.inputProps,
                           }}
                           error={
-                            errors.empresas_id?.type === "required"
+                            errors.empresa_id?.type === "required"
                               ? true
                               : false
                           }
@@ -304,9 +411,9 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                   );
                 }}
               />
-              {errors.empresas_id?.type === "required" && (
+              {errors.empresa_id?.type === "required" && (
                 <Typography color={"#d32f2f"} paddingTop={1} fontSize={12.5}>
-                  El Usuario es obligatorio
+                  La empresa es obligatoria
                 </Typography>
               )}
             </Grid>
@@ -315,6 +422,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
             <Grid item xs={12} sm={6} md={4} sx={{ pr: "16px" }}>
               <Controller
                 name="unidad_negocio_id"
+                rules={{ required: true }}
                 control={control}
                 render={({ field }) => {
                   const { onChange, value } = field;
@@ -346,12 +454,22 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                           inputProps={{
                             ...params.inputProps,
                           }}
+                          error={
+                            errors.unidad_negocio_id?.type === "required"
+                              ? true
+                              : false
+                          }
                         />
                       )}
                     />
                   );
                 }}
               />
+              {errors.unidad_negocio_id?.type === "required" && (
+                <Typography color={"#d32f2f"} paddingTop={1} fontSize={12.5}>
+                  La Unidad de Negocio es obligatoria
+                </Typography>
+              )}
             </Grid>
 
             {/* Habilitado */}

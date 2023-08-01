@@ -40,6 +40,7 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
   const [userRoles, setUserRoles] = useState<Rol[]>([]);
   const {
     control,
+    getValues,
     register,
     setValue,
     handleSubmit,
@@ -205,7 +206,7 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
     <Box
       sx={{
         backgroundColor: "grey.100",
-        height: "100vh",
+        minHeight: { xs: "calc(100vh - 56x)", sm: "calc(100vh - 64px)" },
         padding: "1rem",
       }}
     >
@@ -309,11 +310,17 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
               <TextField
                 {...register("name", {
                   required: true,
-                  minLength: { value: 3, message: "error message" },
+                  minLength: { value: 4, message: "error message" },
                 })}
                 required
                 label="Username"
-                defaultValue="--"
+                defaultValue="..."
+                onFocus={() =>
+                  getValues("name") === "..." ? setValue("name", "") : null
+                }
+                onBlur={() =>
+                  getValues("name") === "" ? setValue("name", "...") : null
+                }
                 error={
                   errors.name?.type === "required" ||
                   errors.name?.type === "minLength"

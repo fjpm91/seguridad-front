@@ -38,6 +38,7 @@ export const ModuloForm = ({ setOpen, setToastMessage }: Props) => {
   const navigate = useNavigate();
   const {
     control,
+    getValues,
     register,
     setValue,
     handleSubmit,
@@ -255,7 +256,7 @@ export const ModuloForm = ({ setOpen, setToastMessage }: Props) => {
     <Box
       sx={{
         backgroundColor: "grey.100",
-        height: "100vh",
+        minHeight: { xs: "calc(100vh - 56x)", sm: "calc(100vh - 64px)" },
         padding: "1rem",
       }}
     >
@@ -301,16 +302,22 @@ export const ModuloForm = ({ setOpen, setToastMessage }: Props) => {
               <TextField
                 {...register("titulo", {
                   required: true,
-                  minLength: { value: 3, message: "error message" },
+                  minLength: { value: 4, message: "error message" },
                 })}
                 required
                 label="Titulo"
-                defaultValue="--"
+                defaultValue="---"
                 error={
                   errors.titulo?.type === "required" ||
                   errors.titulo?.type === "minLength"
                     ? true
                     : false
+                }
+                onFocus={() =>
+                  getValues("titulo") === "---" ? setValue("titulo", "") : null
+                }
+                onBlur={() =>
+                  getValues("titulo") === "" ? setValue("titulo", "---") : null
                 }
                 sx={{ width: "100%" }}
               />
@@ -332,16 +339,22 @@ export const ModuloForm = ({ setOpen, setToastMessage }: Props) => {
               <TextField
                 {...register("nombre", {
                   required: true,
-                  minLength: { value: 3, message: "error message" },
+                  minLength: { value: 4, message: "error message" },
                 })}
                 required
                 label="Nombre"
-                defaultValue="--"
+                defaultValue="---"
                 error={
                   errors.nombre?.type === "required" ||
                   errors.nombre?.type === "minLength"
                     ? true
                     : false
+                }
+                onFocus={() =>
+                  getValues("nombre") === "---" ? setValue("nombre", "") : null
+                }
+                onBlur={() =>
+                  getValues("nombre") === "" ? setValue("nombre", "---") : null
                 }
                 sx={{ width: "100%" }}
               />
@@ -363,16 +376,22 @@ export const ModuloForm = ({ setOpen, setToastMessage }: Props) => {
               <TextField
                 {...register("url", {
                   required: true,
-                  minLength: { value: 3, message: "error message" },
+                  minLength: { value: 4, message: "error message" },
                 })}
                 required
                 label="URL"
-                defaultValue="--"
+                defaultValue="---"
                 error={
                   errors.url?.type === "required" ||
                   errors.url?.type === "minLength"
                     ? true
                     : false
+                }
+                onFocus={() =>
+                  getValues("url") === "---" ? setValue("url", "") : null
+                }
+                onBlur={() =>
+                  getValues("url") === "" ? setValue("url", "---") : null
                 }
                 sx={{ width: "100%" }}
               />
@@ -450,15 +469,9 @@ export const ModuloForm = ({ setOpen, setToastMessage }: Props) => {
 
             {/* Icono */}
             <Grid item xs={12} sm={6} md={4} lg={3} sx={{ pr: "16px" }}>
-              {/* <TextField
-                {...register("icono")}
-                label="Icono"
-                defaultValue="..."
-                sx={{ width: "100%" }}
-              /> */}
-
               <Controller
                 name="icono"
+                rules={{ required: true }}
                 control={control}
                 render={({ field }) => {
                   const { onChange, value } = field;
@@ -488,12 +501,26 @@ export const ModuloForm = ({ setOpen, setToastMessage }: Props) => {
                           inputProps={{
                             ...params.inputProps,
                           }}
+                          error={
+                            errors.icono?.type === "required" ? true : false
+                          }
                         />
                       )}
                     />
                   );
                 }}
               />
+              {(errors.icono?.type === "required" ||
+                errors.icono?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  La aplicacion es obligatoria
+                </Typography>
+              )}
             </Grid>
 
             {/* Modulo Padre */}
