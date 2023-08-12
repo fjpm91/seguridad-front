@@ -105,15 +105,17 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
     const userdata = data.data as Persona;
     setValue("persona_id", userdata.persona_id);
     setValue("codigo", userdata.codigo);
-    setValue("nombre_completo", userdata.nombre_completo);
     setValue("cargo", userdata.cargo);
     setValue("ubicacion", userdata.ubicacion);
+    setValue("nombre", userdata.nombre);
     setValue("apellido_paterno", userdata.apellido_paterno);
     setValue("apellido_materno", userdata.apellido_materno);
+    setValue("nombre_completo", userdata.nombre_completo);
     setValue("unidad_negocio_id", userdata.unidad_negocio_id);
+    if (userdata.empresa_id) setValue("empresa_id", userdata.empresa_id);
   };
 
-  const submitForm = async (formData: any) => {
+  const store = async (formData: any) => {
     const datos = {
       ...formData,
       user: user?.id,
@@ -140,11 +142,48 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
         cancel();
       }, 1000);
     } catch (error) {
-      console.log(
-        "🚀 ~ file: PersonasForm.tsx:115 ~ submitForm ~ error:",
-        error
-      );
+      console.log("🚀 ~ file: PersonasForm.tsx:143 ~ store ~ error:", error);
       showMessage(JSON.stringify(error));
+    }
+  };
+
+  const update = async (formData: any) => {
+    const datos = {
+      ...formData,
+      user: user?.id,
+      codigo_app: import.meta.env.VITE_CODIGO_APP,
+      habilitado: formData.habilitado ? formData.habilitado : 0,
+    };
+
+    try {
+      const { data } = await apiClient.put<BackendResponse>(
+        `/${ApiEndpoints.PERSONAS}/${id}`,
+        { ...datos }
+      );
+      if (!data) {
+        showMessage(Messages.NO_SE_PUDO_COMPLETAR);
+        return;
+      }
+      if (!data.success) {
+        showMessage(data.message);
+        return;
+      }
+
+      showMessage(data.message);
+      setTimeout(() => {
+        cancel();
+      }, 1000);
+    } catch (error) {
+      console.log("🚀 ~ file: PersonasForm.tsx:178 ~ update ~ error:", error);
+      showMessage(JSON.stringify(error));
+    }
+  };
+
+  const submitForm = (event: any) => {
+    if (id === "0") {
+      store(event);
+    } else {
+      update(event);
     }
   };
 
@@ -159,8 +198,9 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
     <Box
       sx={{
         backgroundColor: "grey.100",
-        minHeight: { xs: "calc(100vh - 56x)", sm: "calc(100vh - 64px)" },
-        padding: "1rem",
+        minHeight: { xs: "calc(100vh - 56px)", sm: "calc(100vh - 64px)" },
+        pt: { xs: "64px", md: "72px" },
+        px: { xs: 1, md: 2 },
       }}
     >
       <Container sx={{ p: 0 }}>
@@ -171,7 +211,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
           noValidate
           sx={{
             backgroundColor: "white",
-            p: 4, // 4 * 8
+            p: 2, // 4 * 8
             borderRadius: 2, // 4 * 4
           }}
         >
@@ -179,18 +219,14 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
           <Grid container spacing={2} sx={{ mb: 4 }}>
             {/* Titulo Formulario */}
             <Grid item xs={12}>
-              <Typography
-                variant="h4"
-                component="div"
-                sx={{ flexGrow: 1, mb: 2 }}
-              >
+              <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
                 Formulario de Personass
               </Typography>
-              <Divider />
+              <Divider sx={{ mb: 1 }} />
             </Grid>
 
             {/* Id */}
-            <Grid item xs={12} sm={3} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={3}>
               <TextField
                 {...register("persona_id")}
                 label="Id"
@@ -201,7 +237,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Codigo */}
-            <Grid item xs={12} sm={3} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={3}>
               <TextField
                 {...register("codigo", { required: true })}
                 label="Codigo"
@@ -223,19 +259,14 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
               {(errors.codigo?.type === "required" ||
                 errors.codigo?.type === "minLength" ||
                 getValues("codigo") === "0") && (
-                <Typography
-                  paddingLeft={2}
-                  paddingTop={1}
-                  fontSize={12.5}
-                  color={"#F36892"}
-                >
+                <Typography paddingTop={1} fontSize={12.5} color={"#F36892"}>
                   El Codigo del Usuario es obligatorio
                 </Typography>
               )}
             </Grid>
 
             {/* Nombre */}
-            <Grid item xs={12} sm={6} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 {...register("nombre", {
                   required: true,
@@ -271,7 +302,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Apellido Paterno */}
-            <Grid item xs={12} sm={6} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 {...register("apellido_paterno", {
                   required: true,
@@ -311,7 +342,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Apellido Materno */}
-            <Grid item xs={12} sm={6} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 {...register("apellido_materno")}
                 label="Apellido Materno"
@@ -331,7 +362,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Cargo */}
-            <Grid item xs={12} sm={6} md={4} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={6} md={4}>
               <TextField
                 {...register("cargo")}
                 label="Cargo"
@@ -347,7 +378,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Ciudad */}
-            <Grid item xs={12} sm={6} md={4} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={6} md={4}>
               <TextField
                 {...register("ubicacion")}
                 label="Ciudad"
@@ -367,7 +398,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Empresa */}
-            <Grid item xs={12} sm={6} md={4} lg={3} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={6} md={4} lg={3}>
               <Controller
                 name="empresa_id"
                 rules={{ required: true }}
@@ -419,7 +450,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Unidad de Negocio */}
-            <Grid item xs={12} sm={6} md={4} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={6} md={4}>
               <Controller
                 name="unidad_negocio_id"
                 rules={{ required: true }}
@@ -473,7 +504,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Habilitado */}
-            <Grid item xs={12} sm={4} md={3} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={4} md={3}>
               <Controller
                 name="habilitado"
                 control={control}
@@ -494,14 +525,24 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
 
           {/* Botones */}
           <Grid container spacing={2}>
-            <Grid item>
-              <Button size="medium" variant="contained" type="submit">
+            <Grid item xs={6} sm={3} md={2}>
+              <Button
+                size="medium"
+                variant="contained"
+                sx={{ width: { xs: "100%", sm: "initial" } }}
+                type="submit"
+              >
                 Guardar
               </Button>
             </Grid>
 
-            <Grid item>
-              <Button size="medium" variant="outlined" onClick={cancel}>
+            <Grid item xs={6} sm={3} md={2}>
+              <Button
+                size="medium"
+                variant="outlined"
+                sx={{ width: { xs: "100%", sm: "initial" } }}
+                onClick={cancel}
+              >
                 Cancelar
               </Button>
             </Grid>

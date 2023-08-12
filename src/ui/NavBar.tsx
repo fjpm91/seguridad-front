@@ -27,7 +27,7 @@ export const NavBar = ({ aplicacion, onOpen }: Props) => {
 
   return (
     <>
-      <AppBar position="static">
+      <AppBar position="fixed">
         <Toolbar>
           <IconButton
             size="large"

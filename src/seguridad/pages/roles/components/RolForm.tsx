@@ -169,8 +169,9 @@ export const RolForm = ({ setOpen, setToastMessage }: Props) => {
     <Box
       sx={{
         backgroundColor: "grey.100",
-        minHeight: { xs: "calc(100vh - 56x)", sm: "calc(100vh - 64px)" },
-        padding: "1rem",
+        minHeight: { xs: "calc(100vh - 56px)", sm: "calc(100vh - 64px)" },
+        pt: { xs: "64px", md: "72px" },
+        px: { xs: 1, md: 2 },
       }}
     >
       <Container sx={{ p: 0 }}>
@@ -181,7 +182,7 @@ export const RolForm = ({ setOpen, setToastMessage }: Props) => {
           noValidate
           sx={{
             backgroundColor: "white",
-            p: 4, // 4 * 8
+            p: 2, // 4 * 8
             borderRadius: 2, // 4 * 4
           }}
         >
@@ -189,18 +190,14 @@ export const RolForm = ({ setOpen, setToastMessage }: Props) => {
           <Grid container spacing={2} sx={{ mb: 4 }}>
             {/* Titulo Formulario */}
             <Grid item xs={12}>
-              <Typography
-                variant="h4"
-                component="div"
-                sx={{ flexGrow: 1, mb: 2 }}
-              >
+              <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
                 Formulario de Roles
               </Typography>
-              <Divider />
+              <Divider sx={{ mb: 1 }} />
             </Grid>
 
             {/* Id */}
-            <Grid item xs={12} sm={4} md={3} lg={2} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={4} md={3} lg={2}>
               <TextField
                 {...register("rol_id")}
                 label="Id"
@@ -211,7 +208,7 @@ export const RolForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Nombre */}
-            <Grid item xs={12} md={6} sx={{ pr: "16px" }}>
+            <Grid item xs={12} md={6}>
               <TextField
                 {...register("nombre", {
                   required: true,
@@ -242,7 +239,7 @@ export const RolForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Aplicacion */}
-            <Grid item xs={12} sm={6} md={4} lg={3} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={6} md={4} lg={3}>
               <Controller
                 name="codigo_app"
                 rules={{ required: true }}
@@ -300,7 +297,7 @@ export const RolForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Habilitado */}
-            <Grid item xs={12} sm={4} md={3} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={4} md={3}>
               <Controller
                 name="habilitado"
                 control={control}
@@ -321,14 +318,24 @@ export const RolForm = ({ setOpen, setToastMessage }: Props) => {
 
           {/* Botones */}
           <Grid container spacing={2}>
-            <Grid item>
-              <Button size="medium" variant="contained" type="submit">
+            <Grid item xs={6} sm={3} md={2}>
+              <Button
+                size="medium"
+                variant="contained"
+                sx={{ width: { xs: "100%", sm: "initial" } }}
+                type="submit"
+              >
                 Guardar
               </Button>
             </Grid>
 
-            <Grid item>
-              <Button size="medium" variant="outlined" onClick={cancel}>
+            <Grid item xs={6} sm={3} md={2}>
+              <Button
+                size="medium"
+                variant="outlined"
+                sx={{ width: { xs: "100%", sm: "initial" } }}
+                onClick={cancel}
+              >
                 Cancelar
               </Button>
             </Grid>

@@ -256,8 +256,9 @@ export const ModuloForm = ({ setOpen, setToastMessage }: Props) => {
     <Box
       sx={{
         backgroundColor: "grey.100",
-        minHeight: { xs: "calc(100vh - 56x)", sm: "calc(100vh - 64px)" },
-        padding: "1rem",
+        minHeight: { xs: "calc(100vh - 56px)", sm: "calc(100vh - 64px)" },
+        pt: { xs: "64px", md: "72px" },
+        px: { xs: 1, md: 2 },
       }}
     >
       <Container sx={{ p: 0 }}>
@@ -268,7 +269,7 @@ export const ModuloForm = ({ setOpen, setToastMessage }: Props) => {
           noValidate
           sx={{
             backgroundColor: "white",
-            p: 4, // 4 * 8
+            p: 2, // 4 * 8
             borderRadius: 2, // 4 * 4
           }}
         >
@@ -277,13 +278,13 @@ export const ModuloForm = ({ setOpen, setToastMessage }: Props) => {
             {/* Titulo Formulario */}
             <Grid item xs={12}>
               <Typography
-                variant="h4"
+                variant="h5"
                 component="div"
                 sx={{ flexGrow: 1, mb: 2 }}
               >
                 Formulario de Modulos
               </Typography>
-              <Divider />
+              <Divider sx={{ mb: 1 }} />
             </Grid>
 
             {/* Id */}
@@ -611,14 +612,24 @@ export const ModuloForm = ({ setOpen, setToastMessage }: Props) => {
 
           {/* Botones */}
           <Grid container spacing={2}>
-            <Grid item>
-              <Button size="medium" variant="contained" type="submit">
+            <Grid item xs={6} sm={3} md={2}>
+              <Button
+                size="medium"
+                variant="contained"
+                sx={{ width: { xs: "100%", sm: "initial" } }}
+                type="submit"
+              >
                 Guardar
               </Button>
             </Grid>
 
-            <Grid item>
-              <Button size="medium" variant="outlined" onClick={cancel}>
+            <Grid item xs={6} sm={3} md={2}>
+              <Button
+                size="medium"
+                variant="outlined"
+                sx={{ width: { xs: "100%", sm: "initial" } }}
+                onClick={cancel}
+              >
                 Cancelar
               </Button>
             </Grid>

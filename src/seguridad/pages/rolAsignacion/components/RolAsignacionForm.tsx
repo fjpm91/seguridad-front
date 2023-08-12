@@ -212,8 +212,9 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
     <Box
       sx={{
         backgroundColor: "grey.100",
-        minHeight: { xs: "calc(100vh - 56x)", sm: "calc(100vh - 64px)" },
-        padding: "1rem",
+        minHeight: { xs: "calc(100vh - 56px)", sm: "calc(100vh - 64px)" },
+        pt: { xs: "64px", md: "72px" },
+        px: { xs: 1, md: 2 },
       }}
     >
       <Container sx={{ p: 0 }}>
@@ -224,7 +225,7 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
           noValidate
           sx={{
             backgroundColor: "white",
-            p: 4, // 4 * 8
+            p: 2, // 4 * 8
             borderRadius: 2, // 4 * 4
           }}
         >
@@ -232,18 +233,14 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
           <Grid container spacing={2} sx={{ mb: 4 }}>
             {/* Titulo Formulario */}
             <Grid item xs={12}>
-              <Typography
-                variant="h4"
-                component="div"
-                sx={{ flexGrow: 1, mb: 2 }}
-              >
+              <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
                 Formulario de Rol Asignación
               </Typography>
-              <Divider />
+              <Divider sx={{ mb: 1 }} />
             </Grid>
 
             {/* Id */}
-            <Grid item xs={12} sm={4} md={2} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={4} md={2}>
               <TextField
                 {...register("componente_id")}
                 label="Id"
@@ -254,7 +251,7 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Componentes */}
-            <Grid item xs={12} sm={6} md={5} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={6} md={5}>
               <Controller
                 name="componente_id"
                 rules={{ required: true }}
@@ -312,7 +309,7 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Aplicacion */}
-            <Grid item xs={12} sm={6} md={5} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={6} md={5}>
               <Controller
                 name="aplicacion_id"
                 rules={{ required: true }}
@@ -371,7 +368,7 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Rol */}
-            <Grid item xs={12} sm={6} md={5} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={6} md={5}>
               <Controller
                 name="rol_id"
                 rules={{ required: true }}
@@ -426,7 +423,7 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Visible */}
-            <Grid item xs={12} sm={3} md={2} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={3} md={2}>
               <Controller
                 name="visible"
                 control={control}
@@ -445,7 +442,7 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Editable */}
-            <Grid item xs={12} sm={3} md={2} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={3} md={2}>
               <Controller
                 name="editable"
                 control={control}
@@ -485,14 +482,24 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
 
           {/* Botones */}
           <Grid container spacing={2}>
-            <Grid item>
-              <Button size="medium" variant="contained" type="submit">
+            <Grid item xs={6} sm={3} md={2}>
+              <Button
+                size="medium"
+                variant="contained"
+                sx={{ width: { xs: "100%", sm: "initial" } }}
+                type="submit"
+              >
                 Guardar
               </Button>
             </Grid>
 
-            <Grid item>
-              <Button size="medium" variant="outlined" onClick={cancel}>
+            <Grid item xs={6} sm={3} md={2}>
+              <Button
+                size="medium"
+                variant="outlined"
+                sx={{ width: { xs: "100%", sm: "initial" } }}
+                onClick={cancel}
+              >
                 Cancelar
               </Button>
             </Grid>

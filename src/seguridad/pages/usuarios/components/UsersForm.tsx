@@ -206,8 +206,9 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
     <Box
       sx={{
         backgroundColor: "grey.100",
-        minHeight: { xs: "calc(100vh - 56x)", sm: "calc(100vh - 64px)" },
-        padding: "1rem",
+        minHeight: { xs: "calc(100vh - 56px)", sm: "calc(100vh - 64px)" },
+        pt: { xs: "64px", md: "72px" },
+        px: { xs: 1, md: 2 },
       }}
     >
       <Container sx={{ p: 0 }}>
@@ -218,12 +219,16 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
           noValidate
           sx={{
             backgroundColor: "white",
-            p: 4, // 4 * 8
+            p: 2, // 4 * 8
             borderRadius: 2, // 4 * 4
           }}
         >
           {/* Formulario */}
-          <Grid container spacing={2} sx={{ mb: 4 }}>
+          <Grid
+            container
+            spacing={2}
+            sx={{ mb: 4, justifyContent: { xs: "center", sm: "start" } }}
+          >
             {/* Titulo Formulario */}
             <Grid item xs={12}>
               <Typography
@@ -237,7 +242,7 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Id */}
-            <Grid item xs={12} sm={4} md={3} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={4} md={3}>
               <TextField
                 {...register("id")}
                 label="Id"
@@ -248,7 +253,7 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Personas */}
-            <Grid item xs={12} sm={6} md={6} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={6} md={6}>
               <Controller
                 name="persona_id"
                 rules={{ required: true }}
@@ -306,7 +311,7 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Username */}
-            <Grid item xs={12} sm={4} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={4}>
               <TextField
                 {...register("name", {
                   required: true,
@@ -343,7 +348,7 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Email */}
-            <Grid item xs={12} sm={4} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={4}>
               <TextField
                 {...register("email")}
                 label="Email"
@@ -353,7 +358,7 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Habilitado */}
-            <Grid item xs={12} sm={4} md={3} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={4} md={3}>
               <Controller
                 name="habilitado"
                 control={control}
@@ -372,7 +377,7 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Roles del Usuario*/}
-            <Grid item xs={12} sm={4} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={4}>
               <Typography variant="body2">Roles del usuario</Typography>
               <Divider />
               <List>
@@ -394,14 +399,24 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
 
           {/* Botones */}
           <Grid container spacing={2}>
-            <Grid item>
-              <Button size="medium" variant="contained" type="submit">
+            <Grid item xs={6} sm={3} md={2}>
+              <Button
+                size="medium"
+                variant="contained"
+                type="submit"
+                sx={{ width: { xs: "100%", sm: "initial" } }}
+              >
                 Guardar
               </Button>
             </Grid>
 
-            <Grid item>
-              <Button size="medium" variant="outlined" onClick={cancel}>
+            <Grid item xs={6} sm={3} md={2}>
+              <Button
+                size="medium"
+                variant="outlined"
+                sx={{ width: { xs: "100%", sm: "initial" } }}
+                onClick={cancel}
+              >
                 Cancelar
               </Button>
             </Grid>

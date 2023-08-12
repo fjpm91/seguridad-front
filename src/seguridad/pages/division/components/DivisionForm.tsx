@@ -30,7 +30,13 @@ export const DivisionForm = ({ setOpen, setToastMessage }: Props) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { authState } = useAuth();
-  const { register, setValue, handleSubmit } = useForm();
+  const {
+    register,
+    getValues,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const [unidadesNegocio, setUnidadesNegocio] = useState<UnidadNegocio[]>([]);
   const [divisionActual, setDivisionActual] = useState<Division | null>(null);
   const { user } = authState;
@@ -225,8 +231,9 @@ export const DivisionForm = ({ setOpen, setToastMessage }: Props) => {
     <Box
       sx={{
         backgroundColor: "grey.100",
-        minHeight: { xs: "calc(100vh - 56x)", sm: "calc(100vh - 64px)" },
-        padding: "1rem",
+        minHeight: { xs: "calc(100vh - 56px)", sm: "calc(100vh - 64px)" },
+        pt: { xs: "64px", md: "72px" },
+        px: { xs: 1, md: 2 },
       }}
     >
       <Container sx={{ p: 0 }}>
@@ -237,7 +244,7 @@ export const DivisionForm = ({ setOpen, setToastMessage }: Props) => {
           noValidate
           sx={{
             backgroundColor: "white",
-            p: 4, // 4 * 8
+            p: 2, // 4 * 8
             borderRadius: 2, // 4 * 4
           }}
         >
@@ -246,7 +253,7 @@ export const DivisionForm = ({ setOpen, setToastMessage }: Props) => {
             {/* Titulo Formulario */}
             <Grid item xs={12}>
               <Typography
-                variant="h4"
+                variant="h5"
                 component="div"
                 sx={{ flexGrow: 1, mb: 2 }}
               >
@@ -256,7 +263,7 @@ export const DivisionForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Id */}
-            <Grid item xs={12} sm={4} md={3} lg={2} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sm={4} md={3} lg={2}>
               <TextField
                 {...register("division_id")}
                 label="Id"
@@ -267,15 +274,35 @@ export const DivisionForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Nombre */}
-            <Grid item xs={12} md={6} sx={{ pr: "16px" }}>
+            <Grid item xs={12} md={6}>
               <TextField
-                {...register("nombre", { required: true })}
-                required
+                {...register("nombre", {
+                  required: true,
+                  minLength: { value: 4, message: "error message" },
+                })}
                 label="Nombre"
-                helperText="El Nombre de la Division es obligatorio"
-                defaultValue="Nombre Division"
+                defaultValue="---"
+                error={
+                  errors.nombre?.type === "required" ||
+                  errors.nombre?.type === "minLength"
+                    ? true
+                    : false
+                }
+                onFocus={() =>
+                  getValues("nombre") === "---" ? setValue("nombre", "") : null
+                }
+                onBlur={() =>
+                  getValues("nombre") === "" ? setValue("nombre", "---") : null
+                }
                 sx={{ width: "100%" }}
               />
+              {(errors.nombre?.type === "required" ||
+                errors.nombre?.type === "minLength" ||
+                getValues("nombre") === "0") && (
+                <Typography paddingTop={1} fontSize={12.5} color={"#F36892"}>
+                  El nombre de la División es obligatorio
+                </Typography>
+              )}
             </Grid>
 
             {/* Unidades de Negocio */}
@@ -303,14 +330,24 @@ export const DivisionForm = ({ setOpen, setToastMessage }: Props) => {
 
           {/* Botones */}
           <Grid container spacing={2}>
-            <Grid item>
-              <Button size="medium" variant="contained" type="submit">
+            <Grid item xs={6} sm={3} md={2}>
+              <Button
+                size="medium"
+                variant="contained"
+                sx={{ width: { xs: "100%", sm: "initial" } }}
+                type="submit"
+              >
                 Guardar
               </Button>
             </Grid>
 
-            <Grid item>
-              <Button size="medium" variant="outlined" onClick={cancel}>
+            <Grid item xs={6} sm={3} md={2}>
+              <Button
+                size="medium"
+                variant="outlined"
+                sx={{ width: { xs: "100%", sm: "initial" } }}
+                onClick={cancel}
+              >
                 Cancelar
               </Button>
             </Grid>

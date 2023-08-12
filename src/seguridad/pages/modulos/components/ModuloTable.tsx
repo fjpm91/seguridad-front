@@ -98,6 +98,9 @@ export const ModuloTable = ({
       localization={MRT_Localization_ES}
       enableRowActions={allowed}
       positionActionsColumn="last"
+      defaultColumn={{
+        size: 50,
+      }}
       renderRowActions={({ row }) => [
         <Box
           sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}
