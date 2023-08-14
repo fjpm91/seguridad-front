@@ -1,4 +1,4 @@
-import { Box, Button, Container, Divider, Typography } from "@mui/material";
+import { Button, Container } from "@mui/material";
 import { useAuth } from "../../../auth/context/useAuth";
 import { useEffect, useState } from "react";
 import { BackendResponse, Empresa } from "../../../interfaces/interfaces";
@@ -10,6 +10,8 @@ import {
   TipoAcceso,
 } from "../../../models/enums";
 import { EmpresaTable } from ".";
+import useAutorizado from "../../../hooks/useAutorizado";
+import { PageBox, PageTitle } from "../../../components";
 
 interface Props {
   setOpen: (open: boolean) => void;
@@ -21,6 +23,14 @@ export const EmpresasPage = ({ setOpen, setToastMessage }: Props) => {
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const navigate = useNavigate();
   const { accesos, user } = authState;
+  const { allowed: allowInsert } = useAutorizado(
+    ModulosSistema.PERSONAS + TipoAcceso.INSERT,
+    accesos
+  );
+  const { allowed: allowUpdate } = useAutorizado(
+    ModulosSistema.PERSONAS + TipoAcceso.UPDATE,
+    accesos
+  );
 
   useEffect(() => {
     getEmpresas();
@@ -89,24 +99,11 @@ export const EmpresasPage = ({ setOpen, setToastMessage }: Props) => {
   };
 
   return (
-    <Box
-      sx={{
-        backgroundColor: "grey.100",
-        minHeight: { xs: "calc(100vh - 56px)", sm: "calc(100vh - 64px)" },
-        pt: { xs: "64px", md: "72px" },
-        px: { md: 2 },
-      }}
-    >
+    <PageBox>
       <Container>
-        <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
-          Empresas
-        </Typography>
-        <Divider />
+        <PageTitle title="Empresas" />
 
-        {accesos?.some(
-          (acceso) =>
-            acceso.nombre === ModulosSistema.EMPRESA + TipoAcceso.INSERT
-        ) ? (
+        {allowInsert && (
           <Button
             variant="contained"
             onClick={() => handleOpen(0)}
@@ -114,17 +111,17 @@ export const EmpresasPage = ({ setOpen, setToastMessage }: Props) => {
           >
             Nueva Empresa
           </Button>
-        ) : null}
+        )}
 
-        {empresas ? (
+        {empresas && (
           <EmpresaTable
-            accesos={accesos}
+            allowUpdate={allowUpdate}
             empresas={empresas}
             handleHabilitar={handleHabilitar}
             handleOpen={handleOpen}
           />
-        ) : null}
+        )}
       </Container>
-    </Box>
+    </PageBox>
   );
 };

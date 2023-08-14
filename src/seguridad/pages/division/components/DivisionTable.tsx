@@ -3,22 +3,19 @@ import { Edit } from "@mui/icons-material";
 import { Box, IconButton } from "@mui/material";
 import { MRT_ColumnDef, MaterialReactTable } from "material-react-table";
 import { MRT_Localization_ES } from "material-react-table/locales/es";
-import useAutorizado from "../../../../hooks/useAutorizado";
-import { Division, RolAcceso } from "../../../../interfaces/interfaces";
-import { ModulosSistema, TipoAcceso } from "../../../../models/enums";
+import { Division } from "../../../../interfaces/interfaces";
 
 interface Props {
-  accesos: RolAcceso[] | null;
+  allowUpdate: boolean;
   divisiones: Division[];
   handleOpen: (aplicacion_id: number) => void;
 }
 
-export const DivisionTable = ({ accesos, divisiones, handleOpen }: Props) => {
-  const { allowed } = useAutorizado(
-    ModulosSistema.DIVISIONES + TipoAcceso.UPDATE,
-    accesos
-  );
-
+export const DivisionTable = ({
+  allowUpdate,
+  divisiones,
+  handleOpen,
+}: Props) => {
   const columns = useMemo<MRT_ColumnDef<Division>[]>(
     () => [
       {
@@ -38,7 +35,7 @@ export const DivisionTable = ({ accesos, divisiones, handleOpen }: Props) => {
       columns={columns}
       data={divisiones}
       localization={MRT_Localization_ES}
-      enableRowActions={allowed}
+      enableRowActions={allowUpdate}
       positionActionsColumn="last"
       defaultColumn={{
         size: 50,

@@ -1,8 +1,6 @@
 import { useMemo } from "react";
-import useAutorizado from "../../../../hooks/useAutorizado";
-import { ModulosSistema, TipoAcceso } from "../../../../models/enums";
 import { MRT_ColumnDef, MaterialReactTable } from "material-react-table";
-import { RolAcceso, RolAsignacion } from "../../../../interfaces/interfaces";
+import { RolAsignacion } from "../../../../interfaces/interfaces";
 import {
   Box,
   Checkbox,
@@ -15,7 +13,7 @@ import { IconoHabilitado } from "../../../../components";
 import { Delete, Edit } from "@mui/icons-material";
 
 interface Props {
-  accesos: RolAcceso[] | null;
+  allowUpdate: boolean;
   rolAsignaciones: RolAsignacion[];
   handleOpen: (rol_asignacion_id: number) => void;
   handleHabilitar: (rol_asignacion_id: number) => void;
@@ -23,17 +21,12 @@ interface Props {
 }
 
 export const RolAsignacionTable = ({
-  accesos,
+  allowUpdate,
   rolAsignaciones,
   handleHabilitar,
   handleOpen,
   handleEliminar,
 }: Props) => {
-  const { allowed } = useAutorizado(
-    ModulosSistema.ROL_ASIGNACION + TipoAcceso.UPDATE,
-    accesos
-  );
-
   const columns = useMemo<MRT_ColumnDef<RolAsignacion>[]>(
     () => [
       {
@@ -110,7 +103,7 @@ export const RolAsignacionTable = ({
       columns={columns}
       data={rolAsignaciones}
       localization={MRT_Localization_ES}
-      enableRowActions={allowed}
+      enableRowActions={allowUpdate}
       positionActionsColumn="last"
       defaultColumn={{
         size: 50,

@@ -1,7 +1,5 @@
 import { useMemo } from "react";
-import { Componente, RolAcceso } from "../../../../interfaces/interfaces";
-import useAutorizado from "../../../../hooks/useAutorizado";
-import { ModulosSistema, TipoAcceso } from "../../../../models/enums";
+import { Componente } from "../../../../interfaces/interfaces";
 import { MRT_ColumnDef, MaterialReactTable } from "material-react-table";
 import {
   Box,
@@ -15,7 +13,7 @@ import { IconoHabilitado } from "../../../../components";
 import { Edit } from "@mui/icons-material";
 
 interface Props {
-  accesos: RolAcceso[] | null;
+  allowUpdate: boolean;
   componentes: Componente[];
   handleOpen: (modulo_id: number) => void;
   handleHabilitar: (modulo_id: number) => void;
@@ -23,16 +21,11 @@ interface Props {
 }
 
 export const ComponentsTable = ({
-  accesos,
+  allowUpdate,
   componentes,
   handleHabilitar,
   handleOpen,
 }: Props) => {
-  const { allowed } = useAutorizado(
-    ModulosSistema.EMPRESA + TipoAcceso.UPDATE,
-    accesos
-  );
-
   const columns = useMemo<MRT_ColumnDef<Componente>[]>(
     () => [
       {
@@ -71,7 +64,7 @@ export const ComponentsTable = ({
       columns={columns}
       data={componentes}
       localization={MRT_Localization_ES}
-      enableRowActions={allowed}
+      enableRowActions={allowUpdate}
       positionActionsColumn="last"
       defaultColumn={{
         size: 50,

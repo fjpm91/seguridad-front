@@ -4,7 +4,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import apiClient from "../../../../services/api-client";
 import {
   Box,
-  Container,
   Grid,
   Typography,
   TextField,
@@ -12,7 +11,6 @@ import {
   FormControlLabel,
   Checkbox,
   Button,
-  Divider,
 } from "@mui/material";
 import { useAuth } from "../../../../auth/context/useAuth";
 import {
@@ -22,7 +20,11 @@ import {
 } from "../../../../interfaces/interfaces";
 import { ApiEndpoints, Messages } from "../../../../models/enums";
 import { IconNames } from "../../../../models/iconNames";
-import { DynamicMenuIcon } from "../../../../components";
+import {
+  DynamicMenuIcon,
+  FormBoxContainer,
+  PageTitle,
+} from "../../../../components";
 
 const regMultipleSpaces = /  +/g;
 const regYspaces = /\sy\s/gi;
@@ -253,389 +255,370 @@ export const ModuloForm = ({ setOpen, setToastMessage }: Props) => {
   };
 
   return (
-    <Box
-      sx={{
-        backgroundColor: "grey.100",
-        minHeight: { xs: "calc(100vh - 56px)", sm: "calc(100vh - 64px)" },
-        pt: { xs: "64px", md: "72px" },
-        px: { xs: 1, md: 2 },
-      }}
-    >
-      <Container sx={{ p: 0 }}>
-        <Box
-          component="form"
-          autoComplete="off"
-          onSubmit={handleSubmit(submitForm)}
-          noValidate
-          sx={{
-            backgroundColor: "white",
-            p: 2, // 4 * 8
-            borderRadius: 2, // 4 * 4
-          }}
-        >
-          {/* Formulario */}
-          <Grid container spacing={2} sx={{ mb: 4 }}>
-            {/* Titulo Formulario */}
-            <Grid item xs={12}>
+    <FormBoxContainer>
+      <Box
+        component="form"
+        autoComplete="off"
+        onSubmit={handleSubmit(submitForm)}
+        noValidate
+        sx={{
+          backgroundColor: "white",
+          p: 2, // 4 * 8
+          borderRadius: 2, // 4 * 4
+        }}
+      >
+        {/* Formulario */}
+        <Grid container spacing={2} sx={{ mb: 4 }}>
+          {/* Titulo Formulario */}
+          <Grid item xs={12}>
+            <PageTitle title="Formulario de Modulos" variant="h5" />
+          </Grid>
+
+          {/* Id */}
+          <Grid item xs={12} sm={4} md={3} lg={2} sx={{ pr: "16px" }}>
+            <TextField
+              {...register("modulo_id")}
+              label="Id"
+              defaultValue="0"
+              disabled
+              sx={{ width: "100%", pr: "16px" }}
+            />
+          </Grid>
+
+          {/* Titulo */}
+          <Grid item xs={12} md={6} sx={{ pr: "16px" }}>
+            <TextField
+              {...register("titulo", {
+                required: true,
+                minLength: { value: 4, message: "error message" },
+              })}
+              required
+              label="Titulo"
+              defaultValue="---"
+              error={
+                errors.titulo?.type === "required" ||
+                errors.titulo?.type === "minLength"
+                  ? true
+                  : false
+              }
+              onFocus={() =>
+                getValues("titulo") === "---" ? setValue("titulo", "") : null
+              }
+              onBlur={() =>
+                getValues("titulo") === "" ? setValue("titulo", "---") : null
+              }
+              sx={{ width: "100%" }}
+            />
+            {(errors.titulo?.type === "required" ||
+              errors.titulo?.type === "minLength") && (
               <Typography
-                variant="h5"
-                component="div"
-                sx={{ flexGrow: 1, mb: 2 }}
+                paddingLeft={2}
+                paddingTop={1}
+                fontSize={12.5}
+                color={"#F36892"}
               >
-                Formulario de Modulos
+                El titulo del modulo es obligatorio
               </Typography>
-              <Divider sx={{ mb: 1 }} />
-            </Grid>
+            )}
+          </Grid>
 
-            {/* Id */}
-            <Grid item xs={12} sm={4} md={3} lg={2} sx={{ pr: "16px" }}>
-              <TextField
-                {...register("modulo_id")}
-                label="Id"
-                defaultValue="0"
-                disabled
-                sx={{ width: "100%", pr: "16px" }}
-              />
-            </Grid>
+          {/* Nombre */}
+          <Grid item xs={12} md={6} sx={{ pr: "16px" }}>
+            <TextField
+              {...register("nombre", {
+                required: true,
+                minLength: { value: 4, message: "error message" },
+              })}
+              required
+              label="Nombre"
+              defaultValue="---"
+              error={
+                errors.nombre?.type === "required" ||
+                errors.nombre?.type === "minLength"
+                  ? true
+                  : false
+              }
+              onFocus={() =>
+                getValues("nombre") === "---" ? setValue("nombre", "") : null
+              }
+              onBlur={() =>
+                getValues("nombre") === "" ? setValue("nombre", "---") : null
+              }
+              sx={{ width: "100%" }}
+            />
+            {(errors.nombre?.type === "required" ||
+              errors.nombre?.type === "minLength") && (
+              <Typography
+                paddingLeft={2}
+                paddingTop={1}
+                fontSize={12.5}
+                color={"#F36892"}
+              >
+                El nombre del modulo es obligatorio
+              </Typography>
+            )}
+          </Grid>
 
-            {/* Titulo */}
-            <Grid item xs={12} md={6} sx={{ pr: "16px" }}>
-              <TextField
-                {...register("titulo", {
-                  required: true,
-                  minLength: { value: 4, message: "error message" },
-                })}
-                required
-                label="Titulo"
-                defaultValue="---"
-                error={
-                  errors.titulo?.type === "required" ||
-                  errors.titulo?.type === "minLength"
-                    ? true
-                    : false
-                }
-                onFocus={() =>
-                  getValues("titulo") === "---" ? setValue("titulo", "") : null
-                }
-                onBlur={() =>
-                  getValues("titulo") === "" ? setValue("titulo", "---") : null
-                }
-                sx={{ width: "100%" }}
-              />
-              {(errors.titulo?.type === "required" ||
-                errors.titulo?.type === "minLength") && (
-                <Typography
-                  paddingLeft={2}
-                  paddingTop={1}
-                  fontSize={12.5}
-                  color={"#F36892"}
-                >
-                  El titulo del modulo es obligatorio
-                </Typography>
-              )}
-            </Grid>
+          {/* URL */}
+          <Grid item xs={12} sm={6} md={4} lg={3} sx={{ pr: "16px" }}>
+            <TextField
+              {...register("url", {
+                required: true,
+                minLength: { value: 4, message: "error message" },
+              })}
+              required
+              label="URL"
+              defaultValue="---"
+              error={
+                errors.url?.type === "required" ||
+                errors.url?.type === "minLength"
+                  ? true
+                  : false
+              }
+              onFocus={() =>
+                getValues("url") === "---" ? setValue("url", "") : null
+              }
+              onBlur={() =>
+                getValues("url") === "" ? setValue("url", "---") : null
+              }
+              sx={{ width: "100%" }}
+            />
+            {(errors.url?.type === "required" ||
+              errors.url?.type === "minLength") && (
+              <Typography
+                paddingLeft={2}
+                paddingTop={1}
+                fontSize={12.5}
+                color={"#F36892"}
+              >
+                La url del modulo es obligatorio
+              </Typography>
+            )}
+          </Grid>
 
-            {/* Nombre */}
-            <Grid item xs={12} md={6} sx={{ pr: "16px" }}>
-              <TextField
-                {...register("nombre", {
-                  required: true,
-                  minLength: { value: 4, message: "error message" },
-                })}
-                required
-                label="Nombre"
-                defaultValue="---"
-                error={
-                  errors.nombre?.type === "required" ||
-                  errors.nombre?.type === "minLength"
-                    ? true
-                    : false
-                }
-                onFocus={() =>
-                  getValues("nombre") === "---" ? setValue("nombre", "") : null
-                }
-                onBlur={() =>
-                  getValues("nombre") === "" ? setValue("nombre", "---") : null
-                }
-                sx={{ width: "100%" }}
-              />
-              {(errors.nombre?.type === "required" ||
-                errors.nombre?.type === "minLength") && (
-                <Typography
-                  paddingLeft={2}
-                  paddingTop={1}
-                  fontSize={12.5}
-                  color={"#F36892"}
-                >
-                  El nombre del modulo es obligatorio
-                </Typography>
-              )}
-            </Grid>
-
-            {/* URL */}
-            <Grid item xs={12} sm={6} md={4} lg={3} sx={{ pr: "16px" }}>
-              <TextField
-                {...register("url", {
-                  required: true,
-                  minLength: { value: 4, message: "error message" },
-                })}
-                required
-                label="URL"
-                defaultValue="---"
-                error={
-                  errors.url?.type === "required" ||
-                  errors.url?.type === "minLength"
-                    ? true
-                    : false
-                }
-                onFocus={() =>
-                  getValues("url") === "---" ? setValue("url", "") : null
-                }
-                onBlur={() =>
-                  getValues("url") === "" ? setValue("url", "---") : null
-                }
-                sx={{ width: "100%" }}
-              />
-              {(errors.url?.type === "required" ||
-                errors.url?.type === "minLength") && (
-                <Typography
-                  paddingLeft={2}
-                  paddingTop={1}
-                  fontSize={12.5}
-                  color={"#F36892"}
-                >
-                  La url del modulo es obligatorio
-                </Typography>
-              )}
-            </Grid>
-
-            {/* Aplicacion */}
-            <Grid item xs={12} sm={6} md={4} lg={3} sx={{ pr: "16px" }}>
-              <Controller
-                name="aplicacion_id"
-                rules={{ required: true }}
-                control={control}
-                render={({ field }) => {
-                  const { onChange, value } = field;
-                  return (
-                    <Autocomplete
-                      value={
-                        value
-                          ? aplicaciones.find(
-                              (option) => value === option.aplicacion_id
-                            ) ?? null
-                          : null
-                      }
-                      getOptionLabel={(option) => option.codigo_nombre}
-                      renderOption={(props, option) => (
-                        <Box component="li" {...props}>
-                          {option.codigo_nombre}
-                        </Box>
-                      )}
-                      onChange={(_event: any, newValue) => {
-                        onChange(newValue ? newValue.aplicacion_id : null);
-                        getModulos(newValue?.codigo);
-                      }}
-                      options={aplicaciones}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Aplicacion *"
-                          error={
-                            errors.aplicacion_id?.type === "required"
-                              ? true
-                              : false
-                          }
-                          inputProps={{
-                            ...params.inputProps,
-                          }}
-                        />
-                      )}
-                    />
-                  );
-                }}
-              />
-              {(errors.aplicacion_id?.type === "required" ||
-                errors.aplicacion_id?.type === "minLength") && (
-                <Typography
-                  paddingLeft={2}
-                  paddingTop={1}
-                  fontSize={12.5}
-                  color={"#F36892"}
-                >
-                  La aplicacion es obligatoria
-                </Typography>
-              )}
-            </Grid>
-
-            {/* Icono */}
-            <Grid item xs={12} sm={6} md={4} lg={3} sx={{ pr: "16px" }}>
-              <Controller
-                name="icono"
-                rules={{ required: true }}
-                control={control}
-                render={({ field }) => {
-                  const { onChange, value } = field;
-                  return (
-                    <Autocomplete
-                      value={
-                        value
-                          ? iconos.find((option) => value === option.name) ??
-                            null
-                          : null
-                      }
-                      getOptionLabel={(option) => option.name}
-                      renderOption={(props, option) => (
-                        <Box component="li" {...props}>
-                          <DynamicMenuIcon icon={option.name} /> &nbsp;{" "}
-                          {option.name}
-                        </Box>
-                      )}
-                      onChange={(_event: any, newValue) =>
-                        onChange(newValue ? newValue.name : null)
-                      }
-                      options={iconos}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Icono"
-                          inputProps={{
-                            ...params.inputProps,
-                          }}
-                          error={
-                            errors.icono?.type === "required" ? true : false
-                          }
-                        />
-                      )}
-                    />
-                  );
-                }}
-              />
-              {(errors.icono?.type === "required" ||
-                errors.icono?.type === "minLength") && (
-                <Typography
-                  paddingLeft={2}
-                  paddingTop={1}
-                  fontSize={12.5}
-                  color={"#F36892"}
-                >
-                  La aplicacion es obligatoria
-                </Typography>
-              )}
-            </Grid>
-
-            {/* Modulo Padre */}
-            <Grid item xs={12} sm={6} md={4} lg={3} sx={{ pr: "16px" }}>
-              <Controller
-                name="modulo_padre"
-                control={control}
-                render={({ field }) => {
-                  const { onChange, value } = field;
-                  return (
-                    <Autocomplete
-                      value={
-                        value
-                          ? modulos.find(
-                              (option) => value === option.modulo_id
-                            ) ?? null
-                          : null
-                      }
-                      getOptionLabel={(option) => option.aplicacion_nombre}
-                      renderOption={(props, option) => (
-                        <Box component="li" {...props}>
-                          {option.aplicacion_nombre}
-                        </Box>
-                      )}
-                      onChange={(_event: any, newValue) =>
-                        onChange(newValue ? newValue.modulo_id : null)
-                      }
-                      options={modulos}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Modulo Padre"
-                          inputProps={{
-                            ...params.inputProps,
-                          }}
-                        />
-                      )}
-                    />
-                  );
-                }}
-              />
-            </Grid>
-
-            {/* Habilitado */}
-            <Grid item xs={12} sm={4} md={3} sx={{ pr: "16px" }}>
-              <Controller
-                name="habilitado"
-                control={control}
-                render={({ field }) => (
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        onChange={(e) => {
-                          console.log(
-                            "🚀 ~ file: ModuloForm.tsx:485 ~ ModuloForm ~ e:",
-                            e
-                          );
-                          field.onChange(e.target.checked);
+          {/* Aplicacion */}
+          <Grid item xs={12} sm={6} md={4} lg={3} sx={{ pr: "16px" }}>
+            <Controller
+              name="aplicacion_id"
+              rules={{ required: true }}
+              control={control}
+              render={({ field }) => {
+                const { onChange, value } = field;
+                return (
+                  <Autocomplete
+                    value={
+                      value
+                        ? aplicaciones.find(
+                            (option) => value === option.aplicacion_id
+                          ) ?? null
+                        : null
+                    }
+                    getOptionLabel={(option) => option.codigo_nombre}
+                    renderOption={(props, option) => (
+                      <Box component="li" {...props}>
+                        {option.codigo_nombre}
+                      </Box>
+                    )}
+                    onChange={(_event: any, newValue) => {
+                      onChange(newValue ? newValue.aplicacion_id : null);
+                      getModulos(newValue?.codigo);
+                    }}
+                    options={aplicaciones}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Aplicacion *"
+                        error={
+                          errors.aplicacion_id?.type === "required"
+                            ? true
+                            : false
+                        }
+                        inputProps={{
+                          ...params.inputProps,
                         }}
-                        checked={field.value || false}
                       />
-                    }
-                    label="habilitado"
+                    )}
                   />
-                )}
-              />
-            </Grid>
-
-            {/* Menu */}
-            <Grid item xs={12} sm={4} md={3} sx={{ pr: "16px" }}>
-              <Controller
-                name="menu"
-                control={control}
-                render={({ field }) => (
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        onChange={(e) => field.onChange(e.target.checked)}
-                        checked={field.value || false}
-                      />
-                    }
-                    label="menu"
-                  />
-                )}
-              />
-            </Grid>
+                );
+              }}
+            />
+            {(errors.aplicacion_id?.type === "required" ||
+              errors.aplicacion_id?.type === "minLength") && (
+              <Typography
+                paddingLeft={2}
+                paddingTop={1}
+                fontSize={12.5}
+                color={"#F36892"}
+              >
+                La aplicacion es obligatoria
+              </Typography>
+            )}
           </Grid>
 
-          {/* Botones */}
-          <Grid container spacing={2}>
-            <Grid item xs={6} sm={3} md={2}>
-              <Button
-                size="medium"
-                variant="contained"
-                sx={{ width: { xs: "100%", sm: "initial" } }}
-                type="submit"
+          {/* Icono */}
+          <Grid item xs={12} sm={6} md={4} lg={3} sx={{ pr: "16px" }}>
+            <Controller
+              name="icono"
+              rules={{ required: true }}
+              control={control}
+              render={({ field }) => {
+                const { onChange, value } = field;
+                return (
+                  <Autocomplete
+                    value={
+                      value
+                        ? iconos.find((option) => value === option.name) ?? null
+                        : null
+                    }
+                    getOptionLabel={(option) => option.name}
+                    renderOption={(props, option) => (
+                      <Box component="li" {...props}>
+                        <DynamicMenuIcon icon={option.name} /> &nbsp;{" "}
+                        {option.name}
+                      </Box>
+                    )}
+                    onChange={(_event: any, newValue) =>
+                      onChange(newValue ? newValue.name : null)
+                    }
+                    options={iconos}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Icono"
+                        inputProps={{
+                          ...params.inputProps,
+                        }}
+                        error={errors.icono?.type === "required" ? true : false}
+                      />
+                    )}
+                  />
+                );
+              }}
+            />
+            {(errors.icono?.type === "required" ||
+              errors.icono?.type === "minLength") && (
+              <Typography
+                paddingLeft={2}
+                paddingTop={1}
+                fontSize={12.5}
+                color={"#F36892"}
               >
-                Guardar
-              </Button>
-            </Grid>
-
-            <Grid item xs={6} sm={3} md={2}>
-              <Button
-                size="medium"
-                variant="outlined"
-                sx={{ width: { xs: "100%", sm: "initial" } }}
-                onClick={cancel}
-              >
-                Cancelar
-              </Button>
-            </Grid>
+                La aplicacion es obligatoria
+              </Typography>
+            )}
           </Grid>
-        </Box>
-      </Container>
-    </Box>
+
+          {/* Modulo Padre */}
+          <Grid item xs={12} sm={6} md={4} lg={3} sx={{ pr: "16px" }}>
+            <Controller
+              name="modulo_padre"
+              control={control}
+              render={({ field }) => {
+                const { onChange, value } = field;
+                return (
+                  <Autocomplete
+                    value={
+                      value
+                        ? modulos.find(
+                            (option) => value === option.modulo_id
+                          ) ?? null
+                        : null
+                    }
+                    getOptionLabel={(option) => option.aplicacion_nombre}
+                    renderOption={(props, option) => (
+                      <Box component="li" {...props}>
+                        {option.aplicacion_nombre}
+                      </Box>
+                    )}
+                    onChange={(_event: any, newValue) =>
+                      onChange(newValue ? newValue.modulo_id : null)
+                    }
+                    options={modulos}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Modulo Padre"
+                        inputProps={{
+                          ...params.inputProps,
+                        }}
+                      />
+                    )}
+                  />
+                );
+              }}
+            />
+          </Grid>
+
+          {/* Habilitado */}
+          <Grid item xs={12} sm={4} md={3} sx={{ pr: "16px" }}>
+            <Controller
+              name="habilitado"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      onChange={(e) => {
+                        console.log(
+                          "🚀 ~ file: ModuloForm.tsx:485 ~ ModuloForm ~ e:",
+                          e
+                        );
+                        field.onChange(e.target.checked);
+                      }}
+                      checked={field.value || false}
+                    />
+                  }
+                  label="habilitado"
+                />
+              )}
+            />
+          </Grid>
+
+          {/* Menu */}
+          <Grid item xs={12} sm={4} md={3} sx={{ pr: "16px" }}>
+            <Controller
+              name="menu"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      onChange={(e) => field.onChange(e.target.checked)}
+                      checked={field.value || false}
+                    />
+                  }
+                  label="menu"
+                />
+              )}
+            />
+          </Grid>
+        </Grid>
+
+        {/* Botones */}
+        <Grid container spacing={2}>
+          <Grid item xs={6} sm={3} md={2}>
+            <Button
+              size="medium"
+              variant="contained"
+              sx={{ width: { xs: "100%", sm: "initial" } }}
+              type="submit"
+            >
+              Guardar
+            </Button>
+          </Grid>
+
+          <Grid item xs={6} sm={3} md={2}>
+            <Button
+              size="medium"
+              variant="outlined"
+              sx={{ width: { xs: "100%", sm: "initial" } }}
+              onClick={cancel}
+            >
+              Cancelar
+            </Button>
+          </Grid>
+        </Grid>
+      </Box>
+    </FormBoxContainer>
   );
 };

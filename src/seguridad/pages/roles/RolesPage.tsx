@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Button, Container, Divider, Typography } from "@mui/material";
+import { Button, Container } from "@mui/material";
 import { useAuth } from "../../../auth/context/useAuth";
 import { BackendResponse, Rol } from "../../../interfaces/interfaces";
 import apiClient from "../../../services/api-client";
@@ -10,6 +10,8 @@ import {
   TipoAcceso,
 } from "../../../models/enums";
 import { RolTable } from "./components";
+import useAutorizado from "../../../hooks/useAutorizado";
+import { PageBox, PageTitle } from "../../../components";
 
 interface Props {
   setOpen: (open: boolean) => void;
@@ -21,6 +23,14 @@ export const RolesPage = ({ setOpen, setToastMessage }: Props) => {
   const [roles, setRoles] = useState<Rol[]>([]);
   const { accesos, user } = authState;
   const navigate = useNavigate();
+  const { allowed: allowInsert } = useAutorizado(
+    ModulosSistema.PERSONAS + TipoAcceso.INSERT,
+    accesos
+  );
+  const { allowed: allowUpdate } = useAutorizado(
+    ModulosSistema.PERSONAS + TipoAcceso.UPDATE,
+    accesos
+  );
 
   useEffect(() => {
     getRoles();
@@ -95,23 +105,11 @@ export const RolesPage = ({ setOpen, setToastMessage }: Props) => {
   };
 
   return (
-    <Box
-      sx={{
-        backgroundColor: "grey.100",
-        minHeight: { xs: "calc(100vh - 56px)", sm: "calc(100vh - 64px)" },
-        pt: { xs: "64px", md: "72px" },
-        px: { md: 2 },
-      }}
-    >
+    <PageBox>
       <Container>
-        <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
-          Roles
-        </Typography>
-        <Divider />
+        <PageTitle title="Roles" />
 
-        {accesos?.some(
-          (acceso) => acceso.nombre === ModulosSistema.ROLES + TipoAcceso.INSERT
-        ) ? (
+        {allowInsert && (
           <Button
             variant="contained"
             onClick={() => handleOpen(0)}
@@ -119,18 +117,18 @@ export const RolesPage = ({ setOpen, setToastMessage }: Props) => {
           >
             Nuevo Rol
           </Button>
-        ) : null}
+        )}
 
-        {roles ? (
+        {roles && (
           <RolTable
-            accesos={accesos}
+            allowUpdate={allowUpdate}
             roles={roles}
             handleHabilitar={handleHabilitar}
             handleOpen={handleOpen}
             handleNavegarPermisos={handleNavegarPermisos}
           />
-        ) : null}
+        )}
       </Container>
-    </Box>
+    </PageBox>
   );
 };

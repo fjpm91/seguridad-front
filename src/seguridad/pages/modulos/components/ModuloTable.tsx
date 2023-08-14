@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Modulo, RolAcceso } from "../../../../interfaces/interfaces";
+import { Modulo } from "../../../../interfaces/interfaces";
 import { MRT_ColumnDef, MaterialReactTable } from "material-react-table";
 import {
   Box,
@@ -11,27 +11,20 @@ import {
 import { Edit } from "@mui/icons-material";
 import { MRT_Localization_ES } from "material-react-table/locales/es";
 import { IconoHabilitado } from "../../../../components";
-import useAutorizado from "../../../../hooks/useAutorizado";
-import { ModulosSistema, TipoAcceso } from "../../../../models/enums";
 
 interface Props {
-  accesos: RolAcceso[] | null;
+  allowUpdate: boolean;
   modulos: Modulo[];
   handleOpen: (modulo_id: number) => void;
   handleHabilitar: (modulo_id: number) => void;
 }
 
 export const ModuloTable = ({
-  accesos,
+  allowUpdate,
   modulos,
   handleHabilitar,
   handleOpen,
 }: Props) => {
-  const { allowed } = useAutorizado(
-    ModulosSistema.MODULOS + TipoAcceso.UPDATE,
-    accesos
-  );
-
   const columns = useMemo<MRT_ColumnDef<Modulo>[]>(
     () => [
       {
@@ -96,7 +89,7 @@ export const ModuloTable = ({
       columns={columns}
       data={modulos}
       localization={MRT_Localization_ES}
-      enableRowActions={allowed}
+      enableRowActions={allowUpdate}
       positionActionsColumn="last"
       defaultColumn={{
         size: 50,

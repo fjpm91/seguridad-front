@@ -1,4 +1,4 @@
-import { Box, Container, Typography, Divider, Button } from "@mui/material";
+import { Container, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../auth/context/useAuth";
@@ -11,6 +11,8 @@ import {
 } from "../../../models/enums";
 import apiClient from "../../../services/api-client";
 import { DivisionTable } from ".";
+import { PageBox, PageTitle } from "../../../components";
+import useAutorizado from "../../../hooks/useAutorizado";
 
 interface Props {
   setOpen: (open: boolean) => void;
@@ -22,6 +24,14 @@ export const DivisionPage = ({ setOpen, setToastMessage }: Props) => {
   const [divisiones, setDivisiones] = useState<Division[]>([]);
   const { accesos } = authState;
   const navigate = useNavigate();
+  const { allowed: allowInsert } = useAutorizado(
+    ModulosSistema.PERSONAS + TipoAcceso.INSERT,
+    accesos
+  );
+  const { allowed: allowUpdate } = useAutorizado(
+    ModulosSistema.PERSONAS + TipoAcceso.UPDATE,
+    accesos
+  );
 
   useEffect(() => {
     getDivisiones();
@@ -54,24 +64,11 @@ export const DivisionPage = ({ setOpen, setToastMessage }: Props) => {
   };
 
   return (
-    <Box
-      sx={{
-        backgroundColor: "grey.100",
-        minHeight: { xs: "calc(100vh - 56px)", sm: "calc(100vh - 64px)" },
-        pt: { xs: "64px", md: "72px" },
-        px: { md: 2 },
-      }}
-    >
+    <PageBox>
       <Container>
-        <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
-          Divisiones
-        </Typography>
-        <Divider />
+        <PageTitle title="Divisiones" />
 
-        {accesos?.some(
-          (acceso) =>
-            acceso.nombre === ModulosSistema.DIVISIONES + TipoAcceso.INSERT
-        ) ? (
+        {allowInsert && (
           <Button
             variant="contained"
             onClick={() => handleOpen(0)}
@@ -79,17 +76,16 @@ export const DivisionPage = ({ setOpen, setToastMessage }: Props) => {
           >
             Nueva Division
           </Button>
-        ) : null}
+        )}
 
-        {divisiones ? (
+        {divisiones && (
           <DivisionTable
-            accesos={accesos}
+            allowUpdate={allowUpdate}
             divisiones={divisiones}
-            // handleHabilitar={handleHabilitar}
             handleOpen={handleOpen}
           />
-        ) : null}
+        )}
       </Container>
-    </Box>
+    </PageBox>
   );
 };

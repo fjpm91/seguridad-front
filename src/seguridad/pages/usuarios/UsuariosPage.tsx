@@ -1,4 +1,4 @@
-import { Box, Button, Container, Divider, Typography } from "@mui/material";
+import { Box, Button, Container } from "@mui/material";
 import { useAuth } from "../../../auth/context/useAuth";
 import { useEffect, useState } from "react";
 import { BackendResponse, User } from "../../../interfaces/interfaces";
@@ -10,6 +10,8 @@ import {
   TipoAcceso,
 } from "../../../models/enums";
 import { UsersTable } from ".";
+import { PageBox, PageTitle } from "../../../components";
+import useAutorizado from "../../../hooks/useAutorizado";
 
 interface Props {
   setOpen: (open: boolean) => void;
@@ -21,6 +23,14 @@ export const UsuariosPage = ({ setOpen, setToastMessage }: Props) => {
   const [users, setUsers] = useState<User[]>([]);
   const navigate = useNavigate();
   const { accesos, user } = authState;
+  const { allowed: allowInsert } = useAutorizado(
+    ModulosSistema.PERSONAS + TipoAcceso.INSERT,
+    accesos
+  );
+  const { allowed: allowUpdate } = useAutorizado(
+    ModulosSistema.PERSONAS + TipoAcceso.UPDATE,
+    accesos
+  );
 
   useEffect(() => {
     getUsers();
@@ -97,34 +107,23 @@ export const UsuariosPage = ({ setOpen, setToastMessage }: Props) => {
   };
 
   return (
-    <>
-      <Box
-        sx={{
-          backgroundColor: "grey.100",
-          minHeight: { xs: "calc(100vh - 56px)", sm: "calc(100vh - 64px)" },
-          pt: { xs: "64px", md: "72px" },
-          px: { md: 2 },
-        }}
-      >
-        <Container>
-          <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
-            Usuarios
-          </Typography>
-          <Divider />
+    <PageBox>
+      <Container>
+        <PageTitle title="Usuarios" />
 
-          {accesos?.some(
-            (acceso) =>
-              acceso.nombre === ModulosSistema.USUARIOS + TipoAcceso.INSERT
-          ) ? (
-            <Box sx={{ mt: 2 }}>
-              <Button
-                variant="contained"
-                onClick={() => handleOpen(0)}
-                sx={{ mb: 2 }}
-              >
-                Nuevo Usuario
-              </Button>
+        <Box sx={{ mt: 2 }}>
+          {allowInsert && (
+            <Button
+              variant="contained"
+              onClick={() => handleOpen(0)}
+              sx={{ mb: 2 }}
+            >
+              Nuevo Usuario
+            </Button>
+          )}
 
+          {allowUpdate && (
+            <>
               <Button
                 variant="outlined"
                 onClick={() => handleOpenUsuarioRol(0)}
@@ -140,19 +139,19 @@ export const UsuariosPage = ({ setOpen, setToastMessage }: Props) => {
               >
                 Asignar Rol Base
               </Button>
-            </Box>
-          ) : null}
+            </>
+          )}
+        </Box>
 
-          {users ? (
-            <UsersTable
-              accesos={accesos}
-              users={users}
-              handleHabilitar={handleHabilitar}
-              handleOpen={handleOpen}
-            />
-          ) : null}
-        </Container>
-      </Box>
-    </>
+        {users ? (
+          <UsersTable
+            allowUpdate={allowUpdate}
+            users={users}
+            handleHabilitar={handleHabilitar}
+            handleOpen={handleOpen}
+          />
+        ) : null}
+      </Container>
+    </PageBox>
   );
 };

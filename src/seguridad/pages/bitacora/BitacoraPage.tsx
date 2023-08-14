@@ -3,8 +3,9 @@ import { useAuth } from "../../../auth/context/useAuth";
 import { BackendResponse, Bitacora } from "../../../interfaces/interfaces";
 import { ApiEndpoints } from "../../../models/enums";
 import apiClient from "../../../services/api-client";
-import { Box, Container, Divider, Snackbar, Typography } from "@mui/material";
+import { Box, Container, Snackbar } from "@mui/material";
 import { BitacoraTable } from ".";
+import { PageBox, PageTitle } from "../../../components";
 
 export const BitacoraPage = () => {
   const { authState } = useAuth();
@@ -46,16 +47,15 @@ export const BitacoraPage = () => {
   };
 
   return (
-    <Box sx={{ backgroundColor: "grey.100", height: "100%", padding: "1rem" }}>
+    <PageBox>
       <Container>
-        <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
-          Registro de Actividades
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
+        <PageTitle title="Registro de Actividades" />
 
-        {bitacoras ? (
-          <BitacoraTable accesos={accesos} bitacoras={bitacoras} />
-        ) : null}
+        {bitacoras && (
+          <Box mt={2}>
+            <BitacoraTable accesos={accesos} bitacoras={bitacoras} />
+          </Box>
+        )}
       </Container>
 
       <Snackbar
@@ -65,6 +65,6 @@ export const BitacoraPage = () => {
         anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
         message={message}
       ></Snackbar>
-    </Box>
+    </PageBox>
   );
 };

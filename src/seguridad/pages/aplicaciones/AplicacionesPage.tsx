@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Button, Container, Divider, Typography } from "@mui/material";
+import { Button, Container } from "@mui/material";
 import apiClient from "../../../services/api-client";
 import { useAuth } from "../../../auth/context/useAuth";
 import { Aplicacion, BackendResponse } from "../../../interfaces/interfaces";
@@ -10,6 +10,8 @@ import {
   TipoAcceso,
 } from "../../../models/enums";
 import { AplicacionTable } from "./components";
+import useAutorizado from "../../../hooks/useAutorizado";
+import { PageBox, PageTitle } from "../../../components";
 
 interface Props {
   setOpen: (open: boolean) => void;
@@ -21,6 +23,14 @@ export const AplicacionesPage = ({ setOpen, setToastMessage }: Props) => {
   const [aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
   const navigate = useNavigate();
   const { accesos, user } = authState;
+  const { allowed: allowInsert } = useAutorizado(
+    ModulosSistema.PERSONAS + TipoAcceso.INSERT,
+    accesos
+  );
+  const { allowed: allowUpdate } = useAutorizado(
+    ModulosSistema.PERSONAS + TipoAcceso.UPDATE,
+    accesos
+  );
 
   useEffect(() => {
     getAplicaciones();
@@ -95,44 +105,29 @@ export const AplicacionesPage = ({ setOpen, setToastMessage }: Props) => {
   };
 
   return (
-    <>
-      <Box
-        sx={{
-          backgroundColor: "grey.100",
-          minHeight: { xs: "calc(100vh - 56px)", sm: "calc(100vh - 64px)" },
-          pt: { xs: "64px", md: "72px" },
-          px: { md: 2 },
-        }}
-      >
-        <Container>
-          <Typography variant="h4" component="div" sx={{ flexGrow: 1, mb: 2 }}>
-            Aplicaciones
-          </Typography>
-          <Divider />
+    <PageBox>
+      <Container>
+        <PageTitle title="Aplicaciones" />
 
-          {accesos?.some(
-            (acceso) =>
-              acceso.nombre === ModulosSistema.APLICACIONES + TipoAcceso.INSERT
-          ) ? (
-            <Button
-              variant="contained"
-              onClick={() => handleOpen(0)}
-              sx={{ mb: 2, mt: 2 }}
-            >
-              Nueva Aplicacion
-            </Button>
-          ) : null}
+        {allowInsert && (
+          <Button
+            variant="contained"
+            onClick={() => handleOpen(0)}
+            sx={{ mb: 2, mt: 2 }}
+          >
+            Nueva Aplicacion
+          </Button>
+        )}
 
-          {aplicaciones ? (
-            <AplicacionTable
-              accesos={accesos}
-              aplicaciones={aplicaciones}
-              handleHabilitar={handleHabilitar}
-              handleOpen={handleOpen}
-            />
-          ) : null}
-        </Container>
-      </Box>
-    </>
+        {aplicaciones && (
+          <AplicacionTable
+            allowUpdate={allowUpdate}
+            aplicaciones={aplicaciones}
+            handleHabilitar={handleHabilitar}
+            handleOpen={handleOpen}
+          />
+        )}
+      </Container>
+    </PageBox>
   );
 };

@@ -15,7 +15,6 @@ import {
   Box,
   Button,
   Checkbox,
-  Container,
   Divider,
   FormControlLabel,
   Grid,
@@ -27,6 +26,8 @@ import {
   Typography,
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
+import { FormBoxContainer, PageTitle } from "../../../../components";
+import { ErrorText } from "../../../../components/ErrorText";
 
 interface Props {
   setOpen: (open: boolean) => void;
@@ -202,227 +203,207 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
     setOpen(true);
   };
 
+  const setEmail = () => {
+    getValues("name") === "" ? setValue("name", "...") : null;
+    if (getValues("name")) {
+      setValue("email", getValues("name") + "@empacar.com.bo");
+    }
+  };
+
   return (
-    <Box
-      sx={{
-        backgroundColor: "grey.100",
-        minHeight: { xs: "calc(100vh - 56px)", sm: "calc(100vh - 64px)" },
-        pt: { xs: "64px", md: "72px" },
-        px: { xs: 1, md: 2 },
-      }}
-    >
-      <Container sx={{ p: 0 }}>
-        <Box
-          component="form"
-          autoComplete="off"
-          onSubmit={handleSubmit(submitForm)}
-          noValidate
-          sx={{
-            backgroundColor: "white",
-            p: 2, // 4 * 8
-            borderRadius: 2, // 4 * 4
-          }}
+    <FormBoxContainer>
+      <Box
+        component="form"
+        autoComplete="off"
+        onSubmit={handleSubmit(submitForm)}
+        noValidate
+        sx={{
+          backgroundColor: "white",
+          p: 2, // 4 * 8
+          borderRadius: 2, // 4 * 4
+        }}
+      >
+        {/* Formulario */}
+        <Grid
+          container
+          spacing={2}
+          sx={{ mb: 4, justifyContent: { xs: "center", sm: "start" } }}
         >
-          {/* Formulario */}
-          <Grid
-            container
-            spacing={2}
-            sx={{ mb: 4, justifyContent: { xs: "center", sm: "start" } }}
-          >
-            {/* Titulo Formulario */}
-            <Grid item xs={12}>
-              <Typography
-                variant="h4"
-                component="div"
-                sx={{ flexGrow: 1, mb: 2 }}
-              >
-                Formulario de Usuarios
-              </Typography>
-              <Divider />
-            </Grid>
+          {/* Titulo Formulario */}
+          <Grid item xs={12}>
+            <PageTitle title="Formulario de Usuarios" variant="h5" />
+          </Grid>
 
-            {/* Id */}
-            <Grid item xs={12} sm={4} md={3}>
-              <TextField
-                {...register("id")}
-                label="Id"
-                defaultValue="0"
-                disabled
-                sx={{ width: "100%", pr: "16px" }}
-              />
-            </Grid>
+          {/* Id */}
+          <Grid item xs={12} sm={3} md={2}>
+            <TextField
+              {...register("id")}
+              label="Id"
+              defaultValue="0"
+              disabled
+              sx={{ width: "100%", pr: "16px" }}
+            />
+          </Grid>
 
-            {/* Personas */}
-            <Grid item xs={12} sm={6} md={6}>
-              <Controller
-                name="persona_id"
-                rules={{ required: true }}
-                control={control}
-                render={({ field }) => {
-                  const { onChange, value } = field;
-                  return (
-                    <Autocomplete
-                      value={
-                        value
-                          ? personas.find(
-                              (option) => value === option.persona_id
-                            ) ?? null
-                          : null
-                      }
-                      getOptionLabel={(option) => option.nombre_completo}
-                      renderOption={(props, option) => (
-                        <Box component="li" {...props}>
-                          {option.nombre_completo}
-                        </Box>
-                      )}
-                      onChange={(_event: any, newValue) => {
-                        onChange(newValue ? newValue.persona_id : null);
-                      }}
-                      options={personas}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Personas *"
-                          error={
-                            errors.persona_id?.type === "required"
-                              ? true
-                              : false
-                          }
-                          inputProps={{
-                            ...params.inputProps,
-                          }}
-                        />
-                      )}
-                    />
-                  );
-                }}
-              />
-              {(errors.persona_id?.type === "required" ||
-                errors.persona_id?.type === "minLength") && (
-                <Typography
-                  paddingLeft={2}
-                  paddingTop={1}
-                  fontSize={12.5}
-                  color={"#F36892"}
-                >
-                  La persona es obligatoria
-                </Typography>
-              )}
-            </Grid>
-
-            {/* Username */}
-            <Grid item xs={12} sm={4}>
-              <TextField
-                {...register("name", {
-                  required: true,
-                  minLength: { value: 4, message: "error message" },
-                })}
-                required
-                label="Username"
-                defaultValue="..."
-                onFocus={() =>
-                  getValues("name") === "..." ? setValue("name", "") : null
-                }
-                onBlur={() =>
-                  getValues("name") === "" ? setValue("name", "...") : null
-                }
-                error={
-                  errors.name?.type === "required" ||
-                  errors.name?.type === "minLength"
-                    ? true
-                    : false
-                }
-                sx={{ width: "100%", pr: "16px" }}
-              />
-              {(errors.name?.type === "required" ||
-                errors.name?.type === "minLength") && (
-                <Typography
-                  paddingLeft={2}
-                  paddingTop={1}
-                  fontSize={12.5}
-                  color={"#F36892"}
-                >
-                  El Username es obligatorio
-                </Typography>
-              )}
-            </Grid>
-
-            {/* Email */}
-            <Grid item xs={12} sm={4}>
-              <TextField
-                {...register("email")}
-                label="Email"
-                defaultValue="email@empacar.com.bo"
-                sx={{ width: "100%", pr: "16px" }}
-              />
-            </Grid>
-
-            {/* Habilitado */}
-            <Grid item xs={12} sm={4} md={3}>
-              <Controller
-                name="habilitado"
-                control={control}
-                render={({ field }) => (
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        onChange={(e) => field.onChange(e.target.checked)}
-                        checked={field.value || false}
-                      />
+          {/* Personas */}
+          <Grid item xs={12} sm={5} md={5}>
+            <Controller
+              name="persona_id"
+              rules={{ required: true }}
+              control={control}
+              render={({ field }) => {
+                const { onChange, value } = field;
+                return (
+                  <Autocomplete
+                    value={
+                      value
+                        ? personas.find(
+                            (option) => value === option.persona_id
+                          ) ?? null
+                        : null
                     }
-                    label="habilitado"
+                    getOptionLabel={(option) => option.nombre_completo}
+                    renderOption={(props, option) => (
+                      <Box component="li" {...props}>
+                        {option.nombre_completo}
+                      </Box>
+                    )}
+                    onChange={(_event: any, newValue) => {
+                      onChange(newValue ? newValue.persona_id : null);
+                    }}
+                    options={personas}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Personas *"
+                        error={
+                          errors.persona_id?.type === "required" ? true : false
+                        }
+                        inputProps={{
+                          ...params.inputProps,
+                        }}
+                      />
+                    )}
                   />
-                )}
-              />
-            </Grid>
-
-            {/* Roles del Usuario*/}
-            <Grid item xs={12} sm={4}>
-              <Typography variant="body2">Roles del usuario</Typography>
-              <Divider />
-              <List>
-                {userRoles.map((rol) => (
-                  <ListItem key={rol.rol_id}>
-                    <ListItemText primary={rol.nombre} />
-
-                    <IconButton
-                      color="error"
-                      onClick={() => handleEliminar(rol.rol_id)}
-                    >
-                      <Delete />
-                    </IconButton>
-                  </ListItem>
-                ))}
-              </List>
-            </Grid>
+                );
+              }}
+            />
+            {(errors.persona_id?.type === "required" ||
+              errors.persona_id?.type === "minLength") && (
+              <ErrorText text="La Persona es obligatoria" />
+            )}
           </Grid>
 
-          {/* Botones */}
-          <Grid container spacing={2}>
-            <Grid item xs={6} sm={3} md={2}>
-              <Button
-                size="medium"
-                variant="contained"
-                type="submit"
-                sx={{ width: { xs: "100%", sm: "initial" } }}
-              >
-                Guardar
-              </Button>
-            </Grid>
-
-            <Grid item xs={6} sm={3} md={2}>
-              <Button
-                size="medium"
-                variant="outlined"
-                sx={{ width: { xs: "100%", sm: "initial" } }}
-                onClick={cancel}
-              >
-                Cancelar
-              </Button>
-            </Grid>
+          {/* Username */}
+          <Grid item xs={12} sm={3}>
+            <TextField
+              {...register("name", {
+                required: true,
+                minLength: { value: 4, message: "error message" },
+              })}
+              required
+              label="Username"
+              defaultValue="..."
+              onFocus={() =>
+                getValues("name") === "..." ? setValue("name", "") : null
+              }
+              onBlur={setEmail}
+              error={
+                errors.name?.type === "required" ||
+                errors.name?.type === "minLength"
+                  ? true
+                  : false
+              }
+              sx={{ width: "100%", pr: "16px" }}
+            />
+            {(errors.name?.type === "required" ||
+              errors.name?.type === "minLength") && (
+              <ErrorText text="El Username es obligatorio" />
+            )}
           </Grid>
-        </Box>
-      </Container>
-    </Box>
+
+          {/* Email */}
+          <Grid item xs={12} sm={4}>
+            <TextField
+              {...register("email", { required: true })}
+              label="Email"
+              defaultValue="email@empacar.com.bo"
+              error={errors.name?.type === "required"}
+              sx={{ width: "100%", pr: "16px" }}
+            />
+            {errors.name?.type === "required" && (
+              <ErrorText text="El Email es obligatorio" />
+            )}
+          </Grid>
+
+          {/* Habilitado */}
+          <Grid item xs={12} sm={4} md={3}>
+            <Controller
+              name="habilitado"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      onChange={(e) => field.onChange(e.target.checked)}
+                      checked={field.value || false}
+                    />
+                  }
+                  label="habilitado"
+                />
+              )}
+            />
+          </Grid>
+
+          {/* Vacio */}
+          <Grid item xs={12} sm={4}></Grid>
+
+          {/* Roles del Usuario*/}
+          <Grid item xs={12} sm={4}>
+            <Typography variant="body2">Roles del usuario</Typography>
+            <Divider />
+            <List>
+              {userRoles.map((rol) => (
+                <ListItem key={rol.rol_id}>
+                  <ListItemText primary={rol.nombre} />
+
+                  <IconButton
+                    color="error"
+                    onClick={() => handleEliminar(rol.rol_id)}
+                  >
+                    <Delete />
+                  </IconButton>
+                </ListItem>
+              ))}
+            </List>
+          </Grid>
+        </Grid>
+
+        {/* Botones */}
+        <Grid container spacing={2}>
+          <Grid item xs={6} sm={3} md={2}>
+            <Button
+              size="medium"
+              variant="contained"
+              type="submit"
+              sx={{ width: { xs: "100%", sm: "initial" } }}
+            >
+              Guardar
+            </Button>
+          </Grid>
+
+          <Grid item xs={6} sm={3} md={2}>
+            <Button
+              size="medium"
+              variant="outlined"
+              sx={{ width: { xs: "100%", sm: "initial" } }}
+              onClick={cancel}
+            >
+              Cancelar
+            </Button>
+          </Grid>
+        </Grid>
+      </Box>
+    </FormBoxContainer>
   );
 };

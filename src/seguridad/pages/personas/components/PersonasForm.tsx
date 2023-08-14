@@ -13,15 +13,14 @@ import {
   Box,
   Button,
   Checkbox,
-  Container,
-  Divider,
   FormControlLabel,
   Grid,
   TextField,
-  Typography,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../../../auth/context/useAuth";
+import { FormBoxContainer, PageTitle } from "../../../../components";
+import { ErrorText } from "../../../../components/ErrorText";
 
 interface Props {
   setOpen: (open: boolean) => void;
@@ -195,360 +194,326 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
   const cancel = () => navigate("/personas");
 
   return (
-    <Box
-      sx={{
-        backgroundColor: "grey.100",
-        minHeight: { xs: "calc(100vh - 56px)", sm: "calc(100vh - 64px)" },
-        pt: { xs: "64px", md: "72px" },
-        px: { xs: 1, md: 2 },
-      }}
-    >
-      <Container sx={{ p: 0 }}>
-        <Box
-          component="form"
-          autoComplete="off"
-          onSubmit={handleSubmit(submitForm)}
-          noValidate
-          sx={{
-            backgroundColor: "white",
-            p: 2, // 4 * 8
-            borderRadius: 2, // 4 * 4
-          }}
-        >
-          {/* Formulario */}
-          <Grid container spacing={2} sx={{ mb: 4 }}>
-            {/* Titulo Formulario */}
-            <Grid item xs={12}>
-              <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
-                Formulario de Personass
-              </Typography>
-              <Divider sx={{ mb: 1 }} />
-            </Grid>
+    <FormBoxContainer>
+      <Box
+        component="form"
+        autoComplete="off"
+        onSubmit={handleSubmit(submitForm)}
+        noValidate
+        sx={{
+          backgroundColor: "white",
+          p: 2, // 4 * 8
+          borderRadius: 2, // 4 * 4
+        }}
+      >
+        {/* Formulario */}
+        <Grid container spacing={2} sx={{ mb: 4 }}>
+          {/* Titulo Formulario */}
+          <Grid item xs={12}>
+            <PageTitle title="Formulario de Personas" variant="h5" />
+          </Grid>
 
-            {/* Id */}
-            <Grid item xs={12} sm={3}>
-              <TextField
-                {...register("persona_id")}
-                label="Id"
-                defaultValue="0"
-                disabled
-                sx={{ width: "100%", pr: "16px" }}
-              />
-            </Grid>
+          {/* Id */}
+          <Grid item xs={12} sm={3}>
+            <TextField
+              {...register("persona_id")}
+              label="Id"
+              defaultValue="0"
+              disabled
+              sx={{ width: "100%", pr: "16px" }}
+            />
+          </Grid>
 
-            {/* Codigo */}
-            <Grid item xs={12} sm={3}>
-              <TextField
-                {...register("codigo", { required: true })}
-                label="Codigo"
-                defaultValue="0"
-                error={
-                  errors.codigo?.type === "required" ||
-                  getValues("codigo") === "0"
-                    ? true
-                    : false
-                }
-                onFocus={() =>
-                  getValues("codigo") === "0" ? setValue("codigo", "") : null
-                }
-                onBlur={() =>
-                  getValues("codigo") === "" ? setValue("codigo", "0") : null
-                }
-                sx={{ width: "100%", pr: "16px" }}
-              />
-              {(errors.codigo?.type === "required" ||
-                errors.codigo?.type === "minLength" ||
-                getValues("codigo") === "0") && (
-                <Typography paddingTop={1} fontSize={12.5} color={"#F36892"}>
-                  El Codigo del Usuario es obligatorio
-                </Typography>
-              )}
-            </Grid>
+          {/* Codigo */}
+          <Grid item xs={12} sm={3}>
+            <TextField
+              {...register("codigo", { required: true })}
+              label="Codigo"
+              defaultValue="0"
+              error={
+                errors.codigo?.type === "required" ||
+                getValues("codigo") === "0"
+                  ? true
+                  : false
+              }
+              onFocus={() =>
+                getValues("codigo") === "0" ? setValue("codigo", "") : null
+              }
+              onBlur={() =>
+                getValues("codigo") === "" ? setValue("codigo", "0") : null
+              }
+              sx={{ width: "100%", pr: "16px" }}
+            />
+            {(errors.codigo?.type === "required" ||
+              errors.codigo?.type === "minLength" ||
+              getValues("codigo") === "0") && (
+              <ErrorText text="El Codigo del Usuario es obligatorio" />
+            )}
+          </Grid>
 
-            {/* Nombre */}
-            <Grid item xs={12} sm={6}>
-              <TextField
-                {...register("nombre", {
-                  required: true,
-                  minLength: { value: 4, message: "error message" },
-                })}
-                label="Nombre"
-                defaultValue="..."
-                error={
-                  errors.nombre?.type === "required" ||
-                  errors.nombre?.type === "minLength"
-                    ? true
-                    : false
-                }
-                onFocus={() =>
-                  getValues("nombre") === "..." ? setValue("nombre", "") : null
-                }
-                onBlur={() =>
-                  getValues("nombre") === "" ? setValue("nombre", "...") : null
-                }
-                sx={{ width: "100%", pr: "16px" }}
-              />
-              {(errors.nombre?.type === "required" ||
-                errors.nombre?.type === "minLength") && (
-                <Typography
-                  paddingLeft={2}
-                  paddingTop={1}
-                  fontSize={12.5}
-                  color={"#F36892"}
-                >
-                  El Nombre es obligatorio
-                </Typography>
-              )}
-            </Grid>
+          {/* Nombre */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              {...register("nombre", {
+                required: true,
+                minLength: { value: 4, message: "error message" },
+              })}
+              label="Nombre"
+              defaultValue="..."
+              error={
+                errors.nombre?.type === "required" ||
+                errors.nombre?.type === "minLength"
+                  ? true
+                  : false
+              }
+              onFocus={() =>
+                getValues("nombre") === "..." ? setValue("nombre", "") : null
+              }
+              onBlur={() =>
+                getValues("nombre") === "" ? setValue("nombre", "...") : null
+              }
+              sx={{ width: "100%", pr: "16px" }}
+            />
+            {(errors.nombre?.type === "required" ||
+              errors.nombre?.type === "minLength") && (
+              <ErrorText text="El Nombre es obligatorio" />
+            )}
+          </Grid>
 
-            {/* Apellido Paterno */}
-            <Grid item xs={12} sm={6}>
-              <TextField
-                {...register("apellido_paterno", {
-                  required: true,
-                  minLength: { value: 4, message: "error message" },
-                })}
-                label="Apellido Paterno"
-                defaultValue="..."
-                error={
-                  errors.apellido_paterno?.type === "required" ||
-                  errors.apellido_paterno?.type === "minLength"
-                    ? true
-                    : false
-                }
-                onFocus={() =>
-                  getValues("apellido_paterno") === "..."
-                    ? setValue("apellido_paterno", "")
-                    : null
-                }
-                onBlur={() =>
-                  getValues("apellido_paterno") === ""
-                    ? setValue("apellido_paterno", "...")
-                    : null
-                }
-                sx={{ width: "100%", pr: "16px" }}
-              />
-              {(errors.apellido_paterno?.type === "required" ||
-                errors.apellido_paterno?.type === "minLength") && (
-                <Typography
-                  paddingLeft={2}
-                  paddingTop={1}
-                  fontSize={12.5}
-                  color={"#F36892"}
-                >
-                  El Apellido Paterno es obligatorio
-                </Typography>
-              )}
-            </Grid>
+          {/* Apellido Paterno */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              {...register("apellido_paterno", {
+                required: true,
+                minLength: { value: 4, message: "error message" },
+              })}
+              label="Apellido Paterno"
+              defaultValue="..."
+              error={
+                errors.apellido_paterno?.type === "required" ||
+                errors.apellido_paterno?.type === "minLength"
+                  ? true
+                  : false
+              }
+              onFocus={() =>
+                getValues("apellido_paterno") === "..."
+                  ? setValue("apellido_paterno", "")
+                  : null
+              }
+              onBlur={() =>
+                getValues("apellido_paterno") === ""
+                  ? setValue("apellido_paterno", "...")
+                  : null
+              }
+              sx={{ width: "100%", pr: "16px" }}
+            />
+            {(errors.apellido_paterno?.type === "required" ||
+              errors.apellido_paterno?.type === "minLength") && (
+              <ErrorText text="El Apellido Paterno es obligatorio" />
+            )}
+          </Grid>
 
-            {/* Apellido Materno */}
-            <Grid item xs={12} sm={6}>
-              <TextField
-                {...register("apellido_materno")}
-                label="Apellido Materno"
-                defaultValue="..."
-                onFocus={() =>
-                  getValues("apellido_materno") === "..."
-                    ? setValue("apellido_materno", "")
-                    : null
-                }
-                onBlur={() =>
-                  getValues("apellido_materno") === ""
-                    ? setValue("apellido_materno", "...")
-                    : null
-                }
-                sx={{ width: "100%", pr: "16px" }}
-              />
-            </Grid>
+          {/* Apellido Materno */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              {...register("apellido_materno")}
+              label="Apellido Materno"
+              defaultValue="..."
+              onFocus={() =>
+                getValues("apellido_materno") === "..."
+                  ? setValue("apellido_materno", "")
+                  : null
+              }
+              onBlur={() =>
+                getValues("apellido_materno") === ""
+                  ? setValue("apellido_materno", "...")
+                  : null
+              }
+              sx={{ width: "100%", pr: "16px" }}
+            />
+          </Grid>
 
-            {/* Cargo */}
-            <Grid item xs={12} sm={6} md={4}>
-              <TextField
-                {...register("cargo")}
-                label="Cargo"
-                defaultValue="..."
-                onFocus={() =>
-                  getValues("cargo") === "..." ? setValue("cargo", "") : null
-                }
-                onBlur={() =>
-                  getValues("cargo") === "" ? setValue("cargo", "...") : null
-                }
-                sx={{ width: "100%", pr: "16px" }}
-              />
-            </Grid>
+          {/* Cargo */}
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField
+              {...register("cargo")}
+              label="Cargo"
+              defaultValue="..."
+              onFocus={() =>
+                getValues("cargo") === "..." ? setValue("cargo", "") : null
+              }
+              onBlur={() =>
+                getValues("cargo") === "" ? setValue("cargo", "...") : null
+              }
+              sx={{ width: "100%", pr: "16px" }}
+            />
+          </Grid>
 
-            {/* Ciudad */}
-            <Grid item xs={12} sm={6} md={4}>
-              <TextField
-                {...register("ubicacion")}
-                label="Ciudad"
-                defaultValue="..."
-                onFocus={() =>
-                  getValues("ubicacion") === "..."
-                    ? setValue("ubicacion", "")
-                    : null
-                }
-                onBlur={() =>
-                  getValues("ubicacion") === ""
-                    ? setValue("ubicacion", "...")
-                    : null
-                }
-                sx={{ width: "100%", pr: "16px" }}
-              />
-            </Grid>
+          {/* Ciudad */}
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField
+              {...register("ubicacion")}
+              label="Ciudad"
+              defaultValue="..."
+              onFocus={() =>
+                getValues("ubicacion") === "..."
+                  ? setValue("ubicacion", "")
+                  : null
+              }
+              onBlur={() =>
+                getValues("ubicacion") === ""
+                  ? setValue("ubicacion", "...")
+                  : null
+              }
+              sx={{ width: "100%", pr: "16px" }}
+            />
+          </Grid>
 
-            {/* Empresa */}
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-              <Controller
-                name="empresa_id"
-                rules={{ required: true }}
-                control={control}
-                render={({ field }) => {
-                  const { onChange, value } = field;
-                  return (
-                    <Autocomplete
-                      value={
-                        value
-                          ? empresas.find(
-                              (option) => value === option.empresa_id
-                            ) ?? null
-                          : null
-                      }
-                      getOptionLabel={(option) => option.nombre}
-                      renderOption={(props, option) => (
-                        <Box component="li" {...props}>
-                          {option.nombre}
-                        </Box>
-                      )}
-                      onChange={(_event: any, newValue) =>
-                        onChange(newValue ? newValue.empresa_id : null)
-                      }
-                      options={empresas}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Empresa *"
-                          inputProps={{
-                            ...params.inputProps,
-                          }}
-                          error={
-                            errors.empresa_id?.type === "required"
-                              ? true
-                              : false
-                          }
-                        />
-                      )}
-                    />
-                  );
-                }}
-              />
-              {errors.empresa_id?.type === "required" && (
-                <Typography color={"#d32f2f"} paddingTop={1} fontSize={12.5}>
-                  La empresa es obligatoria
-                </Typography>
-              )}
-            </Grid>
-
-            {/* Unidad de Negocio */}
-            <Grid item xs={12} sm={6} md={4}>
-              <Controller
-                name="unidad_negocio_id"
-                rules={{ required: true }}
-                control={control}
-                render={({ field }) => {
-                  const { onChange, value } = field;
-                  return (
-                    <Autocomplete
-                      value={
-                        value
-                          ? unidades.find(
-                              (option) => value === option.unidad_negocio_id
-                            ) ?? null
-                          : null
-                      }
-                      getOptionLabel={(option) =>
-                        `${option.unidad_negocio_id} - ${option.nombre}`
-                      }
-                      renderOption={(props, option) => (
-                        <Box component="li" {...props}>
-                          {`${option.unidad_negocio_id} - ${option.nombre}`}
-                        </Box>
-                      )}
-                      onChange={(_event: any, newValue) => {
-                        onChange(newValue ? newValue.unidad_negocio_id : null);
-                      }}
-                      options={unidades}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Unidad de Negocio"
-                          inputProps={{
-                            ...params.inputProps,
-                          }}
-                          error={
-                            errors.unidad_negocio_id?.type === "required"
-                              ? true
-                              : false
-                          }
-                        />
-                      )}
-                    />
-                  );
-                }}
-              />
-              {errors.unidad_negocio_id?.type === "required" && (
-                <Typography color={"#d32f2f"} paddingTop={1} fontSize={12.5}>
-                  La Unidad de Negocio es obligatoria
-                </Typography>
-              )}
-            </Grid>
-
-            {/* Habilitado */}
-            <Grid item xs={12} sm={4} md={3}>
-              <Controller
-                name="habilitado"
-                control={control}
-                render={({ field }) => (
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        onChange={(e) => field.onChange(e.target.checked)}
-                        checked={field.value || false}
-                      />
+          {/* Empresa */}
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <Controller
+              name="empresa_id"
+              rules={{ required: true }}
+              control={control}
+              render={({ field }) => {
+                const { onChange, value } = field;
+                return (
+                  <Autocomplete
+                    value={
+                      value
+                        ? empresas.find(
+                            (option) => value === option.empresa_id
+                          ) ?? null
+                        : null
                     }
-                    label="habilitado"
+                    getOptionLabel={(option) => option.nombre}
+                    renderOption={(props, option) => (
+                      <Box component="li" {...props}>
+                        {option.nombre}
+                      </Box>
+                    )}
+                    onChange={(_event: any, newValue) =>
+                      onChange(newValue ? newValue.empresa_id : null)
+                    }
+                    options={empresas}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Empresa *"
+                        inputProps={{
+                          ...params.inputProps,
+                        }}
+                        error={
+                          errors.empresa_id?.type === "required" ? true : false
+                        }
+                      />
+                    )}
                   />
-                )}
-              />
-            </Grid>
+                );
+              }}
+            />
+            {errors.empresa_id?.type === "required" && (
+              <ErrorText text="La empresa es obligatoria" />
+            )}
           </Grid>
 
-          {/* Botones */}
-          <Grid container spacing={2}>
-            <Grid item xs={6} sm={3} md={2}>
-              <Button
-                size="medium"
-                variant="contained"
-                sx={{ width: { xs: "100%", sm: "initial" } }}
-                type="submit"
-              >
-                Guardar
-              </Button>
-            </Grid>
-
-            <Grid item xs={6} sm={3} md={2}>
-              <Button
-                size="medium"
-                variant="outlined"
-                sx={{ width: { xs: "100%", sm: "initial" } }}
-                onClick={cancel}
-              >
-                Cancelar
-              </Button>
-            </Grid>
+          {/* Unidad de Negocio */}
+          <Grid item xs={12} sm={6} md={4}>
+            <Controller
+              name="unidad_negocio_id"
+              rules={{ required: true }}
+              control={control}
+              render={({ field }) => {
+                const { onChange, value } = field;
+                return (
+                  <Autocomplete
+                    value={
+                      value
+                        ? unidades.find(
+                            (option) => value === option.unidad_negocio_id
+                          ) ?? null
+                        : null
+                    }
+                    getOptionLabel={(option) =>
+                      `${option.unidad_negocio_id} - ${option.nombre}`
+                    }
+                    renderOption={(props, option) => (
+                      <Box component="li" {...props}>
+                        {`${option.unidad_negocio_id} - ${option.nombre}`}
+                      </Box>
+                    )}
+                    onChange={(_event: any, newValue) => {
+                      onChange(newValue ? newValue.unidad_negocio_id : null);
+                    }}
+                    options={unidades}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Unidad de Negocio"
+                        inputProps={{
+                          ...params.inputProps,
+                        }}
+                        error={
+                          errors.unidad_negocio_id?.type === "required"
+                            ? true
+                            : false
+                        }
+                      />
+                    )}
+                  />
+                );
+              }}
+            />
+            {errors.unidad_negocio_id?.type === "required" && (
+              <ErrorText text="La Unidad de Negocio es obligatoria" />
+            )}
           </Grid>
-        </Box>
-      </Container>
-    </Box>
+
+          {/* Habilitado */}
+          <Grid item xs={12} sm={4} md={3}>
+            <Controller
+              name="habilitado"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      onChange={(e) => field.onChange(e.target.checked)}
+                      checked={field.value || false}
+                    />
+                  }
+                  label="habilitado"
+                />
+              )}
+            />
+          </Grid>
+        </Grid>
+
+        {/* Botones */}
+        <Grid container spacing={2}>
+          <Grid item xs={6} sm={3} md={2}>
+            <Button
+              size="medium"
+              variant="contained"
+              sx={{ width: { xs: "100%", sm: "initial" } }}
+              type="submit"
+            >
+              Guardar
+            </Button>
+          </Grid>
+
+          <Grid item xs={6} sm={3} md={2}>
+            <Button
+              size="medium"
+              variant="outlined"
+              sx={{ width: { xs: "100%", sm: "initial" } }}
+              onClick={cancel}
+            >
+              Cancelar
+            </Button>
+          </Grid>
+        </Grid>
+      </Box>
+    </FormBoxContainer>
   );
 };

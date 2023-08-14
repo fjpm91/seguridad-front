@@ -7,15 +7,13 @@ import {
 } from "@mui/material";
 import { MaterialReactTable, type MRT_ColumnDef } from "material-react-table";
 import { useMemo } from "react";
-import { Rol, RolAcceso } from "../../../../interfaces/interfaces";
+import { Rol } from "../../../../interfaces/interfaces";
 import { MRT_Localization_ES } from "material-react-table/locales/es";
 import { IconoHabilitado } from "../../../../components";
 import { Edit } from "@mui/icons-material";
-import useAutorizado from "../../../../hooks/useAutorizado";
-import { ModulosSistema, TipoAcceso } from "../../../../models/enums";
 
 interface Props {
-  accesos: RolAcceso[] | null;
+  allowUpdate: boolean;
   roles: Rol[];
   handleOpen: (aplicacion_id: number) => void;
   handleHabilitar: (aplicacion_id: number) => void;
@@ -23,16 +21,11 @@ interface Props {
 }
 
 export const RolTable = ({
-  accesos,
+  allowUpdate,
   roles,
   handleHabilitar,
   handleOpen,
 }: Props) => {
-  const { allowed } = useAutorizado(
-    ModulosSistema.ROLES + TipoAcceso.UPDATE,
-    accesos
-  );
-
   const columns = useMemo<MRT_ColumnDef<Rol>[]>(
     () => [
       {
@@ -72,7 +65,7 @@ export const RolTable = ({
       columns={columns}
       data={roles}
       localization={MRT_Localization_ES}
-      enableRowActions={allowed}
+      enableRowActions={allowUpdate}
       positionActionsColumn="last"
       defaultColumn={{
         size: 50,

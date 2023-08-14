@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  Modal,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Container, Modal } from "@mui/material";
 import { useAuth } from "../../../auth/context/useAuth";
 import { useEffect, useState } from "react";
 import { BackendResponse, Persona } from "../../../interfaces/interfaces";
@@ -18,6 +11,8 @@ import {
 import { PersonasTable } from ".";
 import { ModalImportarPersonas } from "./components/ModalImportarPersonas";
 import { useNavigate } from "react-router-dom";
+import useAutorizado from "../../../hooks/useAutorizado";
+import { PageBox, PageTitle } from "../../../components";
 
 interface Props {
   setOpen: (open: boolean) => void;
@@ -30,6 +25,14 @@ export const PersonasPage = ({ setOpen, setToastMessage }: Props) => {
   const { accesos, user } = authState;
   const [show, setShow] = useState(false);
   const navigate = useNavigate();
+  const { allowed: allowInsert } = useAutorizado(
+    ModulosSistema.PERSONAS + TipoAcceso.INSERT,
+    accesos
+  );
+  const { allowed: allowUpdate } = useAutorizado(
+    ModulosSistema.PERSONAS + TipoAcceso.UPDATE,
+    accesos
+  );
 
   useEffect(() => {
     getPersonas();
@@ -106,53 +109,38 @@ export const PersonasPage = ({ setOpen, setToastMessage }: Props) => {
   };
 
   return (
-    <Box
-      sx={{
-        backgroundColor: "grey.100",
-        minHeight: { xs: "calc(100vh - 56px)", sm: "calc(100vh - 64px)" },
-        pt: { xs: "64px", md: "72px" },
-        px: { md: 2 },
-      }}
-    >
+    <PageBox>
       <Container>
-        <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
-          Personas
-        </Typography>
-        <Divider />
+        <PageTitle title="Personas" />
 
-        {accesos?.some(
-          (acceso) =>
-            acceso.nombre === ModulosSistema.USUARIOS + TipoAcceso.INSERT
-        ) ? (
-          <>
-            <Box sx={{ mt: 2 }}>
-              <Button
-                variant="contained"
-                onClick={() => handleOpen(0)}
-                sx={{ mb: 2, mr: 2 }}
-              >
-                Nueva Persona
-              </Button>
+        {allowInsert && (
+          <Box sx={{ mt: 2 }}>
+            <Button
+              variant="contained"
+              onClick={() => handleOpen(0)}
+              sx={{ mb: 2, mr: 2 }}
+            >
+              Nueva Persona
+            </Button>
 
-              <Button
-                variant="outlined"
-                onClick={() => handleOpenModal()}
-                sx={{ mb: 2 }}
-              >
-                Importar Personas
-              </Button>
-            </Box>
-          </>
-        ) : null}
+            <Button
+              variant="outlined"
+              onClick={() => handleOpenModal()}
+              sx={{ mb: 2 }}
+            >
+              Importar Personas
+            </Button>
+          </Box>
+        )}
 
-        {personas ? (
+        {personas && (
           <PersonasTable
-            accesos={accesos}
+            allowUpdate={allowUpdate}
             personas={personas}
             handleHabilitar={handleHabilitar}
             handleOpen={handleOpen}
           />
-        ) : null}
+        )}
       </Container>
 
       <Modal
@@ -164,6 +152,6 @@ export const PersonasPage = ({ setOpen, setToastMessage }: Props) => {
       >
         <ModalImportarPersonas />
       </Modal>
-    </Box>
+    </PageBox>
   );
 };

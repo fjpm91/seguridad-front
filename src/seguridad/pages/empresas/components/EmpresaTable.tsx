@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Empresa, RolAcceso } from "../../../../interfaces/interfaces";
+import { Empresa } from "../../../../interfaces/interfaces";
 import { MRT_ColumnDef, MaterialReactTable } from "material-react-table";
 import {
   Box,
@@ -11,27 +11,20 @@ import {
 import { Edit } from "@mui/icons-material";
 import { MRT_Localization_ES } from "material-react-table/locales/es";
 import { IconoHabilitado } from "../../../../components";
-import useAutorizado from "../../../../hooks/useAutorizado";
-import { ModulosSistema, TipoAcceso } from "../../../../models/enums";
 
 interface Props {
-  accesos: RolAcceso[] | null;
+  allowUpdate: boolean;
   empresas: Empresa[];
   handleOpen: (modulo_id: number) => void;
   handleHabilitar: (modulo_id: number) => void;
 }
 
 export const EmpresaTable = ({
-  accesos,
+  allowUpdate,
   empresas,
   handleHabilitar,
   handleOpen,
 }: Props) => {
-  const { allowed } = useAutorizado(
-    ModulosSistema.EMPRESA + TipoAcceso.UPDATE,
-    accesos
-  );
-
   const columns = useMemo<MRT_ColumnDef<Empresa>[]>(
     () => [
       {
@@ -72,7 +65,7 @@ export const EmpresaTable = ({
       columns={columns}
       data={empresas}
       localization={MRT_Localization_ES}
-      enableRowActions={allowed}
+      enableRowActions={allowUpdate}
       positionActionsColumn="last"
       defaultColumn={{
         size: 50,

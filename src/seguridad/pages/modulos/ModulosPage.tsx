@@ -9,8 +9,10 @@ import {
   ModulosSistema,
   TipoAcceso,
 } from "../../../models/enums";
-import { Box, Button, Container, Divider, Typography } from "@mui/material";
+import { Button, Container } from "@mui/material";
 import { ModuloTable } from "./components";
+import useAutorizado from "../../../hooks/useAutorizado";
+import { PageBox, PageTitle } from "../../../components";
 
 interface Props {
   setOpen: (open: boolean) => void;
@@ -22,6 +24,14 @@ export const ModulosPage = ({ setOpen, setToastMessage }: Props) => {
   const [modulos, setModulos] = useState<Modulo[]>([]);
   const { accesos, user } = authState;
   const navigate = useNavigate();
+  const { allowed: allowInsert } = useAutorizado(
+    ModulosSistema.PERSONAS + TipoAcceso.INSERT,
+    accesos
+  );
+  const { allowed: allowUpdate } = useAutorizado(
+    ModulosSistema.PERSONAS + TipoAcceso.UPDATE,
+    accesos
+  );
 
   useEffect(() => {
     getModulos();
@@ -95,24 +105,11 @@ export const ModulosPage = ({ setOpen, setToastMessage }: Props) => {
   };
 
   return (
-    <Box
-      sx={{
-        backgroundColor: "grey.100",
-        minHeight: { xs: "calc(100vh - 56px)", sm: "calc(100vh - 64px)" },
-        pt: { xs: "64px", md: "72px" },
-        px: { md: 2 },
-      }}
-    >
+    <PageBox>
       <Container>
-        <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
-          Modulos
-        </Typography>
-        <Divider />
+        <PageTitle title="Modulos" />
 
-        {accesos?.some(
-          (acceso) =>
-            acceso.nombre === ModulosSistema.MODULOS + TipoAcceso.INSERT
-        ) ? (
+        {allowInsert && (
           <Button
             variant="contained"
             onClick={() => handleOpen(0)}
@@ -120,17 +117,17 @@ export const ModulosPage = ({ setOpen, setToastMessage }: Props) => {
           >
             Nuevo Modulo
           </Button>
-        ) : null}
+        )}
 
-        {modulos ? (
+        {modulos && (
           <ModuloTable
-            accesos={accesos}
+            allowUpdate={allowUpdate}
             modulos={modulos}
             handleHabilitar={handleHabilitar}
             handleOpen={handleOpen}
           />
-        ) : null}
+        )}
       </Container>
-    </Box>
+    </PageBox>
   );
 };

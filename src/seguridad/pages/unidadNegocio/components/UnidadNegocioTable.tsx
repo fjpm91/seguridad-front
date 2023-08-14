@@ -3,27 +3,20 @@ import { Edit } from "@mui/icons-material";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { MRT_ColumnDef, MaterialReactTable } from "material-react-table";
 import { MRT_Localization_ES } from "material-react-table/locales/es";
-import useAutorizado from "../../../../hooks/useAutorizado";
-import { RolAcceso, UnidadNegocio } from "../../../../interfaces/interfaces";
-import { ModulosSistema, TipoAcceso } from "../../../../models/enums";
+import { UnidadNegocio } from "../../../../interfaces/interfaces";
 
 interface Props {
-  accesos: RolAcceso[] | null;
+  allowUpdate: boolean;
   unidades: UnidadNegocio[];
   handleOpen: (aplicacion_id: number) => void;
   handleHabilitar: (aplicacion_id: number) => void;
 }
 
 export const UnidadNegocioTable = ({
-  accesos,
+  allowUpdate,
   unidades,
   handleOpen,
 }: Props) => {
-  const { allowed } = useAutorizado(
-    ModulosSistema.ROLES + TipoAcceso.UPDATE,
-    accesos
-  );
-
   const columns = useMemo<MRT_ColumnDef<UnidadNegocio>[]>(
     () => [
       {
@@ -51,7 +44,7 @@ export const UnidadNegocioTable = ({
       columns={columns}
       data={unidades}
       localization={MRT_Localization_ES}
-      enableRowActions={allowed}
+      enableRowActions={allowUpdate}
       positionActionsColumn="last"
       defaultColumn={{
         size: 50,

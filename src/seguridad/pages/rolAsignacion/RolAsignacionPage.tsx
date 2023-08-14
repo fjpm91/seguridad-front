@@ -1,4 +1,4 @@
-import { Box, Container, Typography, Divider, Button } from "@mui/material";
+import { Box, Container, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../auth/context/useAuth";
@@ -16,6 +16,8 @@ import {
 } from "../../../models/enums";
 import apiClient from "../../../services/api-client";
 import { RolAsignacionTable } from ".";
+import useAutorizado from "../../../hooks/useAutorizado";
+import { PageTitle } from "../../../components";
 
 interface Props {
   setOpen: (open: boolean) => void;
@@ -28,6 +30,14 @@ export const RolAsignacionPage = ({ setOpen, setToastMessage }: Props) => {
   const [rolAsignaciones, setRolAsignaciones] = useState<RolAsignacion[]>([]);
   const navigate = useNavigate();
   const { accesos, user } = authState;
+  const { allowed: allowInsert } = useAutorizado(
+    ModulosSistema.PERSONAS + TipoAcceso.INSERT,
+    accesos
+  );
+  const { allowed: allowUpdate } = useAutorizado(
+    ModulosSistema.PERSONAS + TipoAcceso.UPDATE,
+    accesos
+  );
 
   useEffect(() => {
     getAplicaciones();
@@ -154,15 +164,9 @@ export const RolAsignacionPage = ({ setOpen, setToastMessage }: Props) => {
       }}
     >
       <Container>
-        <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
-          Rol Asignacion
-        </Typography>
-        <Divider />
+        <PageTitle title="Rol Asignacion" />
 
-        {accesos?.some(
-          (acceso) =>
-            acceso.nombre === ModulosSistema.COMPONENTES + TipoAcceso.INSERT
-        ) ? (
+        {allowInsert && (
           <Button
             variant="contained"
             onClick={() => handleOpen(0)}
@@ -170,17 +174,17 @@ export const RolAsignacionPage = ({ setOpen, setToastMessage }: Props) => {
           >
             Nuevo Rol Asignacion
           </Button>
-        ) : null}
+        )}
 
-        {rolAsignaciones ? (
+        {rolAsignaciones && (
           <RolAsignacionTable
-            accesos={accesos}
+            allowUpdate={allowUpdate}
             rolAsignaciones={rolAsignaciones}
             handleHabilitar={handleHabilitar}
             handleOpen={handleOpen}
             handleEliminar={handleEliminar}
           />
-        ) : null}
+        )}
       </Container>
     </Box>
   );

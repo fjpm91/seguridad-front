@@ -6,8 +6,6 @@ import {
   Box,
   Button,
   Checkbox,
-  Container,
-  Divider,
   FormControlLabel,
   Grid,
   TextField,
@@ -22,6 +20,7 @@ import {
   Rol,
 } from "../../../../interfaces/interfaces";
 import { ApiEndpoints, Messages } from "../../../../models/enums";
+import { FormBoxContainer, PageTitle } from "../../../../components";
 
 interface Props {
   setOpen: (open: boolean) => void;
@@ -195,194 +194,178 @@ export const RolesAccesosForm = ({ setOpen, setToastMessage }: Props) => {
   };
 
   return (
-    <Box
-      sx={{
-        backgroundColor: "grey.100",
-        minHeight: { xs: "calc(100vh - 56px)", sm: "calc(100vh - 64px)" },
-        pt: { xs: "64px", md: "72px" },
-        px: { xs: 1, md: 2 },
-      }}
-    >
-      <Container sx={{ p: 0 }}>
-        <Box
-          component="form"
-          autoComplete="off"
-          onSubmit={handleSubmit(submitForm)}
-          noValidate
-          sx={{
-            backgroundColor: "white",
-            p: 2, // 4 * 8
-            borderRadius: 2, // 4 * 4
-          }}
-        >
-          {/* Formulario */}
-          <Grid container spacing={2} sx={{ mb: 4 }}>
-            {/* Titulo Formulario */}
-            <Grid item xs={12}>
-              <Typography
-                variant="h4"
-                component="div"
-                sx={{ flexGrow: 1, mb: 2 }}
-              >
-                Formulario de Roles y Accesos
-              </Typography>
-              <Divider />
-            </Grid>
+    <FormBoxContainer>
+      <Box
+        component="form"
+        autoComplete="off"
+        onSubmit={handleSubmit(submitForm)}
+        noValidate
+        sx={{
+          backgroundColor: "white",
+          p: 2, // 4 * 8
+          borderRadius: 2, // 4 * 4
+        }}
+      >
+        {/* Formulario */}
+        <Grid container spacing={2} sx={{ mb: 4 }}>
+          {/* Titulo Formulario */}
+          <Grid item xs={12}>
+            <PageTitle title="Formulario de Roles y Accesos" variant="h5" />
+          </Grid>
 
-            {/* Aplicaciones */}
-            <Grid item xs={12} sm={6} md={5} sx={{ pr: "16px" }}>
-              <Controller
-                name="aplicacion_id"
-                rules={{ required: true }}
-                control={control}
-                render={({ field }) => {
-                  const { onChange, value } = field;
-                  return (
-                    <Autocomplete
-                      value={
-                        value
-                          ? aplicaciones.find(
-                              (option) => value === option.aplicacion_id
-                            ) ?? null
-                          : null
-                      }
-                      getOptionLabel={(option) =>
-                        `${option.codigo} - ${option.nombre}`
-                      }
-                      renderOption={(props, option) => (
-                        <Box component="li" {...props}>
-                          {option.codigo} - {option.nombre}
-                        </Box>
-                      )}
-                      onChange={(_event: any, newValue) => {
-                        onChange(newValue ? newValue.aplicacion_id : null);
-                        getModulosPorAplicacion(newValue?.codigo);
-                        getAplicacionById(newValue?.aplicacion_id);
-                      }}
-                      options={aplicaciones}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Aplicacion *"
-                          inputProps={{
-                            ...params.inputProps,
-                          }}
-                          error={
-                            errors.aplicacion_id?.type === "required"
-                              ? true
-                              : false
-                          }
-                        />
-                      )}
-                    />
-                  );
-                }}
-              />
-              {errors.aplicacion_id?.type === "required" && (
-                <Typography color={"#d32f2f"} paddingTop={1} fontSize={12.5}>
-                  La Aplicación es obligatoria
-                </Typography>
-              )}
-            </Grid>
-
-            {/* Roles */}
-            <Grid item xs={12} sm={6} md={5} sx={{ pr: "16px" }}>
-              <Controller
-                name="rol_id"
-                rules={{ required: true }}
-                control={control}
-                render={({ field }) => {
-                  const { onChange, value } = field;
-                  return (
-                    <Autocomplete
-                      value={
-                        value
-                          ? roles.find((option) => value === option.rol_id) ??
-                            null
-                          : null
-                      }
-                      getOptionLabel={(option) => option.nombre}
-                      renderOption={(props, option) => (
-                        <Box component="li" {...props}>
-                          {option.nombre}
-                        </Box>
-                      )}
-                      onChange={(_event: any, newValue) => {
-                        onChange(newValue ? newValue.rol_id : null);
-                        getRolById(newValue?.rol_id);
-                        resetCheckedModulos();
-                      }}
-                      options={roles}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Rol *"
-                          inputProps={{
-                            ...params.inputProps,
-                          }}
-                          error={
-                            errors.rol_id?.type === "required" ? true : false
-                          }
-                        />
-                      )}
-                    />
-                  );
-                }}
-              />
-              {errors.rol_id?.type === "required" && (
-                <Typography color={"#d32f2f"} paddingTop={1} fontSize={12.5}>
-                  El rol es obligatorio
-                </Typography>
-              )}
-            </Grid>
-
-            {/* Modulos */}
-            <Grid item xs={12} sm={8} sx={{ pr: "16px" }}>
-              {modulos.map((modulo) => (
-                <div key={modulo.modulo_id}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        value={modulo.modulo_id}
-                        checked={modulo.check}
-                        onChange={(e) => {
-                          handleCheckModulo(e);
-                        }}
-                      />
+          {/* Aplicaciones */}
+          <Grid item xs={12} sm={6} md={5} sx={{ pr: "16px" }}>
+            <Controller
+              name="aplicacion_id"
+              rules={{ required: true }}
+              control={control}
+              render={({ field }) => {
+                const { onChange, value } = field;
+                return (
+                  <Autocomplete
+                    value={
+                      value
+                        ? aplicaciones.find(
+                            (option) => value === option.aplicacion_id
+                          ) ?? null
+                        : null
                     }
-                    label={modulo.nombre}
+                    getOptionLabel={(option) =>
+                      `${option.codigo} - ${option.nombre}`
+                    }
+                    renderOption={(props, option) => (
+                      <Box component="li" {...props}>
+                        {option.codigo} - {option.nombre}
+                      </Box>
+                    )}
+                    onChange={(_event: any, newValue) => {
+                      onChange(newValue ? newValue.aplicacion_id : null);
+                      getModulosPorAplicacion(newValue?.codigo);
+                      getAplicacionById(newValue?.aplicacion_id);
+                    }}
+                    options={aplicaciones}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Aplicacion *"
+                        inputProps={{
+                          ...params.inputProps,
+                        }}
+                        error={
+                          errors.aplicacion_id?.type === "required"
+                            ? true
+                            : false
+                        }
+                      />
+                    )}
                   />
-                </div>
-              ))}
-            </Grid>
+                );
+              }}
+            />
+            {errors.aplicacion_id?.type === "required" && (
+              <Typography color={"#d32f2f"} paddingTop={1} fontSize={12.5}>
+                La Aplicación es obligatoria
+              </Typography>
+            )}
           </Grid>
 
-          {/* Botones */}
-          <Grid container spacing={2}>
-            <Grid item xs={6} sm={3} md={2}>
-              <Button
-                size="medium"
-                variant="contained"
-                sx={{ width: { xs: "100%", sm: "initial" } }}
-                type="submit"
-              >
-                Guardar
-              </Button>
-            </Grid>
-
-            <Grid item xs={6} sm={3} md={2}>
-              <Button
-                size="medium"
-                variant="outlined"
-                sx={{ width: { xs: "100%", sm: "initial" } }}
-                onClick={cancel}
-              >
-                Cancelar
-              </Button>
-            </Grid>
+          {/* Roles */}
+          <Grid item xs={12} sm={6} md={5} sx={{ pr: "16px" }}>
+            <Controller
+              name="rol_id"
+              rules={{ required: true }}
+              control={control}
+              render={({ field }) => {
+                const { onChange, value } = field;
+                return (
+                  <Autocomplete
+                    value={
+                      value
+                        ? roles.find((option) => value === option.rol_id) ??
+                          null
+                        : null
+                    }
+                    getOptionLabel={(option) => option.nombre}
+                    renderOption={(props, option) => (
+                      <Box component="li" {...props}>
+                        {option.nombre}
+                      </Box>
+                    )}
+                    onChange={(_event: any, newValue) => {
+                      onChange(newValue ? newValue.rol_id : null);
+                      getRolById(newValue?.rol_id);
+                      resetCheckedModulos();
+                    }}
+                    options={roles}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Rol *"
+                        inputProps={{
+                          ...params.inputProps,
+                        }}
+                        error={
+                          errors.rol_id?.type === "required" ? true : false
+                        }
+                      />
+                    )}
+                  />
+                );
+              }}
+            />
+            {errors.rol_id?.type === "required" && (
+              <Typography color={"#d32f2f"} paddingTop={1} fontSize={12.5}>
+                El rol es obligatorio
+              </Typography>
+            )}
           </Grid>
-        </Box>
-      </Container>
-    </Box>
+
+          {/* Modulos */}
+          <Grid item xs={12} sm={8} sx={{ pr: "16px" }}>
+            {modulos.map((modulo) => (
+              <div key={modulo.modulo_id}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      value={modulo.modulo_id}
+                      checked={modulo.check}
+                      onChange={(e) => {
+                        handleCheckModulo(e);
+                      }}
+                    />
+                  }
+                  label={modulo.nombre}
+                />
+              </div>
+            ))}
+          </Grid>
+        </Grid>
+
+        {/* Botones */}
+        <Grid container spacing={2}>
+          <Grid item xs={6} sm={3} md={2}>
+            <Button
+              size="medium"
+              variant="contained"
+              sx={{ width: { xs: "100%", sm: "initial" } }}
+              type="submit"
+            >
+              Guardar
+            </Button>
+          </Grid>
+
+          <Grid item xs={6} sm={3} md={2}>
+            <Button
+              size="medium"
+              variant="outlined"
+              sx={{ width: { xs: "100%", sm: "initial" } }}
+              onClick={cancel}
+            >
+              Cancelar
+            </Button>
+          </Grid>
+        </Grid>
+      </Box>
+    </FormBoxContainer>
   );
 };

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { RolAcceso, User } from "../../../../interfaces/interfaces";
+import { User } from "../../../../interfaces/interfaces";
 import { MRT_ColumnDef, MaterialReactTable } from "material-react-table";
 import {
   Box,
@@ -11,38 +11,29 @@ import {
 import { MRT_Localization_ES } from "material-react-table/locales/es";
 import { IconoHabilitado } from "../../../../components";
 import { Edit } from "@mui/icons-material";
-import useAutorizado from "../../../../hooks/useAutorizado";
-import { ModulosSistema, TipoAcceso } from "../../../../models/enums";
 
 interface Props {
-  accesos: RolAcceso[] | null;
+  allowUpdate: boolean;
   users: User[];
   handleOpen: (aplicacion_id: number) => void;
   handleHabilitar: (aplicacion_id: number) => void;
 }
 
 export const UsersTable = ({
-  accesos,
+  allowUpdate,
   users,
   handleHabilitar,
   handleOpen,
 }: Props) => {
-  const { allowed } = useAutorizado(
-    ModulosSistema.USUARIOS + TipoAcceso.UPDATE,
-    accesos
-  );
-
   const columns = useMemo<MRT_ColumnDef<User>[]>(
     () => [
       {
         accessorKey: "id",
         header: "Id",
-        // size: 100,
       },
       {
         accessorKey: "name",
         header: "Nombre",
-        // size: 180,
       },
       {
         accessorKey: "habilitado",
@@ -72,7 +63,7 @@ export const UsersTable = ({
       columns={columns}
       data={users}
       localization={MRT_Localization_ES}
-      enableRowActions={allowed}
+      enableRowActions={allowUpdate}
       positionActionsColumn="last"
       defaultColumn={{
         size: 50,

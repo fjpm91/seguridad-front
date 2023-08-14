@@ -12,15 +12,14 @@ import {
   Autocomplete,
   Box,
   Button,
-  Container,
-  Divider,
   Grid,
   Snackbar,
   TextField,
-  Typography,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { UseToastMessage } from "../../../../hooks/useToastMessage";
+import { FormBoxContainer, PageTitle } from "../../../../components";
+import { ErrorText } from "../../../../components/ErrorText";
 
 export const UsuarioRolBaseForm = () => {
   const { authState } = useAuth();
@@ -90,11 +89,6 @@ export const UsuarioRolBaseForm = () => {
   };
 
   const store = async (formData: any) => {
-    console.log(
-      "🚀 ~ file: UsuarioRolBaseForm.tsx:88 ~ store ~ formData:",
-      formData
-    );
-    // return;
     const datos = {
       ...formData,
       user: user?.id,
@@ -138,170 +132,139 @@ export const UsuarioRolBaseForm = () => {
   };
 
   return (
-    <Box
-      sx={{
-        backgroundColor: "grey.100",
-        minHeight: { xs: "calc(100vh - 56px)", sm: "calc(100vh - 64px)" },
-        padding: "1rem",
-      }}
-    >
-      <Container sx={{ p: 0 }}>
-        <Box
-          component="form"
-          autoComplete="off"
-          onSubmit={handleSubmit(store)}
-          noValidate
-          sx={{
-            backgroundColor: "white",
-            p: 4, // 4 * 8
-            borderRadius: 2, // 4 * 4
-          }}
-        >
-          {/* Formulario */}
-          <Grid container spacing={2} sx={{ mb: 4 }}>
-            {/* Titulo Formulario */}
-            <Grid item xs={12}>
-              <Typography
-                variant="h4"
-                component="div"
-                sx={{ flexGrow: 1, mb: 2 }}
-              >
-                Asignación de Rol Base
-              </Typography>
-              <Divider />
-            </Grid>
-
-            {/* Aplicacion */}
-            <Grid item xs={12} sm={6} md={4} sx={{ pr: "16px" }}>
-              <Controller
-                name="codigo_app"
-                rules={{ required: true }}
-                control={control}
-                render={({ field }) => {
-                  const { onChange, value } = field;
-                  return (
-                    <Autocomplete
-                      value={
-                        value
-                          ? aplicaciones.find(
-                              (option) => value === option.codigo
-                            ) ?? null
-                          : null
-                      }
-                      getOptionLabel={(app) => `${app.codigo} - ${app.nombre}`}
-                      renderOption={(props, app) => (
-                        <Box component="li" {...props}>
-                          {app.codigo_nombre} - {app.nombre}
-                        </Box>
-                      )}
-                      onChange={(_event: any, newValue) => {
-                        onChange(newValue ? newValue.codigo : null);
-                        setRolesByApp(newValue ? newValue : null);
-                      }}
-                      options={aplicaciones}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Seleccionar aplicación"
-                          error={
-                            errors.codigo_app?.type === "required"
-                              ? true
-                              : false
-                          }
-                          inputProps={{
-                            ...params.inputProps,
-                          }}
-                        />
-                      )}
-                    />
-                  );
-                }}
-              />
-              {(errors.codigo_app?.type === "required" ||
-                errors.codigo_app?.type === "minLength") && (
-                <Typography
-                  paddingLeft={2}
-                  paddingTop={1}
-                  fontSize={12.5}
-                  color={"#F36892"}
-                >
-                  La aplicacion es obligatoria
-                </Typography>
-              )}
-            </Grid>
-
-            {/* Rol */}
-            <Grid item xs={12} sm={6} md={4} sx={{ pr: "16px" }}>
-              <Controller
-                name="rol_id"
-                rules={{ required: true }}
-                control={control}
-                render={({ field }) => {
-                  const { onChange, value } = field;
-                  return (
-                    <Autocomplete
-                      value={
-                        value
-                          ? roles.find((option) => value === option.rol_id) ??
-                            null
-                          : null
-                      }
-                      getOptionLabel={(option) => option.nombre}
-                      renderOption={(props, option) => (
-                        <Box component="li" {...props}>
-                          {option.nombre}
-                        </Box>
-                      )}
-                      onChange={(_event: any, newValue) =>
-                        onChange(newValue ? newValue.rol_id : null)
-                      }
-                      options={roles}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Seleccionar Rol"
-                          error={
-                            errors.rol_id?.type === "required" ? true : false
-                          }
-                          inputProps={{
-                            ...params.inputProps,
-                          }}
-                        />
-                      )}
-                    />
-                  );
-                }}
-              />
-              {(errors.rol_id?.type === "required" ||
-                errors.rol_id?.type === "minLength") && (
-                <Typography
-                  paddingLeft={2}
-                  paddingTop={1}
-                  fontSize={12.5}
-                  color={"#F36892"}
-                >
-                  El rol es obligatorio
-                </Typography>
-              )}
-            </Grid>
+    <FormBoxContainer>
+      <Box
+        component="form"
+        autoComplete="off"
+        onSubmit={handleSubmit(store)}
+        noValidate
+        sx={{
+          backgroundColor: "white",
+          p: 2, // 4 * 8
+          borderRadius: 2, // 4 * 4
+        }}
+      >
+        {/* Formulario */}
+        <Grid container spacing={2} sx={{ mb: 4 }}>
+          {/* Titulo Formulario */}
+          <Grid item xs={12}>
+            <PageTitle title="Asignación de Rol Base" variant="h5" />
           </Grid>
 
-          {/* Botones */}
-          <Grid container spacing={2}>
-            <Grid item>
-              <Button size="medium" variant="contained" type="submit">
-                Guardar
-              </Button>
-            </Grid>
-
-            <Grid item>
-              <Button size="medium" variant="outlined" onClick={cancel}>
-                Cancelar
-              </Button>
-            </Grid>
+          {/* Aplicacion */}
+          <Grid item xs={12} sm={6} md={4} sx={{ pr: "16px" }}>
+            <Controller
+              name="codigo_app"
+              rules={{ required: true }}
+              control={control}
+              render={({ field }) => {
+                const { onChange, value } = field;
+                return (
+                  <Autocomplete
+                    value={
+                      value
+                        ? aplicaciones.find(
+                            (option) => value === option.codigo
+                          ) ?? null
+                        : null
+                    }
+                    getOptionLabel={(app) => `${app.codigo} - ${app.nombre}`}
+                    renderOption={(props, app) => (
+                      <Box component="li" {...props}>
+                        {app.codigo_nombre} - {app.nombre}
+                      </Box>
+                    )}
+                    onChange={(_event: any, newValue) => {
+                      onChange(newValue ? newValue.codigo : null);
+                      setRolesByApp(newValue ? newValue : null);
+                    }}
+                    options={aplicaciones}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Seleccionar aplicación"
+                        error={
+                          errors.codigo_app?.type === "required" ? true : false
+                        }
+                        inputProps={{
+                          ...params.inputProps,
+                        }}
+                      />
+                    )}
+                  />
+                );
+              }}
+            />
+            {(errors.codigo_app?.type === "required" ||
+              errors.codigo_app?.type === "minLength") && (
+              <ErrorText text="La aplicacion es obligatoria" />
+            )}
           </Grid>
-        </Box>
-      </Container>
+
+          {/* Rol */}
+          <Grid item xs={12} sm={6} md={4} sx={{ pr: "16px" }}>
+            <Controller
+              name="rol_id"
+              rules={{ required: true }}
+              control={control}
+              render={({ field }) => {
+                const { onChange, value } = field;
+                return (
+                  <Autocomplete
+                    value={
+                      value
+                        ? roles.find((option) => value === option.rol_id) ??
+                          null
+                        : null
+                    }
+                    getOptionLabel={(option) => option.nombre}
+                    renderOption={(props, option) => (
+                      <Box component="li" {...props}>
+                        {option.nombre}
+                      </Box>
+                    )}
+                    onChange={(_event: any, newValue) =>
+                      onChange(newValue ? newValue.rol_id : null)
+                    }
+                    options={roles}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Seleccionar Rol"
+                        error={
+                          errors.rol_id?.type === "required" ? true : false
+                        }
+                        inputProps={{
+                          ...params.inputProps,
+                        }}
+                      />
+                    )}
+                  />
+                );
+              }}
+            />
+            {(errors.rol_id?.type === "required" ||
+              errors.rol_id?.type === "minLength") && (
+              <ErrorText text="El rol es obligatorio" />
+            )}
+          </Grid>
+        </Grid>
+
+        {/* Botones */}
+        <Grid container spacing={2}>
+          <Grid item>
+            <Button size="medium" variant="contained" type="submit">
+              Guardar
+            </Button>
+          </Grid>
+
+          <Grid item>
+            <Button size="medium" variant="outlined" onClick={cancel}>
+              Cancelar
+            </Button>
+          </Grid>
+        </Grid>
+      </Box>
 
       <Snackbar
         open={open}
@@ -310,6 +273,6 @@ export const UsuarioRolBaseForm = () => {
         anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
         message={message}
       ></Snackbar>
-    </Box>
+    </FormBoxContainer>
   );
 };

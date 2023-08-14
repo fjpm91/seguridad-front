@@ -10,27 +10,21 @@ import {
 import { MaterialReactTable, type MRT_ColumnDef } from "material-react-table";
 import { MRT_Localization_ES } from "material-react-table/locales/es";
 import { IconoHabilitado } from "../../../../components";
-import { Aplicacion, RolAcceso } from "../../../../interfaces/interfaces";
-import { ModulosSistema, TipoAcceso } from "../../../../models/enums";
-import useAutorizado from "../../../../hooks/useAutorizado";
+import { Aplicacion } from "../../../../interfaces/interfaces";
 
 interface Props {
-  accesos: RolAcceso[] | null;
+  allowUpdate: boolean;
   aplicaciones: Aplicacion[];
   handleOpen: (aplicacion_id: number) => void;
   handleHabilitar: (aplicacion_id: number) => void;
 }
 
 export const AplicacionTable = ({
-  accesos,
+  allowUpdate,
   aplicaciones,
   handleHabilitar,
   handleOpen,
 }: Props) => {
-  const { allowed } = useAutorizado(
-    ModulosSistema.APLICACIONES + TipoAcceso.UPDATE,
-    accesos
-  );
   const columns = useMemo<MRT_ColumnDef<Aplicacion>[]>(
     () => [
       {
@@ -76,7 +70,7 @@ export const AplicacionTable = ({
       columns={columns}
       data={aplicaciones}
       localization={MRT_Localization_ES}
-      enableRowActions={allowed}
+      enableRowActions={allowUpdate}
       positionActionsColumn="last"
       defaultColumn={{
         size: 50,
