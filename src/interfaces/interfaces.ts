@@ -28,6 +28,7 @@ export interface Persona {
   ubicacion?: string;
   updated_at?: number;
   unidad_negocio_id: number;
+  user: any;
 }
 
 export interface Rol {
@@ -119,7 +120,7 @@ export interface Modulo {
   created_at?: number;
   habilitado: number;
   icono: string;
-  menu: boolean;
+  menu: number;
   modulo_id: number;
   modulo_padre?: number | null;
   nombre: string;

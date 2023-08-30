@@ -40,6 +40,10 @@ export const PersonasTable = ({
         header: "Cargo",
       },
       {
+        accessorFn: (row) => (row?.user ? row.user.name : ""),
+        header: "Usuario",
+      },
+      {
         accessorKey: "habilitado",
         header: "Habilitado",
         enableColumnActions: false,
@@ -69,6 +73,7 @@ export const PersonasTable = ({
       localization={MRT_Localization_ES}
       enableRowActions={allowUpdate}
       positionActionsColumn="last"
+      initialState={{ density: "compact" }}
       defaultColumn={{
         size: 50,
       }}

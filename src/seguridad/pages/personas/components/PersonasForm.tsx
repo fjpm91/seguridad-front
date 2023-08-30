@@ -14,6 +14,8 @@ import {
   Button,
   Checkbox,
   FormControlLabel,
+  FormGroup,
+  FormLabel,
   Grid,
   TextField,
 } from "@mui/material";
@@ -87,8 +89,13 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
   const getPersonaById = async () => {
     if (!id || id === "0") return;
 
-    const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.PERSONAS}/${id}`
+    const datos = {
+      persona_id: id,
+      user: 1,
+    };
+    const { data } = await apiClient.post<BackendResponse>(
+      `/${ApiEndpoints.FILTRAR_PERSONAS}`,
+      datos
     );
 
     if (!data) {
@@ -112,6 +119,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
     setValue("nombre_completo", userdata.nombre_completo);
     setValue("unidad_negocio_id", userdata.unidad_negocio_id);
     if (userdata.empresa_id) setValue("empresa_id", userdata.empresa_id);
+    if (userdata.user) setValue("user", userdata.user.name);
   };
 
   const store = async (formData: any) => {
@@ -350,7 +358,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
           </Grid>
 
           {/* Ciudad */}
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid item xs={12} sm={4} md={3}>
             <TextField
               {...register("ubicacion")}
               label="Ciudad"
@@ -475,16 +483,32 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
               name="habilitado"
               control={control}
               render={({ field }) => (
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      onChange={(e) => field.onChange(e.target.checked)}
-                      checked={field.value || false}
+                <>
+                  <FormLabel component="legend">Estado</FormLabel>
+                  <FormGroup>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          onChange={(e) => field.onChange(e.target.checked)}
+                          checked={field.value || false}
+                        />
+                      }
+                      label="Habilitado"
                     />
-                  }
-                  label="habilitado"
-                />
+                  </FormGroup>
+                </>
               )}
+            />
+          </Grid>
+
+          {/* Usuario */}
+          <Grid item xs={12} sm={4} md={3}>
+            <TextField
+              {...register("user")}
+              label="Usuario"
+              defaultValue="..."
+              disabled
+              sx={{ width: "100%", pr: "16px" }}
             />
           </Grid>
         </Grid>

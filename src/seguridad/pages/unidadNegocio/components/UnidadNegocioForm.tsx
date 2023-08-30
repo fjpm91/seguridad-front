@@ -7,6 +7,8 @@ import {
   Checkbox,
   Button,
   Autocomplete,
+  FormGroup,
+  FormLabel,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
@@ -150,7 +152,7 @@ export const UnidadNegocioForm = ({ setOpen, setToastMessage }: Props) => {
       ...formData,
       user: user?.id,
       codigo_app: import.meta.env.VITE_CODIGO_APP,
-      habilitado: formData.habilitado ? formData.habilitado : 0,
+      habilitado: formData.habilitado ? 1 : 0,
     };
 
     try {
@@ -170,7 +172,7 @@ export const UnidadNegocioForm = ({ setOpen, setToastMessage }: Props) => {
 
       showMessage(response.message);
       setTimeout(() => {
-        navigate("/unidad-negocio");
+        cancel();
       }, 1000);
     } catch (error) {
       showMessage(JSON.stringify(error));
@@ -296,7 +298,6 @@ export const UnidadNegocioForm = ({ setOpen, setToastMessage }: Props) => {
           <Grid item xs={12} sm={6} md={4} lg={3}>
             <Controller
               name="division_id"
-              rules={{ required: true }}
               control={control}
               render={({ field }) => {
                 const { onChange, value } = field;
@@ -340,15 +341,20 @@ export const UnidadNegocioForm = ({ setOpen, setToastMessage }: Props) => {
               name="habilitado"
               control={control}
               render={({ field }) => (
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      onChange={(e) => field.onChange(e.target.checked)}
-                      checked={field.value || false}
+                <>
+                  <FormLabel component="legend">Estado</FormLabel>
+                  <FormGroup>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          onChange={(e) => field.onChange(e.target.checked)}
+                          checked={field.value || false}
+                        />
+                      }
+                      label="Habilitado"
                     />
-                  }
-                  label="habilitado"
-                />
+                  </FormGroup>
+                </>
               )}
             />
           </Grid>

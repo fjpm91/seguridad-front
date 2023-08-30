@@ -66,6 +66,7 @@ export const ComponentsTable = ({
       localization={MRT_Localization_ES}
       enableRowActions={allowUpdate}
       positionActionsColumn="last"
+      initialState={{ density: "compact" }}
       defaultColumn={{
         size: 50,
       }}

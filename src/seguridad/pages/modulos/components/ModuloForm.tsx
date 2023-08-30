@@ -73,7 +73,9 @@ export const ModuloForm = ({ setOpen, setToastMessage }: Props) => {
     setValue("titulo", data.titulo);
     if (data.modulo_padre) setValue("modulo_padre", data.modulo_padre);
     if (data.icono) setValue("icono", data.icono);
-    if (data.menu) setValue("menu", data.menu);
+    if (data.menu) {
+      setValue("menu", data.menu === 1 ? true : false);
+    }
   };
 
   const getModulos = async (codigo_app?: string) => {
@@ -568,7 +570,7 @@ export const ModuloForm = ({ setOpen, setToastMessage }: Props) => {
                       checked={field.value || false}
                     />
                   }
-                  label="habilitado"
+                  label="Habilitado"
                 />
               )}
             />
@@ -587,7 +589,7 @@ export const ModuloForm = ({ setOpen, setToastMessage }: Props) => {
                       checked={field.value || false}
                     />
                   }
-                  label="menu"
+                  label="Menu"
                 />
               )}
             />

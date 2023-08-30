@@ -7,9 +7,10 @@ import {
   Button,
   Checkbox,
   FormControlLabel,
+  FormGroup,
+  FormLabel,
   Grid,
   TextField,
-  Typography,
 } from "@mui/material";
 import { useAuth } from "../../../../auth/context/useAuth";
 import apiClient from "../../../../services/api-client";
@@ -272,15 +273,20 @@ export const RolForm = ({ setOpen, setToastMessage }: Props) => {
               name="habilitado"
               control={control}
               render={({ field }) => (
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      onChange={(e) => field.onChange(e.target.checked)}
-                      checked={field.value || false}
+                <>
+                  <FormLabel component="legend">Estado</FormLabel>
+                  <FormGroup>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          onChange={(e) => field.onChange(e.target.checked)}
+                          checked={field.value || false}
+                        />
+                      }
+                      label="Habilitado"
                     />
-                  }
-                  label="habilitado"
-                />
+                  </FormGroup>
+                </>
               )}
             />
           </Grid>

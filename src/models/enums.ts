@@ -52,6 +52,7 @@ export enum ApiEndpoints {
   MODULOS = "modulos",
   MODULOS_BY_APP = "modulos/app",
   PERSONAS = "personas",
+  FILTRAR_PERSONAS = "personas/filtrar",
   IMPORTAR_PERSONAS = "personas-upload",
   ROL_ASIGNACION = "rol-asignaciones",
   ROLES = "roles",

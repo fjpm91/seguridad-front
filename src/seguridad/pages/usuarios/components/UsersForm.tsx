@@ -17,6 +17,8 @@ import {
   Checkbox,
   Divider,
   FormControlLabel,
+  FormGroup,
+  FormLabel,
   Grid,
   IconButton,
   List,
@@ -342,15 +344,20 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
               name="habilitado"
               control={control}
               render={({ field }) => (
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      onChange={(e) => field.onChange(e.target.checked)}
-                      checked={field.value || false}
+                <>
+                  <FormLabel component="legend">Estado</FormLabel>
+                  <FormGroup>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          onChange={(e) => field.onChange(e.target.checked)}
+                          checked={field.value || false}
+                        />
+                      }
+                      label="Habilitado"
                     />
-                  }
-                  label="habilitado"
-                />
+                  </FormGroup>
+                </>
               )}
             />
           </Grid>

@@ -49,6 +49,9 @@ export const BitacoraTable = ({ bitacoras }: Props) => {
     <MaterialReactTable
       columns={columns}
       data={bitacoras}
+      defaultColumn={{
+        size: 50,
+      }}
       localization={MRT_Localization_ES}
     />
   );

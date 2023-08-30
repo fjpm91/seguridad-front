@@ -33,7 +33,14 @@ export const UsersTable = ({
       },
       {
         accessorKey: "name",
-        header: "Nombre",
+        header: "Username",
+      },
+      {
+        accessorFn: (row) =>
+          row?.persona
+            ? `${row.persona.nombre} ${row.persona.apellido_paterno}`
+            : "",
+        header: "Persona",
       },
       {
         accessorKey: "habilitado",
@@ -65,6 +72,7 @@ export const UsersTable = ({
       localization={MRT_Localization_ES}
       enableRowActions={allowUpdate}
       positionActionsColumn="last"
+      initialState={{ density: "compact" }}
       defaultColumn={{
         size: 50,
       }}
