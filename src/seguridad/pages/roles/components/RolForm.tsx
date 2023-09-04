@@ -33,6 +33,7 @@ export const RolForm = ({ setOpen, setToastMessage }: Props) => {
   const navigate = useNavigate();
   const {
     control,
+    getValues,
     register,
     setValue,
     handleSubmit,
@@ -203,12 +204,18 @@ export const RolForm = ({ setOpen, setToastMessage }: Props) => {
               })}
               required
               label="Nombre"
-              defaultValue="--"
+              defaultValue="---"
               error={
                 errors.nombre?.type === "required" ||
                 errors.nombre?.type === "minLength"
                   ? true
                   : false
+              }
+              onFocus={() =>
+                getValues("nombre") === "---" ? setValue("nombre", "") : null
+              }
+              onBlur={() =>
+                getValues("nombre") === "" ? setValue("nombre", "---") : null
               }
               sx={{ width: "100%" }}
             />

@@ -40,6 +40,12 @@ export const PersonasTable = ({
         header: "Cargo",
       },
       {
+        accessorFn: (row) => (row?.empresa ? row.empresa.nombre : ""),
+        header: "Empresa",
+        filterVariant: "select",
+        filterSelectOptions: ["Empacar", "Italsa"],
+      },
+      {
         accessorFn: (row) => (row?.user ? row.user.name : ""),
         header: "Usuario",
       },

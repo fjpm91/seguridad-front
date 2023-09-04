@@ -29,6 +29,7 @@ export interface Persona {
   updated_at?: number;
   unidad_negocio_id: number;
   user: any;
+  empresa: Empresa;
 }
 
 export interface Rol {
