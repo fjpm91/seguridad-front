@@ -243,10 +243,12 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
                           null
                         : null
                     }
-                    getOptionLabel={(option) => option.nombre}
+                    getOptionLabel={(option) =>
+                      `${option.aplicacion.codigo} - ${option.nombre}`
+                    }
                     renderOption={(props, option) => (
                       <Box component="li" {...props}>
-                        {option.nombre}
+                        {`${option.aplicacion.codigo} - ${option.nombre}`}
                       </Box>
                     )}
                     onChange={(_event: any, newValue) =>

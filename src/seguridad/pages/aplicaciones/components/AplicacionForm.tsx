@@ -104,12 +104,14 @@ export const AplicacionForm = ({ setOpen, setToastMessage }: Props) => {
       ...formData,
       user: user?.id,
       codigo_app: import.meta.env.VITE_CODIGO_APP,
+      habilitado: formData.habilitado ? 1 : 0,
     };
     if (datos.area === "...") datos.area = null;
     if (datos.url === "...") datos.url = null;
     if (datos.descripcion === "...") datos.descripcion = null;
     if (datos.base_datos === "...") datos.base_datos = null;
     if (datos.icono === "...") datos.icono = null;
+    datos.habilitado ? (datos.habilitado = 1) : (datos.habilitado = 0);
 
     try {
       const { data } = await apiClient.put<BackendResponse>(
@@ -329,7 +331,13 @@ export const AplicacionForm = ({ setOpen, setToastMessage }: Props) => {
             <TextField
               {...register("url")}
               label="Url"
-              defaultValue="..."
+              defaultValue="--"
+              onFocus={() =>
+                getValues("url") === "--" ? setValue("url", "") : null
+              }
+              onBlur={() =>
+                getValues("url") === "" ? setValue("url", "--") : null
+              }
               sx={{ width: "100%" }}
             />
           </Grid>
@@ -339,7 +347,17 @@ export const AplicacionForm = ({ setOpen, setToastMessage }: Props) => {
             <TextField
               {...register("descripcion")}
               label="Descripcion"
-              defaultValue="..."
+              defaultValue="--"
+              onFocus={() =>
+                getValues("descripcion") === "--"
+                  ? setValue("descripcion", "")
+                  : null
+              }
+              onBlur={() =>
+                getValues("descripcion") === ""
+                  ? setValue("descripcion", "--")
+                  : null
+              }
               sx={{ width: "100%" }}
             />
           </Grid>
@@ -349,7 +367,13 @@ export const AplicacionForm = ({ setOpen, setToastMessage }: Props) => {
             <TextField
               {...register("area")}
               label="Area"
-              defaultValue="..."
+              defaultValue="--"
+              onFocus={() =>
+                getValues("area") === "--" ? setValue("area", "") : null
+              }
+              onBlur={() =>
+                getValues("area") === "" ? setValue("area", "--") : null
+              }
               sx={{ width: "100%" }}
             />
           </Grid>
@@ -359,7 +383,17 @@ export const AplicacionForm = ({ setOpen, setToastMessage }: Props) => {
             <TextField
               {...register("base_datos")}
               label="Base de Datos"
-              defaultValue="..."
+              defaultValue="--"
+              onFocus={() =>
+                getValues("base_datos") === "--"
+                  ? setValue("base_datos", "")
+                  : null
+              }
+              onBlur={() =>
+                getValues("base_datos") === ""
+                  ? setValue("base_datos", "--")
+                  : null
+              }
               sx={{ width: "100%", pr: "16px" }}
             />
           </Grid>
@@ -369,7 +403,13 @@ export const AplicacionForm = ({ setOpen, setToastMessage }: Props) => {
             <TextField
               {...register("icono")}
               label="Icono"
-              defaultValue="..."
+              defaultValue="--"
+              onFocus={() =>
+                getValues("icono") === "--" ? setValue("icono", "") : null
+              }
+              onBlur={() =>
+                getValues("icono") === "" ? setValue("icono", "--") : null
+              }
               sx={{ width: "100%" }}
             />
           </Grid>
@@ -379,7 +419,17 @@ export const AplicacionForm = ({ setOpen, setToastMessage }: Props) => {
             <TextField
               {...register("ip_servidor")}
               label="Ip servidor"
-              defaultValue="..."
+              defaultValue="--"
+              onFocus={() =>
+                getValues("ip_servidor") === "--"
+                  ? setValue("ip_servidor", "")
+                  : null
+              }
+              onBlur={() =>
+                getValues("ip_servidor") === ""
+                  ? setValue("ip_servidor", "--")
+                  : null
+              }
               sx={{ width: "100%", pr: "16px" }}
             />
           </Grid>

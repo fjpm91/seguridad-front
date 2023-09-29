@@ -68,7 +68,7 @@ export const EmpresaForm = ({ setOpen, setToastMessage }: Props) => {
       ...formData,
       user: user?.id,
       codigo_app: import.meta.env.VITE_CODIGO_APP,
-      habilitado: formData.habilitado ? formData.habilitado : 0,
+      habilitado: formData.habilitado ? 1 : 0,
     };
 
     try {

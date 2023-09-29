@@ -1,4 +1,4 @@
-import { Edit } from "@mui/icons-material";
+import { Edit, Launch } from "@mui/icons-material";
 import { useMemo } from "react";
 import {
   FormGroup,
@@ -6,11 +6,13 @@ import {
   Checkbox,
   Box,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 import { MaterialReactTable, type MRT_ColumnDef } from "material-react-table";
 import { MRT_Localization_ES } from "material-react-table/locales/es";
 import { IconoHabilitado } from "../../../../components";
 import { Aplicacion } from "../../../../interfaces/interfaces";
+import { Link } from "react-router-dom";
 
 interface Props {
   allowUpdate: boolean;
@@ -81,20 +83,43 @@ export const AplicacionTable = ({
           sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}
           key={row.id}
         >
-          <IconButton
-            color="warning"
-            onClick={() => handleHabilitar(row.original.aplicacion_id)}
+          <Tooltip
+            title={row.original.habilitado ? "Deshabilitar" : "Habilitar"}
           >
-            <IconoHabilitado habilitado={row.original.habilitado} />
-          </IconButton>
-          <IconButton
-            color="primary"
-            onClick={() => handleOpen(row.original.aplicacion_id)}
-          >
-            <Edit />
-          </IconButton>
+            <IconButton
+              color="warning"
+              onClick={() => handleHabilitar(row.original.aplicacion_id)}
+            >
+              <IconoHabilitado habilitado={row.original.habilitado} />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Editar">
+            <IconButton
+              color="primary"
+              onClick={() => handleOpen(row.original.aplicacion_id)}
+            >
+              <Edit />
+            </IconButton>
+          </Tooltip>
+
+          {row.original.url && (
+            <Link to={row.original.url} target="_blank">
+              <IconButton>
+                <Launch color="secondary" />
+              </IconButton>
+            </Link>
+          )}
+          {/* <Tooltip title="Abrir">
+            </Tooltip> */}
         </Box>,
       ]}
     />
   );
 };
+
+/**
+ *           <Link to={row.original.LINK} target="_blank">
+            <RemoveRedEye color="primary" />
+          </Link>
+ */

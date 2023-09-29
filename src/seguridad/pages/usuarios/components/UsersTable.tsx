@@ -10,7 +10,8 @@ import {
 } from "@mui/material";
 import { MRT_Localization_ES } from "material-react-table/locales/es";
 import { IconoHabilitado } from "../../../../components";
-import { Edit } from "@mui/icons-material";
+import { AccountCircle, Edit } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   allowUpdate: boolean;
@@ -25,6 +26,7 @@ export const UsersTable = ({
   handleHabilitar,
   handleOpen,
 }: Props) => {
+  const navigate = useNavigate();
   const columns = useMemo<MRT_ColumnDef<User>[]>(
     () => [
       {
@@ -87,12 +89,23 @@ export const UsersTable = ({
           >
             <IconoHabilitado habilitado={row.original.habilitado} />
           </IconButton>
+
           <IconButton
             color="primary"
             onClick={() => handleOpen(row.original.id)}
           >
             <Edit />
           </IconButton>
+
+          {row.original.persona && (
+            <IconButton
+              onClick={() =>
+                navigate(`/personas/${row.original.persona.persona_id}`)
+              }
+            >
+              <AccountCircle color="secondary" />
+            </IconButton>
+          )}
         </Box>,
       ]}
     />
