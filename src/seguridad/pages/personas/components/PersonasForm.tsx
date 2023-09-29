@@ -120,6 +120,8 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
     setValue("unidad_negocio_id", userdata.unidad_negocio_id);
     if (userdata.empresa_id) setValue("empresa_id", userdata.empresa_id);
     if (userdata.user) setValue("user", userdata.user.name);
+    if (userdata.habilitado)
+      setValue("habilitado", userdata.habilitado ? true : false);
   };
 
   const store = async (formData: any) => {

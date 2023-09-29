@@ -108,7 +108,7 @@ export const UsuariosPage = ({ setOpen, setToastMessage }: Props) => {
 
   return (
     <PageBox>
-      <Container>
+      <Container maxWidth="xl">
         <PageTitle title="Usuarios" />
 
         <Box sx={{ mt: 2 }}>

@@ -110,7 +110,7 @@ export const PersonasPage = ({ setOpen, setToastMessage }: Props) => {
 
   return (
     <PageBox>
-      <Container>
+      <Container maxWidth="xl">
         <PageTitle title="Personas" />
 
         {allowInsert && (
