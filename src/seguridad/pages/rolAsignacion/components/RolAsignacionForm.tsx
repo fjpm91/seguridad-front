@@ -371,12 +371,10 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
                           null
                         : null
                     }
-                    getOptionLabel={(option) =>
-                      `${option.aplicacion.codigo} - ${option.nombre}`
-                    }
+                    getOptionLabel={(option) => option.nombre}
                     renderOption={(props, option) => (
                       <Box component="li" {...props}>
-                        {`${option.aplicacion.codigo} - ${option.nombre}`}
+                        {option.nombre}
                       </Box>
                     )}
                     onChange={(_event: any, newValue) => {
