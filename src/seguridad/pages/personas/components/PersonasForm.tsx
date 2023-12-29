@@ -439,21 +439,19 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                   <Autocomplete
                     value={
                       value
-                        ? unidades.find(
-                            (option) => value === option.unidad_negocio_id
-                          ) ?? null
+                        ? unidades.find((option) => value === option.id) ?? null
                         : null
                     }
                     getOptionLabel={(option) =>
-                      `${option.unidad_negocio_id} - ${option.nombre}`
+                      `${option.id} - ${option.nombre}`
                     }
                     renderOption={(props, option) => (
                       <Box component="li" {...props}>
-                        {`${option.unidad_negocio_id} - ${option.nombre}`}
+                        {`${option.id} - ${option.nombre}`}
                       </Box>
                     )}
                     onChange={(_event: any, newValue) => {
-                      onChange(newValue ? newValue.unidad_negocio_id : null);
+                      onChange(newValue ? newValue.id : null);
                     }}
                     options={unidades}
                     renderInput={(params) => (

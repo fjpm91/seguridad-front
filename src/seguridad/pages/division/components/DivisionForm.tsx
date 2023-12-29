@@ -174,9 +174,7 @@ export const DivisionForm = ({ setOpen, setToastMessage }: Props) => {
   const handleCheckUnidad = (e: any) => {
     console.log("🚀 ~ file: DivisionForm.tsx:186 ~ handleCheckUnidad ~ e:", e);
     const { value } = e.target;
-    const index = unidadesNegocio.findIndex(
-      (m) => m.unidad_negocio_id == value
-    );
+    const index = unidadesNegocio.findIndex((m) => m.id == value);
     if (index >= 0) {
       const unidadesModificadas = [...unidadesNegocio];
       const unidadBuscada = unidadesModificadas[index];
@@ -194,8 +192,7 @@ export const DivisionForm = ({ setOpen, setToastMessage }: Props) => {
 
     unidadesDivision.forEach((uApp) => {
       unidadesDivisionActual.forEach((uList) => {
-        if (uApp.unidad_negocio_id === uList.unidad_negocio_id)
-          uApp.check = true;
+        if (uApp.id === uList.id) uApp.check = true;
       });
     });
     setUnidadesNegocio([...unidadesDivision]);
@@ -204,9 +201,9 @@ export const DivisionForm = ({ setOpen, setToastMessage }: Props) => {
   const getDiferenciaUnidades = () => {
     const unidadesSeleccionadas = unidadesNegocio
       .filter((unidad) => unidad.check)
-      .map((u) => u.unidad_negocio_id);
+      .map((u) => u.id);
     const unidadesIniciales =
-      divisionActual?.unidades_negocio.map((u) => u.unidad_negocio_id) ?? [];
+      divisionActual?.unidades_negocio.map((u) => u.id) ?? [];
     const diferencia = unidadesSeleccionadas.filter(
       (x) => unidadesIniciales.indexOf(x) === -1
     );
@@ -216,9 +213,9 @@ export const DivisionForm = ({ setOpen, setToastMessage }: Props) => {
   const getDiferenciaEliminarUnidades = () => {
     const unidadesNoSeleccionadas = unidadesNegocio
       .filter((unidad) => !unidad.check)
-      .map((u) => u.unidad_negocio_id);
+      .map((u) => u.id);
     const unidadesIniciales =
-      divisionActual?.unidades_negocio.map((u) => u.unidad_negocio_id) ?? [];
+      divisionActual?.unidades_negocio.map((u) => u.id) ?? [];
     const diferencia = unidadesNoSeleccionadas.filter(
       (x) => unidadesIniciales.indexOf(x) !== -1
     );
@@ -292,18 +289,18 @@ export const DivisionForm = ({ setOpen, setToastMessage }: Props) => {
           {id !== "0" ? (
             <Grid item xs={12} sm={8} sx={{ pr: "16px" }}>
               {unidadesNegocio.map((unidad) => (
-                <div key={unidad.unidad_negocio_id}>
+                <div key={unidad.id}>
                   <FormControlLabel
                     control={
                       <Checkbox
-                        value={unidad.unidad_negocio_id}
+                        value={unidad.id}
                         checked={unidad.check}
                         onChange={(e) => {
                           handleCheckUnidad(e);
                         }}
                       />
                     }
-                    label={unidad.unidad_negocio_id + " - " + unidad.nombre}
+                    label={unidad.id + " - " + unidad.nombre}
                   />
                 </div>
               ))}

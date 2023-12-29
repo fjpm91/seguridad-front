@@ -101,7 +101,8 @@ export const UnidadNegocioForm = ({ setOpen, setToastMessage }: Props) => {
     }
 
     const { data } = response;
-    setValue("unidad_negocio_id", data.unidad_negocio_id);
+    setValue("id", data.id);
+    setValue("codigo", data.codigo);
     setValue("empresa_id", data.empresa.empresa_id);
     setValue("division_id", data.division_id);
     setValue("nombre", data.nombre);
@@ -140,7 +141,7 @@ export const UnidadNegocioForm = ({ setOpen, setToastMessage }: Props) => {
 
       showMessage(data.message);
       setTimeout(() => {
-        navigate("/unidad-negocio");
+        cancel();
       }, 1000);
     } catch (error) {
       showMessage(JSON.stringify(error));
@@ -179,7 +180,7 @@ export const UnidadNegocioForm = ({ setOpen, setToastMessage }: Props) => {
     }
   };
 
-  const cancel = () => navigate("/unidades-negocio");
+  const cancel = () => navigate(`/${ApiEndpoints.UNIDAD_NEGOCIO}`);
 
   const showMessage = (text: string = "Operacion correcta") => {
     setToastMessage(text);
@@ -209,9 +210,25 @@ export const UnidadNegocioForm = ({ setOpen, setToastMessage }: Props) => {
           {/* ID */}
           <Grid item xs={12} sm={3} md={2}>
             <TextField
-              {...register("unidad_negocio_id")}
+              {...register("id")}
               label="Id"
-              defaultValue="0"
+              defaultValue={0}
+              type="number"
+              disabled
+              inputProps={{
+                readOnly: true,
+              }}
+              sx={{ width: "100%", pr: "16px" }}
+            />
+          </Grid>
+
+          {/* Codigo */}
+          <Grid item xs={12} sm={3} md={2}>
+            <TextField
+              {...register("codigo")}
+              label="Codigo"
+              defaultValue={0}
+              type="number"
               sx={{ width: "100%", pr: "16px" }}
             />
           </Grid>

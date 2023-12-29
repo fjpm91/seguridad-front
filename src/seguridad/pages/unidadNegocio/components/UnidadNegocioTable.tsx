@@ -20,7 +20,7 @@ export const UnidadNegocioTable = ({
   const columns = useMemo<MRT_ColumnDef<UnidadNegocio>[]>(
     () => [
       {
-        accessorKey: "unidad_negocio_id",
+        accessorKey: "codigo",
         header: "Codigo",
       },
       {
@@ -58,7 +58,7 @@ export const UnidadNegocioTable = ({
           <Tooltip title="Editar">
             <IconButton
               color="primary"
-              onClick={() => handleOpen(row.original.unidad_negocio_id)}
+              onClick={() => handleOpen(row.original.id)}
             >
               <Edit />
             </IconButton>

@@ -44,13 +44,14 @@ export interface Rol {
 }
 
 export interface UnidadNegocio {
+  check: boolean;
+  codigo: number;
+  division: Division;
   empresa_id: number;
-  nombre: string;
-  unidad_negocio_id: number;
   empresa: Empresa;
   habilitado: number;
-  division: Division;
-  check: boolean;
+  id: number;
+  nombre: string;
 }
 
 export interface CentroCosto {

@@ -60,7 +60,7 @@ export const UnidadNegocioPage = ({ setOpen, setToastMessage }: Props) => {
 
   const handleHabilitar = async (id: number) => {
     const unidadSeleccionada = unidadesNegocio.find(
-      (unidad) => unidad.unidad_negocio_id === id
+      (unidad) => unidad.id === id
     );
     if (!unidadSeleccionada) return;
 
@@ -86,7 +86,7 @@ export const UnidadNegocioPage = ({ setOpen, setToastMessage }: Props) => {
 
       const unidadModificada = data.data as UnidadNegocio;
       const newAplicaciones = unidadesNegocio.map((unidad) => {
-        if (unidad.unidad_negocio_id === unidadModificada.unidad_negocio_id) {
+        if (unidad.id === unidadModificada.id) {
           unidad.habilitado = unidadModificada.habilitado;
         }
         return unidad;
