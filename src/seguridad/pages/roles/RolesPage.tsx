@@ -2,11 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Container } from "@mui/material";
 import { useAuth } from "../../../auth/context/useAuth";
-import {
-  Aplicacion,
-  BackendResponse,
-  Rol,
-} from "../../../interfaces/interfaces";
+import { BackendResponse, Rol } from "../../../interfaces/interfaces";
 import apiClient from "../../../services/api-client";
 import {
   ApiEndpoints,
