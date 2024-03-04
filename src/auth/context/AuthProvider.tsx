@@ -3,6 +3,7 @@ import { AppAuthState, AuthContext } from "./AuthContext";
 import { authReducer } from "../../auth";
 import {
   Aplicacion,
+  Cargo,
   Modulo,
   Persona,
   Rol,
@@ -35,6 +36,7 @@ const init = () => {
   const modulos = JSON.parse(localStorage.getItem(StorageKeys.MODULOS) || "[]");
   const persona = JSON.parse(localStorage.getItem(StorageKeys.PERSONA) || "{}");
   const rol = JSON.parse(localStorage.getItem(StorageKeys.ROL) || "{}");
+  const cargo = JSON.parse(localStorage.getItem(StorageKeys.CARGO) || "{}");
   const user = JSON.parse(localStorage.getItem(StorageKeys.USER) || "{}");
   const storageToken = localStorage.getItem(StorageKeys.USER_TOKEN);
   const logged = JSON.parse(
@@ -53,6 +55,7 @@ const init = () => {
     user,
     token,
     logged,
+    cargo,
   };
 };
 
@@ -73,20 +76,22 @@ export const AuthProvider = ({ children }: Props) => {
     rol: Rol,
     token: string,
     user: User,
-    logged: boolean
+    logged: boolean,
+    cargo: Cargo
   ) => {
     dispatch({
       type: "[AUTH] login",
       payload: {
         accesos,
         aplicacion,
+        cargo,
+        logged,
         modulos,
         open,
         persona,
         rol,
         token,
         user,
-        logged,
       },
     });
   };

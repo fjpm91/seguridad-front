@@ -39,17 +39,25 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
     setValue,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm();
   const [unidades, setUnidadesNegocio] = useState<UnidadNegocio[]>([]);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const { authState } = useAuth();
   const { user } = authState;
+  const empresaWatched = watch("empresa_id");
 
   useEffect(() => {
     getEmpresas();
-    getUnidadesNegocio();
     getPersonaById();
+    if (id === "0") getUnidadesNegocio();
   }, []);
+
+  useEffect(() => {
+    if (empresaWatched) {
+      getUnidadesNegocio(empresaWatched);
+    }
+  }, [empresaWatched]);
 
   const getEmpresas = async () => {
     const { data } = await apiClient.get<BackendResponse>(
@@ -69,9 +77,14 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
     setEmpresas([...data.data]);
   };
 
-  const getUnidadesNegocio = async () => {
+  const getUnidadesNegocio = async (empresaId?: number) => {
     const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.UNIDAD_NEGOCIO}`
+      `/${ApiEndpoints.UNIDAD_NEGOCIO}`,
+      {
+        params: {
+          empresaId: empresaId ? empresaId : 0,
+        },
+      }
     );
 
     if (!data) {
@@ -443,11 +456,11 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                         : null
                     }
                     getOptionLabel={(option) =>
-                      `${option.id} - ${option.nombre}`
+                      `${option.codigo} - ${option.nombre}`
                     }
                     renderOption={(props, option) => (
                       <Box component="li" {...props}>
-                        {`${option.id} - ${option.nombre}`}
+                        {`${option.codigo} - ${option.nombre}`}
                       </Box>
                     )}
                     onChange={(_event: any, newValue) => {

@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Container } from "@mui/material";
 import { useAuth } from "../../../auth/context/useAuth";
-import { BackendResponse, Rol } from "../../../interfaces/interfaces";
+import {
+  Aplicacion,
+  BackendResponse,
+  Rol,
+} from "../../../interfaces/interfaces";
 import apiClient from "../../../services/api-client";
 import {
   ApiEndpoints,
@@ -21,6 +25,7 @@ interface Props {
 export const RolesPage = ({ setOpen, setToastMessage }: Props) => {
   const { authState } = useAuth();
   const [roles, setRoles] = useState<Rol[]>([]);
+  const [filtroAplicaciones, setFiltroAplicaciones] = useState<string[]>([]);
   const { accesos, user } = authState;
   const navigate = useNavigate();
   const { allowed: allowInsert } = useAutorizado(
@@ -50,6 +55,8 @@ export const RolesPage = ({ setOpen, setToastMessage }: Props) => {
       showMessage(data.message);
       return;
     }
+    const apps = (data.data as Rol[]).map((p) => p.aplicacion.codigo);
+    if (apps) setFiltroAplicaciones([...new Set(apps)]);
     setRoles([...data.data]);
   };
 
@@ -122,6 +129,7 @@ export const RolesPage = ({ setOpen, setToastMessage }: Props) => {
         {roles && (
           <RolTable
             allowUpdate={allowUpdate}
+            filtroAplicaciones={filtroAplicaciones}
             roles={roles}
             handleHabilitar={handleHabilitar}
             handleOpen={handleOpen}

@@ -112,6 +112,7 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
     const rolAsignacion = data.data as RolAsignacion;
     setValue("aplicacion_id", rolAsignacion.aplicacion_id);
     setValue("componente_id", rolAsignacion.componente_id);
+    setValue("rol_id", rolAsignacion.rol_id);
     setValue("nombre", rolAsignacion.nombre);
     setValue("visible", rolAsignacion.visible === 1 ? true : false);
     setValue("editable", rolAsignacion.editable === 1 ? true : false);
@@ -313,10 +314,12 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
                           ) ?? null
                         : null
                     }
-                    getOptionLabel={(option) => option.nombre}
+                    getOptionLabel={(option) =>
+                      `${option.codigo} - ${option.nombre}`
+                    }
                     renderOption={(props, option) => (
                       <Box component="li" {...props}>
-                        {option.nombre}
+                        {`${option.codigo} - ${option.nombre}`}
                       </Box>
                     )}
                     onChange={(_event: any, newValue) => {

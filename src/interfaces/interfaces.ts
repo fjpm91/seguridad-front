@@ -59,6 +59,7 @@ export interface CentroCosto {
   nombre: string;
   unidad_negocio_id: number;
 }
+
 export interface Division {
   division_id: number;
   nombre: string;
@@ -179,4 +180,17 @@ export interface BackendResponse {
   success: boolean;
   message: string;
   data: any;
+}
+
+export interface Cargo {
+  cargo_id: number;
+  cargo_nombre: string;
+  cargo_superior_nombre?: string;
+  created_at: string;
+  empresa_id: number;
+  empresa_nombre: string;
+  superior_id?: number;
+  unidad_negocio_id?: number;
+  unidad_negocio_nombre: string;
+  updated_at: string;
 }

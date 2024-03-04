@@ -14,6 +14,7 @@ import { Edit } from "@mui/icons-material";
 
 interface Props {
   allowUpdate: boolean;
+  filtroAplicaciones: string[];
   roles: Rol[];
   handleOpen: (aplicacion_id: number) => void;
   handleHabilitar: (aplicacion_id: number) => void;
@@ -22,6 +23,7 @@ interface Props {
 
 export const RolTable = ({
   allowUpdate,
+  filtroAplicaciones,
   roles,
   handleHabilitar,
   handleOpen,
@@ -35,6 +37,8 @@ export const RolTable = ({
       {
         accessorKey: "aplicacion.codigo",
         header: "Aplicacion",
+        filterVariant: "select",
+        filterSelectOptions: filtroAplicaciones,
         // enableColumnFilter: false,
       },
       {

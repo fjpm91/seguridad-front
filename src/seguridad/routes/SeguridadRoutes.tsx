@@ -27,6 +27,7 @@ import { DivisionForm, DivisionPage } from "../pages/division";
 import { PersonasForm } from "../pages/personas";
 import { UseToastMessage } from "../../hooks/useToastMessage";
 import { Snackbar } from "@mui/material";
+import { CargoForm, CargosPage } from "../pages/cargos";
 
 export const SeguridadRoutes = () => {
   const { authState, toggle } = useContext(AuthContext);
@@ -357,6 +358,27 @@ export const SeguridadRoutes = () => {
               path="divisiones/:id"
               element={
                 <DivisionForm
+                  setToastMessage={setToastMessage}
+                  setOpen={setOpen}
+                />
+              }
+            />
+          </Route>
+
+          <Route element={<SeguridadProtectedRoutes url="cargos_index" />}>
+            <Route
+              path="cargos"
+              element={
+                <CargosPage
+                  setToastMessage={setToastMessage}
+                  setOpen={setOpen}
+                />
+              }
+            />
+            <Route
+              path="cargos/:id"
+              element={
+                <CargoForm
                   setToastMessage={setToastMessage}
                   setOpen={setOpen}
                 />

@@ -28,7 +28,8 @@ const guardarState = (
   persona: any,
   rol: any,
   user: any,
-  token: any
+  token: any,
+  cargo: any
 ) => {
   localStorage.setItem(StorageKeys.ACCESOS, JSON.stringify(accesos));
   localStorage.setItem(StorageKeys.APLICACION, JSON.stringify(aplicacion));
@@ -37,6 +38,7 @@ const guardarState = (
   localStorage.setItem(StorageKeys.ROL, JSON.stringify(rol));
   localStorage.setItem(StorageKeys.USER, JSON.stringify(user));
   localStorage.setItem(StorageKeys.USER_TOKEN, token);
+  localStorage.setItem(StorageKeys.CARGO, JSON.stringify(cargo));
   localStorage.setItem(StorageKeys.LOGGED, JSON.stringify(true));
 };
 
@@ -89,7 +91,8 @@ export const LoginPage = () => {
         return;
       }
 
-      const { accesos, aplicacion, modulos, persona, rol, token, user } = data;
+      const { accesos, aplicacion, modulos, persona, rol, token, user, cargo } =
+        data;
       const modulosOrdenados: Modulo[] = ordenarModulos(modulos);
       const open = false;
       guardarState(
@@ -99,7 +102,8 @@ export const LoginPage = () => {
         persona,
         rol,
         user,
-        token
+        token,
+        cargo
       );
       login(
         accesos,
@@ -110,7 +114,8 @@ export const LoginPage = () => {
         rol,
         token,
         user,
-        true
+        true,
+        cargo
       );
 
       navigate("/");

@@ -1,6 +1,7 @@
 import { AppAuthState } from ".";
 import {
   Aplicacion,
+  Cargo,
   Modulo,
   Persona,
   Rol,
@@ -14,13 +15,14 @@ type AuthAction =
       payload: {
         accesos: RolAcceso[];
         aplicacion: Aplicacion;
+        cargo: Cargo;
+        logged: boolean;
         modulos: Modulo[];
         open: boolean;
         persona: Persona;
         rol: Rol;
         token: string;
         user: User;
-        logged: boolean;
       };
     }
   | { type: "[AUTH] logout" }
@@ -45,6 +47,7 @@ export const authReducer = (state: AppAuthState, action: AuthAction) => {
         token: action.payload.token,
         user: action.payload.user,
         logged: true,
+        cargo: action.payload.cargo,
       };
 
     case "[AUTH] logout":
@@ -57,6 +60,7 @@ export const authReducer = (state: AppAuthState, action: AuthAction) => {
         persona: null,
         rol: null,
         user: null,
+        cargo: null,
         token: "",
         logged: false,
       };
