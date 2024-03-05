@@ -327,14 +327,20 @@ export const RolesAccesosForm = ({ setOpen, setToastMessage }: Props) => {
                 <FormControlLabel
                   control={
                     <Checkbox
+                      id={`check-${modulo.modulo_id}`}
                       value={modulo.modulo_id}
-                      checked={modulo.check}
+                      // defaultChecked={false}
+                      checked={modulo.check || false}
                       onChange={(e) => {
                         handleCheckModulo(e);
                       }}
                     />
                   }
-                  label={modulo.nombre}
+                  label={
+                    modulo.menu === 1
+                      ? `Menú - ${modulo.titulo}`
+                      : modulo.nombre
+                  }
                 />
               </div>
             ))}

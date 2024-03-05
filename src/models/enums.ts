@@ -60,6 +60,7 @@ export enum ApiEndpoints {
   ROLES = "roles",
   ROLES_ACCESOS = "roles/accesos",
   UNIDAD_NEGOCIO = "unidades-negocio",
+  CENTROS_COSTO = "centros-costo",
   USERS = "users",
   USUARIO_ROL = "usuario-rol",
   CARGOS = "cargos",

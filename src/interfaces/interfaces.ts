@@ -28,6 +28,8 @@ export interface Persona {
   ubicacion?: string;
   updated_at?: number;
   unidad_negocio_id: number;
+  centro_costo_encargado?: number;
+  centro_costo_id?: number;
   user: any;
   empresa: Empresa;
 }
@@ -56,6 +58,8 @@ export interface UnidadNegocio {
 
 export interface CentroCosto {
   centro_costo_id: number;
+  id: number;
+  codigo: string;
   nombre: string;
   unidad_negocio_id: number;
 }
