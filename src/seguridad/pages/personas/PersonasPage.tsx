@@ -60,6 +60,10 @@ export const PersonasPage = ({ setOpen, setToastMessage }: Props) => {
     navigate(`/personas/${id}`);
   };
 
+  const handleOpenCentroCosto = (id: number) => {
+    navigate(`/${ApiEndpoints.PERSONAS_CENTROS_COSTO}/${id}`);
+  };
+
   const handleOpenModal = () => {
     setShow(true);
   };
@@ -139,6 +143,7 @@ export const PersonasPage = ({ setOpen, setToastMessage }: Props) => {
             personas={personas}
             handleHabilitar={handleHabilitar}
             handleOpen={handleOpen}
+            handleOpenCC={handleOpenCentroCosto}
           />
         )}
       </Container>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   BackendResponse,
+  CentroCosto,
   Empresa,
   Persona,
   UnidadNegocio,
@@ -13,10 +14,12 @@ import {
   Box,
   Button,
   Checkbox,
+  Divider,
   FormControlLabel,
-  FormGroup,
-  FormLabel,
   Grid,
+  List,
+  ListItem,
+  ListItemText,
   TextField,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
@@ -29,12 +32,14 @@ interface Props {
   setToastMessage: (toastMessage: string) => void;
 }
 
-export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
+export const PersonasCentroCostoForm = ({
+  setOpen,
+  setToastMessage,
+}: Props) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const {
     control,
-    getValues,
     register,
     setValue,
     handleSubmit,
@@ -42,10 +47,12 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
     watch,
   } = useForm();
   const [unidades, setUnidadesNegocio] = useState<UnidadNegocio[]>([]);
+  const [centrosCosto, setCentrosCosto] = useState<CentroCosto[]>([]);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const { authState } = useAuth();
   const { user } = authState;
   const empresaWatched = watch("empresa_id");
+  const unidadNegocioWatched = watch("unidad_negocio_id");
 
   useEffect(() => {
     getEmpresas();
@@ -58,6 +65,12 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
       getUnidadesNegocio(empresaWatched);
     }
   }, [empresaWatched]);
+
+  useEffect(() => {
+    if (unidadNegocioWatched) {
+      getCentrosCosto(unidadNegocioWatched);
+    }
+  }, [unidadNegocioWatched]);
 
   const getEmpresas = async () => {
     const { data } = await apiClient.get<BackendResponse>(
@@ -99,6 +112,36 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
     setUnidadesNegocio([...data.data]);
   };
 
+  const getCentrosCosto = async (unidadNegocioId?: number) => {
+    const { data } = await apiClient.get<BackendResponse>(
+      `/${ApiEndpoints.CENTROS_COSTO}`,
+      {
+        params: {
+          unidadNegocioId: unidadNegocioId ? unidadNegocioId : 0,
+        },
+      }
+    );
+
+    if (!data) {
+      showMessage(Messages.NO_SE_PUDO_COMPLETAR);
+      return;
+    }
+
+    if (!data.success) {
+      showMessage(data.message);
+      return;
+    }
+
+    const centros = (data.data as CentroCosto[]).map((m) => {
+      return {
+        ...m,
+        checkEncargado: false,
+        checkPertenece: false,
+      };
+    });
+    setCentrosCosto([...centros]);
+  };
+
   const getPersonaById = async () => {
     if (!id || id === "0") return;
 
@@ -128,18 +171,12 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
     setValue("codigo", userdata.codigo);
     setValue("cargo", userdata.cargo);
     setValue("ubicacion", userdata.ubicacion);
-    setValue("nombre", userdata.nombre);
-    setValue("apellido_paterno", userdata.apellido_paterno);
-    setValue("apellido_materno", userdata.apellido_materno);
-    setValue("nombre_completo", userdata.nombre_completo);
+    setValue("nombre", userdata.nombre_completo);
     setValue("unidad_negocio_id", userdata.unidad_negocio_id);
     if (userdata.empresa_id) setValue("empresa_id", userdata.empresa_id);
     if (userdata.user) setValue("user", userdata.user.name);
     if (userdata.habilitado)
       setValue("habilitado", userdata.habilitado ? true : false);
-    // encargado
-    // persona_id
-    // centro_costo_id
     if (userdata.centro_costo_encargado)
       setValue("encargado", userdata.centro_costo_encargado === 1 ? true : 0);
     if (userdata.centro_costo_id)
@@ -150,9 +187,10 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
     const datos = {
       ...formData,
       user: user?.id,
-      codigo_app: import.meta.env.VITE_CODIGO_APP,
-      habilitado: formData.habilitado ? formData.habilitado : 0,
+      centros: centrosCosto,
     };
+    console.log("🚀 ~ store ~ datos:", datos);
+    return;
 
     try {
       const { data } = await apiClient.post<BackendResponse>(
@@ -178,44 +216,8 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
     }
   };
 
-  const update = async (formData: any) => {
-    const datos = {
-      ...formData,
-      user: user?.id,
-      codigo_app: import.meta.env.VITE_CODIGO_APP,
-      habilitado: formData.habilitado ? formData.habilitado : 0,
-    };
-
-    try {
-      const { data } = await apiClient.put<BackendResponse>(
-        `/${ApiEndpoints.PERSONAS}/${id}`,
-        { ...datos }
-      );
-      if (!data) {
-        showMessage(Messages.NO_SE_PUDO_COMPLETAR);
-        return;
-      }
-      if (!data.success) {
-        showMessage(data.message);
-        return;
-      }
-
-      showMessage(data.message);
-      setTimeout(() => {
-        cancel();
-      }, 1000);
-    } catch (error) {
-      console.log("🚀 ~ file: PersonasForm.tsx:178 ~ update ~ error:", error);
-      showMessage(JSON.stringify(error));
-    }
-  };
-
   const submitForm = (event: any) => {
-    if (id === "0") {
-      store(event);
-    } else {
-      update(event);
-    }
+    store(event);
   };
 
   const showMessage = (text: string = "Operacion correcta") => {
@@ -224,6 +226,28 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
   };
 
   const cancel = () => navigate("/personas");
+
+  const handleCheckEncargadoCC = (e: any) => {
+    const { value } = e.target;
+    const index = centrosCosto.findIndex((cc) => cc.id == value);
+    if (index >= 0) {
+      const centrosCostoModificados = [...centrosCosto];
+      const ccBuscado = centrosCostoModificados[index];
+      ccBuscado.checkEncargado = !ccBuscado.checkEncargado;
+      setCentrosCosto([...centrosCostoModificados]);
+    }
+  };
+
+  const handleCheckPerteneceCC = (e: any) => {
+    const { value } = e.target;
+    const index = centrosCosto.findIndex((cc) => cc.id == value);
+    if (index >= 0) {
+      const centrosCostoModificados = [...centrosCosto];
+      const ccBuscado = centrosCostoModificados[index];
+      ccBuscado.checkPertenece = !ccBuscado.checkPertenece;
+      setCentrosCosto([...centrosCostoModificados]);
+    }
+  };
 
   return (
     <FormBoxContainer>
@@ -242,12 +266,12 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
         <Grid container sx={{ mb: 4 }}>
           {/* Titulo Formulario */}
           <Grid item xs={12}>
-            <PageTitle title="Formulario de Personas" variant="h5" />
+            <PageTitle title="Asignacion de Centros de Costo" variant="h5" />
           </Grid>
 
           <Grid container item lg={6}>
             {/* Id */}
-            <Grid item xs={12} sm={6} sx={{ p: 1 }}>
+            <Grid item xs={12} md={5} sx={{ p: 1 }}>
               <TextField
                 {...register("persona_id")}
                 label="Id"
@@ -257,35 +281,8 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
               />
             </Grid>
 
-            {/* Codigo */}
-            <Grid item xs={12} sm={6} sx={{ p: 1 }}>
-              <TextField
-                {...register("codigo", { required: true })}
-                label="Codigo"
-                defaultValue="0"
-                error={
-                  errors.codigo?.type === "required" ||
-                  getValues("codigo") === "0"
-                    ? true
-                    : false
-                }
-                onFocus={() =>
-                  getValues("codigo") === "0" ? setValue("codigo", "") : null
-                }
-                onBlur={() =>
-                  getValues("codigo") === "" ? setValue("codigo", "0") : null
-                }
-                sx={{ width: "100%", pr: "16px" }}
-              />
-              {(errors.codigo?.type === "required" ||
-                errors.codigo?.type === "minLength" ||
-                getValues("codigo") === "0") && (
-                <ErrorText text="El Codigo del Usuario es obligatorio" />
-              )}
-            </Grid>
-
             {/* Nombre */}
-            <Grid item xs={6} sx={{ p: 1 }}>
+            <Grid item xs={12} md={7} sx={{ p: 1 }}>
               <TextField
                 {...register("nombre", {
                   required: true,
@@ -293,18 +290,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                 })}
                 label="Nombre"
                 defaultValue="..."
-                error={
-                  errors.nombre?.type === "required" ||
-                  errors.nombre?.type === "minLength"
-                    ? true
-                    : false
-                }
-                onFocus={() =>
-                  getValues("nombre") === "..." ? setValue("nombre", "") : null
-                }
-                onBlur={() =>
-                  getValues("nombre") === "" ? setValue("nombre", "...") : null
-                }
+                disabled
                 sx={{ width: "100%", pr: "16px" }}
               />
               {(errors.nombre?.type === "required" ||
@@ -313,85 +299,8 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
               )}
             </Grid>
 
-            <Grid item xs={6} sx={{ p: 1 }}></Grid>
-
-            {/* Apellido Paterno */}
-            <Grid item xs={6} sx={{ p: 1 }}>
-              <TextField
-                {...register("apellido_paterno", {
-                  required: true,
-                  minLength: { value: 4, message: "error message" },
-                })}
-                label="Apellido Paterno"
-                defaultValue="..."
-                error={
-                  errors.apellido_paterno?.type === "required" ||
-                  errors.apellido_paterno?.type === "minLength"
-                    ? true
-                    : false
-                }
-                onFocus={() =>
-                  getValues("apellido_paterno") === "..."
-                    ? setValue("apellido_paterno", "")
-                    : null
-                }
-                onBlur={() =>
-                  getValues("apellido_paterno") === ""
-                    ? setValue("apellido_paterno", "...")
-                    : null
-                }
-                sx={{ width: "100%", pr: "16px" }}
-              />
-              {(errors.apellido_paterno?.type === "required" ||
-                errors.apellido_paterno?.type === "minLength") && (
-                <ErrorText text="El Apellido Paterno es obligatorio" />
-              )}
-            </Grid>
-
-            {/* Apellido Materno */}
-            <Grid item xs={12} sm={6} sx={{ p: 1 }}>
-              <TextField
-                {...register("apellido_materno")}
-                label="Apellido Materno"
-                defaultValue="..."
-                onFocus={() =>
-                  getValues("apellido_materno") === "..."
-                    ? setValue("apellido_materno", "")
-                    : null
-                }
-                onBlur={() =>
-                  getValues("apellido_materno") === ""
-                    ? setValue("apellido_materno", "...")
-                    : null
-                }
-                sx={{ width: "100%", pr: "16px" }}
-              />
-            </Grid>
-
-            {/* Ciudad */}
-            <Grid item xs={12} sm={6} sx={{ p: 1 }}>
-              <TextField
-                {...register("ubicacion")}
-                label="Ciudad"
-                defaultValue="..."
-                onFocus={() =>
-                  getValues("ubicacion") === "..."
-                    ? setValue("ubicacion", "")
-                    : null
-                }
-                onBlur={() =>
-                  getValues("ubicacion") === ""
-                    ? setValue("ubicacion", "...")
-                    : null
-                }
-                sx={{ width: "100%", pr: "16px" }}
-              />
-            </Grid>
-
-            <Grid item xs={6} sx={{ p: 1 }}></Grid>
-
             {/* Empresa */}
-            <Grid item xs={12} sm={6} sx={{ p: 1 }}>
+            <Grid item xs={12} md={5} sx={{ p: 1 }}>
               <Controller
                 name="empresa_id"
                 rules={{ required: true }}
@@ -424,6 +333,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                           inputProps={{
                             ...params.inputProps,
                           }}
+                          disabled
                           error={
                             errors.empresa_id?.type === "required"
                               ? true
@@ -441,7 +351,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Unidad de Negocio */}
-            <Grid item xs={12} sx={{ p: 1 }}>
+            <Grid item xs={12} md={7} sx={{ p: 1 }}>
               <Controller
                 name="unidad_negocio_id"
                 rules={{ required: true }}
@@ -475,6 +385,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                           inputProps={{
                             ...params.inputProps,
                           }}
+                          disabled
                           error={
                             errors.unidad_negocio_id?.type === "required"
                               ? true
@@ -491,39 +402,61 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
               )}
             </Grid>
 
-            {/* Habilitado */}
-            <Grid item xs={12} sm={6} sx={{ p: 1 }}>
-              <Controller
-                name="habilitado"
-                control={control}
-                render={({ field }) => (
-                  <>
-                    <FormLabel component="legend">Estado</FormLabel>
-                    <FormGroup>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            onChange={(e) => field.onChange(e.target.checked)}
-                            checked={field.value || false}
-                          />
-                        }
-                        label="Habilitado"
+            {/* Centros de Costo */}
+            <Grid item xs={12} sx={{ pr: "16px" }}>
+              <Grid container item xs={12}>
+                <List>
+                  <ListItem>
+                    <ListItemText primary="Centros de Costo" />
+                  </ListItem>
+                  {centrosCosto.map((centro) => (
+                    <ListItem
+                      key={centro.id}
+                      sx={{
+                        flexDirection: "column",
+                        alignItems: "flex-start",
+                        p: "0 0  0 8px",
+                      }}
+                    >
+                      <ListItemText
+                        primary={`${centro.codigo} - ${centro.nombre}`}
                       />
-                    </FormGroup>
-                  </>
-                )}
-              />
-            </Grid>
-
-            {/* Usuario */}
-            <Grid item xs={12} sm={6} sx={{ p: 1 }}>
-              <TextField
-                {...register("user")}
-                label="Usuario"
-                defaultValue="..."
-                disabled
-                sx={{ width: "100%", pr: "16px" }}
-              />
+                      <div style={{ width: "100%" }}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              id={`check-pertenece-${centro.id}`}
+                              value={centro.id}
+                              // defaultChecked={false}
+                              checked={centro.checkPertenece || false}
+                              onChange={(e) => {
+                                handleCheckPerteneceCC(e);
+                              }}
+                            />
+                          }
+                          label="Pertenece"
+                          sx={{ flex: 1 }}
+                        />
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              id={`check-encargado-${centro.id}`}
+                              value={centro.id}
+                              // defaultChecked={false}
+                              checked={centro.checkEncargado || false}
+                              onChange={(e) => {
+                                handleCheckEncargadoCC(e);
+                              }}
+                            />
+                          }
+                          label="Encargado"
+                        />
+                        <Divider />
+                      </div>
+                    </ListItem>
+                  ))}
+                </List>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>

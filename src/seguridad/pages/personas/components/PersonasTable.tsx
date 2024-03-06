@@ -7,17 +7,19 @@ import {
   FormControlLabel,
   FormGroup,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 import { MRT_Localization_ES } from "material-react-table/locales/es";
 import { IconoHabilitado } from "../../../../components";
-import { AccountCircle, Edit } from "@mui/icons-material";
+import { AccountCircle, AddToPhotos, Edit } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 interface Props {
   allowUpdate: boolean;
   personas: Persona[];
-  handleOpen: (aplicacion_id: number) => void;
-  handleHabilitar: (aplicacion_id: number) => void;
+  handleOpen: (persona_id: number) => void;
+  handleOpenCC: (persona_id: number) => void;
+  handleHabilitar: (persona_id: number) => void;
 }
 
 export const PersonasTable = ({
@@ -25,6 +27,7 @@ export const PersonasTable = ({
   personas,
   handleHabilitar,
   handleOpen,
+  handleOpenCC,
 }: Props) => {
   const navigate = useNavigate();
   const columns = useMemo<MRT_ColumnDef<Persona>[]>(
@@ -90,26 +93,40 @@ export const PersonasTable = ({
           sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}
           key={row.id}
         >
-          <IconButton
-            color="warning"
-            onClick={() => handleHabilitar(row.original.persona_id)}
+          <Tooltip
+            title={`${row.original.habilitado ? "Inhabilitar" : "Habilitar"}`}
           >
-            <IconoHabilitado habilitado={row.original.habilitado} />
-          </IconButton>
+            <IconButton
+              color="warning"
+              onClick={() => handleHabilitar(row.original.persona_id)}
+            >
+              <IconoHabilitado habilitado={row.original.habilitado} />
+            </IconButton>
+          </Tooltip>
 
-          <IconButton
-            color="primary"
-            onClick={() => handleOpen(row.original.persona_id)}
-          >
-            <Edit />
-          </IconButton>
+          <Tooltip title="Editar">
+            <IconButton
+              color="primary"
+              onClick={() => handleOpen(row.original.persona_id)}
+            >
+              <Edit />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Asignar Centro de Costo">
+            <IconButton onClick={() => handleOpenCC(row.original.persona_id)}>
+              <AddToPhotos />
+            </IconButton>
+          </Tooltip>
 
           {row.original.user && (
-            <IconButton
-              onClick={() => navigate(`/users/${row.original.user.id}`)}
-            >
-              <AccountCircle color="secondary" />
-            </IconButton>
+            <Tooltip title="Ver usuario">
+              <IconButton
+                onClick={() => navigate(`/users/${row.original.user.id}`)}
+              >
+                <AccountCircle color="secondary" />
+              </IconButton>
+            </Tooltip>
           )}
         </Box>,
       ]}
