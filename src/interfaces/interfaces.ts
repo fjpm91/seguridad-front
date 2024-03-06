@@ -62,6 +62,9 @@ export interface CentroCosto {
   codigo: string;
   nombre: string;
   unidad_negocio_id: number;
+  empresa_id?: number;
+  checkEncargado?: boolean;
+  checkPertenece?: boolean;
 }
 
 export interface Division {

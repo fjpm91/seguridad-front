@@ -24,10 +24,11 @@ import { ComponentsForm } from "../pages/componentes";
 import { RolAsignacionForm, RolAsignacionPage } from "../pages/rolAsignacion";
 import { UnidadNegocioForm, UnidadNegocioPage } from "../pages/unidadNegocio";
 import { DivisionForm, DivisionPage } from "../pages/division";
-import { PersonasForm } from "../pages/personas";
+import { PersonasCentroCostoForm, PersonasForm } from "../pages/personas";
 import { UseToastMessage } from "../../hooks/useToastMessage";
 import { Snackbar } from "@mui/material";
 import { CargoForm, CargosPage } from "../pages/cargos";
+import { CentroCostoForm, CentrosCostoPage } from "../pages/centrosCosto";
 
 export const SeguridadRoutes = () => {
   const { authState, toggle } = useContext(AuthContext);
@@ -192,6 +193,31 @@ export const SeguridadRoutes = () => {
               path="personas/:id"
               element={
                 <PersonasForm
+                  setToastMessage={setToastMessage}
+                  setOpen={setOpen}
+                />
+              }
+            />
+          </Route>
+
+          <Route
+            element={
+              <SeguridadProtectedRoutes url="personas_centro_costo_index" />
+            }
+          >
+            <Route
+              path="personas"
+              element={
+                <PersonasPage
+                  setToastMessage={setToastMessage}
+                  setOpen={setOpen}
+                />
+              }
+            />
+            <Route
+              path="/personas-centro-costo/:id"
+              element={
+                <PersonasCentroCostoForm
                   setToastMessage={setToastMessage}
                   setOpen={setOpen}
                 />
@@ -379,6 +405,29 @@ export const SeguridadRoutes = () => {
               path="cargos/:id"
               element={
                 <CargoForm
+                  setToastMessage={setToastMessage}
+                  setOpen={setOpen}
+                />
+              }
+            />
+          </Route>
+
+          <Route
+            element={<SeguridadProtectedRoutes url="centros_costo_index" />}
+          >
+            <Route
+              path="centros-costo"
+              element={
+                <CentrosCostoPage
+                  setToastMessage={setToastMessage}
+                  setOpen={setOpen}
+                />
+              }
+            />
+            <Route
+              path="centros-costo/:id"
+              element={
+                <CentroCostoForm
                   setToastMessage={setToastMessage}
                   setOpen={setOpen}
                 />
