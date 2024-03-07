@@ -4,6 +4,7 @@ import {
   CentroCosto,
   Empresa,
   Persona,
+  PersonaCentroCosto,
   UnidadNegocio,
 } from "../../../../interfaces/interfaces";
 import { Controller, useForm } from "react-hook-form";
@@ -16,16 +17,20 @@ import {
   Checkbox,
   Divider,
   FormControlLabel,
+  FormGroup,
   Grid,
+  IconButton,
   List,
   ListItem,
   ListItemText,
   TextField,
+  Tooltip,
+  Typography,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../../../../auth/context/useAuth";
 import { FormBoxContainer, PageTitle } from "../../../../components";
 import { ErrorText } from "../../../../components/ErrorText";
+import { Check, Close, Delete } from "@mui/icons-material";
 
 interface Props {
   setOpen: (open: boolean) => void;
@@ -48,9 +53,10 @@ export const PersonasCentroCostoForm = ({
   } = useForm();
   const [unidades, setUnidadesNegocio] = useState<UnidadNegocio[]>([]);
   const [centrosCosto, setCentrosCosto] = useState<CentroCosto[]>([]);
+  const [centrosCostoPersona, setCentrosCostoPersona] = useState<
+    PersonaCentroCosto[]
+  >([]);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
-  const { authState } = useAuth();
-  const { user } = authState;
   const empresaWatched = watch("empresa_id");
   const unidadNegocioWatched = watch("unidad_negocio_id");
 
@@ -148,6 +154,7 @@ export const PersonasCentroCostoForm = ({
     const datos = {
       persona_id: id,
       user: 1,
+      personaCC: true,
     };
     const { data } = await apiClient.get<BackendResponse>(
       `/${ApiEndpoints.PERSONAS}/${id}`,
@@ -181,20 +188,31 @@ export const PersonasCentroCostoForm = ({
       setValue("encargado", userdata.centro_costo_encargado === 1 ? true : 0);
     if (userdata.centro_costo_id)
       setValue("centro_costo_id", userdata.centro_costo_id);
+    if (userdata.persona_centros_costos) {
+      // const pcc = userdata.persona_centros_costos.map((x) => {
+      //   return {
+      //     ...x,
+      //     centro_costo_id: x.centro_costos.id,
+      //     nombre: x.centro_costos.nombre,
+      //     codigo: x.centro_costos.codigo,
+      //     persona_centro_costo_id: x.id,
+      //   };
+      // });
+      // setCentrosCostoPersona([...pcc]);
+      setCentrosCostoPersona([...userdata.persona_centros_costos]);
+    }
   };
 
   const store = async (formData: any) => {
     const datos = {
       ...formData,
-      user: user?.id,
-      centros: centrosCosto,
+      encargado: formData.encargado ? 1 : 0,
     };
     console.log("🚀 ~ store ~ datos:", datos);
-    return;
 
     try {
       const { data } = await apiClient.post<BackendResponse>(
-        `/${ApiEndpoints.PERSONAS}`,
+        `/${ApiEndpoints.PERSONAS_CENTROS_COSTO}`,
         { ...datos }
       );
       if (!data) {
@@ -227,25 +245,63 @@ export const PersonasCentroCostoForm = ({
 
   const cancel = () => navigate("/personas");
 
-  const handleCheckEncargadoCC = (e: any) => {
-    const { value } = e.target;
-    const index = centrosCosto.findIndex((cc) => cc.id == value);
-    if (index >= 0) {
-      const centrosCostoModificados = [...centrosCosto];
-      const ccBuscado = centrosCostoModificados[index];
-      ccBuscado.checkEncargado = !ccBuscado.checkEncargado;
-      setCentrosCosto([...centrosCostoModificados]);
+  const handleEliminar = async (centroCosto: PersonaCentroCosto) => {
+    try {
+      const datos = {
+        persona_id: centroCosto.persona_id,
+        persona_centro_costo_id: centroCosto.id,
+        centro_costo_id: centroCosto.centro_costo_id,
+      };
+      const { data } = await apiClient.post<BackendResponse>(
+        `/${ApiEndpoints.ELIMINAR_ASIGNACION_PCC}`,
+        datos
+      );
+
+      if (!data) {
+        showMessage("No se pudo completar la operación");
+        return;
+      }
+
+      if (!data.success) {
+        showMessage(data.message);
+        return;
+      }
+
+      showMessage(data.message);
+      getPersonaById();
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  const handleCheckPerteneceCC = (e: any) => {
-    const { value } = e.target;
-    const index = centrosCosto.findIndex((cc) => cc.id == value);
-    if (index >= 0) {
-      const centrosCostoModificados = [...centrosCosto];
-      const ccBuscado = centrosCostoModificados[index];
-      ccBuscado.checkPertenece = !ccBuscado.checkPertenece;
-      setCentrosCosto([...centrosCostoModificados]);
+  const handleActualizarEncargado = async (pcc: PersonaCentroCosto) => {
+    console.log("🚀 ~ handleActualizarEncargado ~ centroCosto:", pcc);
+    try {
+      const datos = {
+        persona_id: pcc.persona_id,
+        persona_centro_costo_id: pcc.id,
+        centro_costo_id: pcc.centro_costos.id,
+        encargado: pcc.encargado,
+      };
+      const { data } = await apiClient.post<BackendResponse>(
+        `/${ApiEndpoints.ACTUALIZAR_ENCARGADO_PCC}`,
+        datos
+      );
+
+      if (!data) {
+        showMessage("No se pudo completar la operación");
+        return;
+      }
+
+      if (!data.success) {
+        showMessage(data.message);
+        return;
+      }
+
+      showMessage(data.message);
+      getPersonaById();
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -269,9 +325,9 @@ export const PersonasCentroCostoForm = ({
             <PageTitle title="Asignacion de Centros de Costo" variant="h5" />
           </Grid>
 
-          <Grid container item lg={6}>
+          <Grid container item lg={6} sx={{ pt: 2 }}>
             {/* Id */}
-            <Grid item xs={12} md={5} sx={{ p: 1 }}>
+            {/* <Grid item xs={12} md={5} sx={{ p: 1 }}>
               <TextField
                 {...register("persona_id")}
                 label="Id"
@@ -279,16 +335,16 @@ export const PersonasCentroCostoForm = ({
                 disabled
                 sx={{ width: "100%", pr: "16px" }}
               />
-            </Grid>
+            </Grid> */}
 
             {/* Nombre */}
-            <Grid item xs={12} md={7} sx={{ p: 1 }}>
+            <Grid item xs={12} sx={{ p: 1 }}>
               <TextField
                 {...register("nombre", {
                   required: true,
                   minLength: { value: 4, message: "error message" },
                 })}
-                label="Nombre"
+                label="Persona"
                 defaultValue="..."
                 disabled
                 sx={{ width: "100%", pr: "16px" }}
@@ -300,7 +356,7 @@ export const PersonasCentroCostoForm = ({
             </Grid>
 
             {/* Empresa */}
-            <Grid item xs={12} md={5} sx={{ p: 1 }}>
+            <Grid item xs={12} sx={{ p: 1 }}>
               <Controller
                 name="empresa_id"
                 rules={{ required: true }}
@@ -351,7 +407,7 @@ export const PersonasCentroCostoForm = ({
             </Grid>
 
             {/* Unidad de Negocio */}
-            <Grid item xs={12} md={7} sx={{ p: 1 }}>
+            <Grid item xs={12} sx={{ p: 1 }}>
               <Controller
                 name="unidad_negocio_id"
                 rules={{ required: true }}
@@ -385,7 +441,6 @@ export const PersonasCentroCostoForm = ({
                           inputProps={{
                             ...params.inputProps,
                           }}
-                          disabled
                           error={
                             errors.unidad_negocio_id?.type === "required"
                               ? true
@@ -403,86 +458,145 @@ export const PersonasCentroCostoForm = ({
             </Grid>
 
             {/* Centros de Costo */}
-            <Grid item xs={12} sx={{ pr: "16px" }}>
-              <Grid container item xs={12}>
-                <List>
-                  <ListItem>
-                    <ListItemText primary="Centros de Costo" />
-                  </ListItem>
-                  {centrosCosto.map((centro) => (
-                    <ListItem
-                      key={centro.id}
-                      sx={{
-                        flexDirection: "column",
-                        alignItems: "flex-start",
-                        p: "0 0  0 8px",
+            <Grid item xs={12} sx={{ p: 1 }}>
+              <Controller
+                name="centro_costo_id"
+                rules={{ required: true }}
+                control={control}
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <Autocomplete
+                      value={
+                        value
+                          ? centrosCosto.find(
+                              (option) => value === option.id
+                            ) ?? null
+                          : null
+                      }
+                      getOptionLabel={(option) =>
+                        `${option.codigo} - ${option.nombre}`
+                      }
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props}>
+                          {`${option.codigo} - ${option.nombre}`}
+                        </Box>
+                      )}
+                      onChange={(_event: any, newValue) => {
+                        onChange(newValue ? newValue.id : null);
                       }}
-                    >
-                      <ListItemText
-                        primary={`${centro.codigo} - ${centro.nombre}`}
-                      />
-                      <div style={{ width: "100%" }}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              id={`check-pertenece-${centro.id}`}
-                              value={centro.id}
-                              // defaultChecked={false}
-                              checked={centro.checkPertenece || false}
-                              onChange={(e) => {
-                                handleCheckPerteneceCC(e);
-                              }}
-                            />
+                      options={centrosCosto}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Centro de Costo"
+                          inputProps={{
+                            ...params.inputProps,
+                          }}
+                          error={
+                            errors.centro_costo_id?.type === "required"
+                              ? true
+                              : false
                           }
-                          label="Pertenece"
-                          sx={{ flex: 1 }}
                         />
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              id={`check-encargado-${centro.id}`}
-                              value={centro.id}
-                              // defaultChecked={false}
-                              checked={centro.checkEncargado || false}
-                              onChange={(e) => {
-                                handleCheckEncargadoCC(e);
-                              }}
-                            />
-                          }
-                          label="Encargado"
+                      )}
+                    />
+                  );
+                }}
+              />
+              {errors.centro_costo_id?.type === "required" && (
+                <ErrorText text="El Centro de Costo es obligatorio" />
+              )}
+            </Grid>
+
+            {/* Encargado */}
+            <Grid item xs={12} sm={4} md={3}>
+              <Controller
+                name="encargado"
+                control={control}
+                render={({ field }) => (
+                  <FormGroup>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          sx={{ ml: 1 }}
+                          onChange={(e) => field.onChange(e.target.checked)}
+                          checked={field.value || false}
                         />
-                        <Divider />
-                      </div>
-                    </ListItem>
-                  ))}
-                </List>
+                      }
+                      label="Encargado"
+                    />
+                  </FormGroup>
+                )}
+              />
+            </Grid>
+
+            {/* Botones */}
+            <Grid container item sx={{ p: 1 }}>
+              <Grid item xs={6}>
+                <Button
+                  size="medium"
+                  variant="contained"
+                  sx={{ width: { xs: "100%", sm: "initial" } }}
+                  type="submit"
+                >
+                  Asignar
+                </Button>
+              </Grid>
+
+              <Grid item xs={6}>
+                <Button
+                  size="medium"
+                  variant="outlined"
+                  sx={{ width: { xs: "100%", sm: "initial" } }}
+                  onClick={cancel}
+                >
+                  Cancelar
+                </Button>
               </Grid>
             </Grid>
-          </Grid>
-        </Grid>
 
-        {/* Botones */}
-        <Grid container spacing={2}>
-          <Grid item xs={6} sm={3} md={2}>
-            <Button
-              size="medium"
-              variant="contained"
-              sx={{ width: { xs: "100%", sm: "initial" } }}
-              type="submit"
-            >
-              Guardar
-            </Button>
-          </Grid>
+            {/* Centros de Costo */}
+            <Grid item xs={12} sx={{ pt: 2 }}>
+              <Typography variant="body2">
+                Centros de Costo Asignados
+              </Typography>
+              <Divider />
+              <List>
+                {centrosCostoPersona.map((cc) => (
+                  <ListItem key={cc.id}>
+                    <ListItemText
+                      primary={`${cc.centro_costos.codigo} - ${cc.centro_costos.nombre}`}
+                      secondary={cc.encargado ? "Encargado" : "---"}
+                    />
 
-          <Grid item xs={6} sm={3} md={2}>
-            <Button
-              size="medium"
-              variant="outlined"
-              sx={{ width: { xs: "100%", sm: "initial" } }}
-              onClick={cancel}
-            >
-              Cancelar
-            </Button>
+                    <Tooltip
+                      title={
+                        cc.encargado
+                          ? "Quitar Encargado"
+                          : "Marcar como Encargado"
+                      }
+                    >
+                      <IconButton
+                        color={cc.encargado ? "warning" : "default"}
+                        onClick={() => handleActualizarEncargado(cc)}
+                      >
+                        {cc.encargado ? <Close /> : <Check />}
+                      </IconButton>
+                    </Tooltip>
+
+                    <Tooltip title="Eliminar Asignacion de CC">
+                      <IconButton
+                        color="error"
+                        onClick={() => handleEliminar(cc)}
+                      >
+                        <Delete />
+                      </IconButton>
+                    </Tooltip>
+                  </ListItem>
+                ))}
+              </List>
+            </Grid>
           </Grid>
         </Grid>
       </Box>

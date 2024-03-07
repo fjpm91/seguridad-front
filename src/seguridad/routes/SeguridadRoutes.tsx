@@ -202,7 +202,7 @@ export const SeguridadRoutes = () => {
 
           <Route
             element={
-              <SeguridadProtectedRoutes url="personas_centro_costo_index" />
+              <SeguridadProtectedRoutes url="personas_centro_costos_index" />
             }
           >
             <Route
@@ -215,7 +215,7 @@ export const SeguridadRoutes = () => {
               }
             />
             <Route
-              path="/personas-centro-costo/:id"
+              path="/personas-centro-costos/:id"
               element={
                 <PersonasCentroCostoForm
                   setToastMessage={setToastMessage}

@@ -10,14 +10,18 @@ export interface Persona {
   apellido_materno: string;
   apellido_paterno: string;
   cargo?: string;
+  centro_costo_encargado?: number;
+  centro_costo_id?: number;
+  centros_costo?: CentroCosto[];
   ci_extension?: string;
   ci_origen?: string;
   ci?: string;
-  correo?: string;
   ciudad: string;
   codigo: number;
+  correo?: string;
   created_at?: number;
   empresa_id?: number;
+  empresa: Empresa;
   fecha_nacimiento?: string;
   foto?: string;
   habilitado: number;
@@ -26,12 +30,10 @@ export interface Persona {
   persona_id: number;
   telefono?: string;
   ubicacion?: string;
-  updated_at?: number;
   unidad_negocio_id: number;
-  centro_costo_encargado?: number;
-  centro_costo_id?: number;
+  updated_at?: number;
   user: any;
-  empresa: Empresa;
+  persona_centros_costos?: PersonaCentroCosto[];
 }
 
 export interface Rol {
@@ -58,13 +60,13 @@ export interface UnidadNegocio {
 
 export interface CentroCosto {
   centro_costo_id: number;
-  id: number;
-  codigo: string;
-  nombre: string;
-  unidad_negocio_id: number;
-  empresa_id?: number;
   checkEncargado?: boolean;
   checkPertenece?: boolean;
+  codigo: string;
+  empresa_id?: number;
+  id: number;
+  nombre: string;
+  unidad_negocio_id: number;
 }
 
 export interface Division {
@@ -200,4 +202,25 @@ export interface Cargo {
   unidad_negocio_id?: number;
   unidad_negocio_nombre: string;
   updated_at: string;
+}
+
+export interface PersonaCentroCosto {
+  id: number;
+  nombre?: string;
+  codigo?: number;
+  encargado: number;
+  persona_id: number;
+  centro_costo_id: number;
+  created_at: string;
+  updated_at: string;
+  centro_costos: Centrocostos2;
+}
+
+interface Centrocostos2 {
+  id: number;
+  nombre: string;
+  codigo: number;
+  unidad_negocio_id: number;
+  created_at?: any;
+  updated_at?: any;
 }
