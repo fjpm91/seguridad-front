@@ -226,8 +226,10 @@ export const PersonasCentroCostoForm = ({
 
       showMessage(data.message);
       setTimeout(() => {
-        cancel();
-      }, 1000);
+        // cancel();
+        resetForm();
+        getPersonaById();
+      }, 500);
     } catch (error) {
       console.log("🚀 ~ file: PersonasForm.tsx:143 ~ store ~ error:", error);
       showMessage(JSON.stringify(error));
@@ -303,6 +305,11 @@ export const PersonasCentroCostoForm = ({
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const resetForm = () => {
+    setValue("centro_costo_id", 0);
+    setValue("encargado", false);
   };
 
   return (
