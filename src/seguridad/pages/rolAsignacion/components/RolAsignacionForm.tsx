@@ -39,16 +39,24 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
     register,
     setValue,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm();
   const navigate = useNavigate();
   const { user } = authState;
+  const appWatched = watch("aplicacion_id");
 
   useEffect(() => {
     getComponentes();
     getAplicaciones();
     getRolAsignacionById();
   }, []);
+
+  useEffect(() => {
+    if (appWatched) {
+      getRoles(appWatched);
+    }
+  }, [appWatched]);
 
   const getComponentes = async () => {
     const { data } = await apiClient.get<BackendResponse>(
@@ -86,10 +94,27 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
     setAplicaciones([...data.data]);
   };
 
-  const setRolesByApp = async (aplicacion: Aplicacion | null) => {
-    if (!aplicacion) return;
-    setRoles([...aplicacion.roles]);
-    console.log("setRolesByApp");
+  const getRoles = async (aplicacionId: number) => {
+    const { data } = await apiClient.get<BackendResponse>(
+      `/${ApiEndpoints.ROLES}`,
+      {
+        params: {
+          aplicacionId,
+        },
+      }
+    );
+
+    if (!data) {
+      showMessage(Messages.NO_SE_PUDO_COMPLETAR);
+      return;
+    }
+
+    if (!data.success) {
+      showMessage(data.message);
+      return;
+    }
+
+    setRoles([...data.data]);
   };
 
   const getRolAsignacionById = async () => {
@@ -117,14 +142,6 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
     setValue("visible", rolAsignacion.visible === 1 ? true : false);
     setValue("editable", rolAsignacion.editable === 1 ? true : false);
     setValue("habilitado", rolAsignacion.habilitado === 1 ? true : false);
-
-    const appActual = aplicaciones.find(
-      (app) => app.aplicacion_id === rolAsignacion.aplicacion_id
-    );
-    if (appActual) {
-      setRolesByApp(appActual);
-      setValue("rol_id", rolAsignacion.rol_id);
-    }
   };
 
   const store = async (formData: any) => {
@@ -222,252 +239,254 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
         }}
       >
         {/* Formulario */}
-        <Grid container spacing={2} sx={{ mb: 4 }}>
-          {/* Titulo Formulario */}
-          <Grid item xs={12}>
-            <PageTitle title="Formulario de Rol Asignación" variant="h5" />
-          </Grid>
+        <Grid container sx={{ mb: 4 }}>
+          <Grid item container xs={12} lg={6}>
+            {/* Titulo Formulario */}
+            <Grid item xs={12}>
+              <PageTitle title="Formulario de Rol Asignación" variant="h5" />
+            </Grid>
 
-          {/* Id */}
-          <Grid item xs={12} sm={4} md={2}>
-            <TextField
-              {...register("componente_id")}
-              label="Id"
-              defaultValue="Id"
-              disabled
-              sx={{ width: "100%" }}
-            />
-          </Grid>
+            {/* Id */}
+            <Grid item xs={12} lg={3} sx={{ p: 1 }}>
+              <TextField
+                {...register("componente_id")}
+                label="Id"
+                defaultValue="Id"
+                disabled
+                sx={{ width: "100%" }}
+              />
+            </Grid>
 
-          {/* Componentes */}
-          <Grid item xs={12} sm={6} md={5}>
-            <Controller
-              name="componente_id"
-              rules={{ required: true }}
-              control={control}
-              render={({ field }) => {
-                const { onChange, value } = field;
-                return (
-                  <Autocomplete
-                    value={
-                      value
-                        ? componentes.find(
-                            (option) => value === option.componente_id
-                          ) ?? null
-                        : null
-                    }
-                    getOptionLabel={(option) => option.nombre}
-                    renderOption={(props, option) => (
-                      <Box component="li" {...props}>
-                        {option.nombre}
-                      </Box>
-                    )}
-                    onChange={(_event: any, newValue) => {
-                      onChange(newValue ? newValue.componente_id : null);
-                    }}
-                    options={componentes}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Componente *"
-                        error={
-                          errors.componente_id?.type === "required"
-                            ? true
-                            : false
-                        }
-                        inputProps={{
-                          ...params.inputProps,
-                        }}
-                      />
-                    )}
-                  />
-                );
-              }}
-            />
-            {(errors.componente_id?.type === "required" ||
-              errors.componente_id?.type === "minLength") && (
-              <Typography
-                paddingLeft={2}
-                paddingTop={1}
-                fontSize={12.5}
-                color={"#F36892"}
-              >
-                El componente es obligatorio
-              </Typography>
-            )}
-          </Grid>
-
-          {/* Aplicacion */}
-          <Grid item xs={12} sm={6} md={5}>
-            <Controller
-              name="aplicacion_id"
-              rules={{ required: true }}
-              control={control}
-              render={({ field }) => {
-                const { onChange, value } = field;
-                return (
-                  <Autocomplete
-                    value={
-                      value
-                        ? aplicaciones.find(
-                            (option) => value === option.aplicacion_id
-                          ) ?? null
-                        : null
-                    }
-                    getOptionLabel={(option) =>
-                      `${option.codigo} - ${option.nombre}`
-                    }
-                    renderOption={(props, option) => (
-                      <Box component="li" {...props}>
-                        {`${option.codigo} - ${option.nombre}`}
-                      </Box>
-                    )}
-                    onChange={(_event: any, newValue) => {
-                      onChange(newValue ? newValue.aplicacion_id : null);
-                      setRolesByApp(newValue ? newValue : null);
-                    }}
-                    options={aplicaciones}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Aplicacion *"
-                        error={
-                          errors.aplicacion_id?.type === "required"
-                            ? true
-                            : false
-                        }
-                        inputProps={{
-                          ...params.inputProps,
-                        }}
-                      />
-                    )}
-                  />
-                );
-              }}
-            />
-            {(errors.aplicacion_id?.type === "required" ||
-              errors.aplicacion_id?.type === "minLength") && (
-              <Typography
-                paddingLeft={2}
-                paddingTop={1}
-                fontSize={12.5}
-                color={"#F36892"}
-              >
-                La aplicacion es obligatoria
-              </Typography>
-            )}
-          </Grid>
-
-          {/* Rol */}
-          <Grid item xs={12} sm={6} md={5}>
-            <Controller
-              name="rol_id"
-              rules={{ required: true }}
-              control={control}
-              render={({ field }) => {
-                const { onChange, value } = field;
-                return (
-                  <Autocomplete
-                    value={
-                      value
-                        ? roles.find((option) => value === option.rol_id) ??
-                          null
-                        : null
-                    }
-                    getOptionLabel={(option) => option.nombre}
-                    renderOption={(props, option) => (
-                      <Box component="li" {...props}>
-                        {option.nombre}
-                      </Box>
-                    )}
-                    onChange={(_event: any, newValue) => {
-                      onChange(newValue ? newValue.rol_id : null);
-                    }}
-                    options={roles}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Rol *"
-                        error={
-                          errors.rol_id?.type === "required" ? true : false
-                        }
-                        inputProps={{
-                          ...params.inputProps,
-                        }}
-                      />
-                    )}
-                  />
-                );
-              }}
-            />
-            {(errors.rol_id?.type === "required" ||
-              errors.rol_id?.type === "minLength") && (
-              <Typography
-                paddingLeft={2}
-                paddingTop={1}
-                fontSize={12.5}
-                color={"#F36892"}
-              >
-                El rol es obligatorio
-              </Typography>
-            )}
-          </Grid>
-
-          {/* Visible */}
-          <Grid item xs={12} sm={3} md={2}>
-            <Controller
-              name="visible"
-              control={control}
-              render={({ field }) => (
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      onChange={(e) => field.onChange(e.target.checked)}
-                      checked={field.value || false}
+            {/* Componentes */}
+            <Grid item xs={12} lg={9} sx={{ p: 1 }}>
+              <Controller
+                name="componente_id"
+                rules={{ required: true }}
+                control={control}
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <Autocomplete
+                      value={
+                        value
+                          ? componentes.find(
+                              (option) => value === option.componente_id
+                            ) ?? null
+                          : null
+                      }
+                      getOptionLabel={(option) => option.nombre}
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props}>
+                          {option.nombre}
+                        </Box>
+                      )}
+                      onChange={(_event: any, newValue) => {
+                        onChange(newValue ? newValue.componente_id : null);
+                      }}
+                      options={componentes}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Componente *"
+                          error={
+                            errors.componente_id?.type === "required"
+                              ? true
+                              : false
+                          }
+                          inputProps={{
+                            ...params.inputProps,
+                          }}
+                        />
+                      )}
                     />
-                  }
-                  label="Visible"
-                />
+                  );
+                }}
+              />
+              {(errors.componente_id?.type === "required" ||
+                errors.componente_id?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  El componente es obligatorio
+                </Typography>
               )}
-            />
-          </Grid>
+            </Grid>
 
-          {/* Editable */}
-          <Grid item xs={12} sm={3} md={2}>
-            <Controller
-              name="editable"
-              control={control}
-              render={({ field }) => (
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      onChange={(e) => field.onChange(e.target.checked)}
-                      checked={field.value || false}
+            {/* Aplicacion */}
+            <Grid item xs={12} sx={{ p: 1 }}>
+              <Controller
+                name="aplicacion_id"
+                rules={{ required: true }}
+                control={control}
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <Autocomplete
+                      value={
+                        value
+                          ? aplicaciones.find(
+                              (option) => value === option.aplicacion_id
+                            ) ?? null
+                          : null
+                      }
+                      getOptionLabel={(option) =>
+                        `${option.codigo} - ${option.nombre}`
+                      }
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props}>
+                          {`${option.codigo} - ${option.nombre}`}
+                        </Box>
+                      )}
+                      onChange={(_event: any, newValue) => {
+                        onChange(newValue ? newValue.aplicacion_id : null);
+                        // setRolesByApp(newValue ? newValue : null);
+                      }}
+                      options={aplicaciones}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Aplicacion *"
+                          error={
+                            errors.aplicacion_id?.type === "required"
+                              ? true
+                              : false
+                          }
+                          inputProps={{
+                            ...params.inputProps,
+                          }}
+                        />
+                      )}
                     />
-                  }
-                  label="Editable"
-                />
+                  );
+                }}
+              />
+              {(errors.aplicacion_id?.type === "required" ||
+                errors.aplicacion_id?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  La aplicacion es obligatoria
+                </Typography>
               )}
-            />
-          </Grid>
+            </Grid>
 
-          {/* Habilitado */}
-          <Grid item xs={12} sm={3} md={2} sx={{ pr: "16px" }}>
-            <Controller
-              name="habilitado"
-              control={control}
-              render={({ field }) => (
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      onChange={(e) => field.onChange(e.target.checked)}
-                      checked={field.value || false}
+            {/* Rol */}
+            <Grid item xs={12} sx={{ p: 1 }}>
+              <Controller
+                name="rol_id"
+                rules={{ required: true }}
+                control={control}
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <Autocomplete
+                      value={
+                        value
+                          ? roles.find((option) => value === option.rol_id) ??
+                            null
+                          : null
+                      }
+                      getOptionLabel={(option) => option.nombre}
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props}>
+                          {option.nombre}
+                        </Box>
+                      )}
+                      onChange={(_event: any, newValue) => {
+                        onChange(newValue ? newValue.rol_id : null);
+                      }}
+                      options={roles}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Rol *"
+                          error={
+                            errors.rol_id?.type === "required" ? true : false
+                          }
+                          inputProps={{
+                            ...params.inputProps,
+                          }}
+                        />
+                      )}
                     />
-                  }
-                  label="Habilitado"
-                />
+                  );
+                }}
+              />
+              {(errors.rol_id?.type === "required" ||
+                errors.rol_id?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  El rol es obligatorio
+                </Typography>
               )}
-            />
+            </Grid>
+
+            {/* Visible */}
+            <Grid item xs={12} lg={4} sx={{ p: 1 }}>
+              <Controller
+                name="visible"
+                control={control}
+                render={({ field }) => (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        onChange={(e) => field.onChange(e.target.checked)}
+                        checked={field.value || false}
+                      />
+                    }
+                    label="Visible"
+                  />
+                )}
+              />
+            </Grid>
+
+            {/* Editable */}
+            <Grid item xs={12} lg={4} sx={{ p: 1 }}>
+              <Controller
+                name="editable"
+                control={control}
+                render={({ field }) => (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        onChange={(e) => field.onChange(e.target.checked)}
+                        checked={field.value || false}
+                      />
+                    }
+                    label="Editable"
+                  />
+                )}
+              />
+            </Grid>
+
+            {/* Habilitado */}
+            <Grid item xs={12} lg={4} sx={{ p: 1 }}>
+              <Controller
+                name="habilitado"
+                control={control}
+                render={({ field }) => (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        onChange={(e) => field.onChange(e.target.checked)}
+                        checked={field.value || false}
+                      />
+                    }
+                    label="Habilitado"
+                  />
+                )}
+              />
+            </Grid>
           </Grid>
         </Grid>
 
