@@ -10,7 +10,7 @@ export const FormBoxContainer = ({ children }: Props) => {
       sx={{
         backgroundColor: "grey.100",
         minHeight: { xs: "calc(100vh - 56px)", sm: "calc(100vh - 64px)" },
-        pt: { xs: "64px", md: "72px" },
+        pt: { xs: "64px", md: "84px" },
         px: { xs: 1, md: 2 },
       }}
     >
