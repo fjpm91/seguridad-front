@@ -224,3 +224,11 @@ interface Centrocostos2 {
   created_at?: any;
   updated_at?: any;
 }
+
+export interface UnidadOrganizativa {
+  descripcion: string;
+  division_id: number;
+  division_nombre: string;
+  nombre: string;
+  unidad_organizativa_id: number;
+}

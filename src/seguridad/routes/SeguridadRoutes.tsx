@@ -29,6 +29,11 @@ import { UseToastMessage } from "../../hooks/useToastMessage";
 import { Snackbar } from "@mui/material";
 import { CargoForm, CargosPage } from "../pages/cargos";
 import { CentroCostoForm, CentrosCostoPage } from "../pages/centrosCosto";
+import { ApiEndpoints, TipoAcceso } from "../../models/enums";
+import {
+  UnidadOrganizativaForm,
+  UnidadOrganizativaPage,
+} from "../pages/unidadOrganizativa";
 
 export const SeguridadRoutes = () => {
   const { authState, toggle } = useContext(AuthContext);
@@ -66,12 +71,14 @@ export const SeguridadRoutes = () => {
             <Route path="inicio" element={<InicioPage />} />
           </Route>
 
+          {/* Roles */}
           <Route
             element={<SeguridadProtectedRoutes url="roles_accesos_index" />}
           >
             <Route path="roles-accesos" element={<RolesAccesosPage />} />
           </Route>
 
+          {/* Accesos */}
           <Route element={<SeguridadProtectedRoutes url="accesos_index" />}>
             <Route
               path="accesos"
@@ -93,6 +100,7 @@ export const SeguridadRoutes = () => {
             />
           </Route>
 
+          {/* Aplicaciones */}
           <Route
             element={<SeguridadProtectedRoutes url="aplicaciones_index" />}
           >
@@ -116,6 +124,7 @@ export const SeguridadRoutes = () => {
             />
           </Route>
 
+          {/* Empresas */}
           <Route element={<SeguridadProtectedRoutes url="empresas_index" />}>
             <Route
               path="empresas"
@@ -137,6 +146,7 @@ export const SeguridadRoutes = () => {
             />
           </Route>
 
+          {/* Modulos */}
           <Route element={<SeguridadProtectedRoutes url="modulos_index" />}>
             <Route
               path="modulos"
@@ -158,6 +168,7 @@ export const SeguridadRoutes = () => {
             />
           </Route>
 
+          {/* Componentes */}
           <Route element={<SeguridadProtectedRoutes url="componentes_index" />}>
             <Route
               path="componentes"
@@ -179,6 +190,7 @@ export const SeguridadRoutes = () => {
             />
           </Route>
 
+          {/* Personas */}
           <Route element={<SeguridadProtectedRoutes url="personas_index" />}>
             <Route
               path="personas"
@@ -200,6 +212,7 @@ export const SeguridadRoutes = () => {
             />
           </Route>
 
+          {/* Personas Centro Costos */}
           <Route
             element={
               <SeguridadProtectedRoutes url="personas_centro_costos_index" />
@@ -225,6 +238,7 @@ export const SeguridadRoutes = () => {
             />
           </Route>
 
+          {/* Personas Usuarios */}
           <Route
             element={<SeguridadProtectedRoutes url="personas_usuarios_index" />}
           >
@@ -239,10 +253,12 @@ export const SeguridadRoutes = () => {
             />
           </Route>
 
+          {/* Bitacora */}
           <Route element={<SeguridadProtectedRoutes url="bitacora_index" />}>
             <Route path="bitacora" element={<BitacoraPage />} />
           </Route>
 
+          {/* Roles */}
           <Route element={<SeguridadProtectedRoutes url="roles_index" />}>
             <Route
               path="roles"
@@ -261,24 +277,7 @@ export const SeguridadRoutes = () => {
             />
           </Route>
 
-          <Route element={<SeguridadProtectedRoutes url="roles_index" />}>
-            <Route
-              path="roles"
-              element={
-                <RolesPage
-                  setToastMessage={setToastMessage}
-                  setOpen={setOpen}
-                />
-              }
-            />
-            <Route
-              path="roles/:id"
-              element={
-                <RolForm setToastMessage={setToastMessage} setOpen={setOpen} />
-              }
-            />
-          </Route>
-
+          {/* Rol Asignacion */}
           <Route
             element={<SeguridadProtectedRoutes url="rol_asignacion_index" />}
           >
@@ -302,6 +301,7 @@ export const SeguridadRoutes = () => {
             />
           </Route>
 
+          {/* Users */}
           <Route element={<SeguridadProtectedRoutes url="users_index" />}>
             <Route
               path="users"
@@ -333,6 +333,7 @@ export const SeguridadRoutes = () => {
             <Route path="usuario-rol-base" element={<UsuarioRolBaseForm />} />
           </Route>
 
+          {/* Usuario Rol */}
           <Route
             element={<SeguridadProtectedRoutes url="usuario_rol_insert" />}
           >
@@ -347,6 +348,7 @@ export const SeguridadRoutes = () => {
             />
           </Route>
 
+          {/* Unidades de Negocio */}
           <Route
             element={<SeguridadProtectedRoutes url="unidades_negocio_index" />}
           >
@@ -370,6 +372,7 @@ export const SeguridadRoutes = () => {
             />
           </Route>
 
+          {/* Divisiones */}
           <Route element={<SeguridadProtectedRoutes url="divisiones_index" />}>
             <Route
               path="divisiones"
@@ -391,6 +394,7 @@ export const SeguridadRoutes = () => {
             />
           </Route>
 
+          {/* Cargos */}
           <Route element={<SeguridadProtectedRoutes url="cargos_index" />}>
             <Route
               path="cargos"
@@ -412,6 +416,7 @@ export const SeguridadRoutes = () => {
             />
           </Route>
 
+          {/* Centros de Costo */}
           <Route
             element={<SeguridadProtectedRoutes url="centros_costo_index" />}
           >
@@ -428,6 +433,34 @@ export const SeguridadRoutes = () => {
               path="centros-costo/:id"
               element={
                 <CentroCostoForm
+                  setToastMessage={setToastMessage}
+                  setOpen={setOpen}
+                />
+              }
+            />
+          </Route>
+
+          {/* Unidades Organizativas */}
+          <Route
+            element={
+              <SeguridadProtectedRoutes
+                url={ApiEndpoints.UNIDADES_ORGANIZATIVAS + TipoAcceso.INDEX}
+              />
+            }
+          >
+            <Route
+              path={ApiEndpoints.UNIDADES_ORGANIZATIVAS}
+              element={
+                <UnidadOrganizativaPage
+                  setToastMessage={setToastMessage}
+                  setOpen={setOpen}
+                />
+              }
+            />
+            <Route
+              path={ApiEndpoints.UNIDADES_ORGANIZATIVAS + "/:id"}
+              element={
+                <UnidadOrganizativaForm
                   setToastMessage={setToastMessage}
                   setOpen={setOpen}
                 />

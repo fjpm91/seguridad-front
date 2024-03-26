@@ -1,0 +1,316 @@
+import { useEffect, useState } from "react";
+import { Box, Grid, TextField, Button, Autocomplete } from "@mui/material";
+import { Controller, useForm } from "react-hook-form";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  BackendResponse,
+  Division,
+  UnidadOrganizativa,
+} from "../../../../interfaces/interfaces";
+import { ApiEndpoints, Messages } from "../../../../models/enums";
+import apiClient from "../../../../services/api-client";
+import { useAuth } from "../../../../auth/context/useAuth";
+import { FormBoxContainer, PageTitle } from "../../../../components";
+import { ErrorText } from "../../../../components/ErrorText";
+
+interface Props {
+  setOpen: (open: boolean) => void;
+  setToastMessage: (toastMessage: string) => void;
+}
+
+export const UnidadOrganizativaForm = ({ setOpen, setToastMessage }: Props) => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [divisiones, setDivisiones] = useState<Division[]>([]);
+  const {
+    control,
+    getValues,
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<UnidadOrganizativa>();
+  const { authState } = useAuth();
+  const { user } = authState;
+
+  useEffect(() => {
+    getDivisiones();
+    getUnidadOrganizativaById();
+  }, []);
+
+  const getDivisiones = async () => {
+    const { data } = await apiClient.get<BackendResponse>(
+      `/${ApiEndpoints.DIVISIONES}`
+    );
+
+    if (!data) {
+      showMessage(Messages.NO_SE_PUDO_COMPLETAR);
+      return;
+    }
+
+    if (!data.success) {
+      showMessage(data.message);
+      return;
+    }
+
+    setDivisiones([...data.data]);
+  };
+
+  const getUnidadOrganizativaById = async () => {
+    if (!id || id === "0") return;
+
+    const { data: response } = await apiClient.get<BackendResponse>(
+      `/${ApiEndpoints.UNIDADES_ORGANIZATIVAS}/${id}`
+    );
+
+    if (!response) return;
+
+    if (!response.success) {
+      showMessage(response.message);
+      return;
+    }
+
+    const modelData = response.data as UnidadOrganizativa;
+    setValue("unidad_organizativa_id", modelData.unidad_organizativa_id);
+    setValue("division_id", modelData.division_id);
+    setValue("nombre", modelData.nombre);
+    setValue("division_nombre", modelData.division_nombre);
+  };
+
+  const submitForm = (event: any) => {
+    if (id === "0") {
+      store(event);
+    } else {
+      update(event);
+    }
+  };
+
+  const store = async (formData: any) => {
+    const datos = {
+      ...formData,
+      user: user?.id,
+      codigo_app: import.meta.env.VITE_CODIGO_APP,
+    };
+
+    try {
+      const { data } = await apiClient.post<BackendResponse>(
+        `/${ApiEndpoints.UNIDADES_ORGANIZATIVAS}`,
+        { ...datos }
+      );
+      if (!data) {
+        showMessage(Messages.NO_SE_PUDO_COMPLETAR);
+        return;
+      }
+      if (!data.success) {
+        showMessage(data.message);
+        return;
+      }
+
+      showMessage(data.message);
+      setTimeout(() => {
+        cancel();
+      }, 1000);
+    } catch (error) {
+      showMessage(JSON.stringify(error));
+    }
+  };
+
+  const update = async (formData: any) => {
+    const datos = {
+      ...formData,
+      user: user?.id,
+      codigo_app: import.meta.env.VITE_CODIGO_APP,
+    };
+
+    try {
+      const { data: response } = await apiClient.put<BackendResponse>(
+        `/${ApiEndpoints.UNIDADES_ORGANIZATIVAS}/${id}`,
+        datos
+      );
+      if (!response) {
+        showMessage(Messages.NO_SE_PUDO_COMPLETAR);
+        return;
+      }
+
+      if (!response.success) {
+        showMessage(response.message);
+        return;
+      }
+
+      showMessage(response.message);
+      setTimeout(() => {
+        cancel();
+      }, 1000);
+    } catch (error) {
+      showMessage(JSON.stringify(error));
+    }
+  };
+
+  const cancel = () => navigate(`/${ApiEndpoints.UNIDADES_ORGANIZATIVAS}`);
+
+  const showMessage = (text: string = "Operacion correcta") => {
+    setToastMessage(text);
+    setOpen(true);
+  };
+
+  return (
+    <FormBoxContainer>
+      <Box
+        component="form"
+        autoComplete="off"
+        onSubmit={handleSubmit(submitForm)}
+        noValidate
+        sx={{
+          backgroundColor: "white",
+          p: 3, // 4 * 8
+          borderRadius: 2, // 4 * 4
+        }}
+      >
+        {/* Formulario */}
+        <Grid container spacing={2} sx={{ mb: 4 }}>
+          {/* Titulo Formulario */}
+          <Grid item xs={12}>
+            <PageTitle
+              title="Formulario de Unidades Organizativas"
+              variant="h5"
+            />
+          </Grid>
+
+          <Grid container item xs={12} lg={6}>
+            {/* ID */}
+            <Grid item xs={12} md={4} sx={{ p: 1 }}>
+              <TextField
+                {...register("unidad_organizativa_id")}
+                label="Id"
+                defaultValue={0}
+                type="number"
+                disabled
+                inputProps={{
+                  readOnly: true,
+                }}
+                sx={{ width: "100%", pr: "16px" }}
+              />
+            </Grid>
+
+            {/* Nombre Unidad */}
+            <Grid item xs={12} md={8} sx={{ p: 1 }}>
+              <TextField
+                {...register("nombre", {
+                  required: true,
+                  minLength: { value: 4, message: "error message" },
+                })}
+                required
+                label="Nombre"
+                defaultValue="---"
+                onFocus={() =>
+                  getValues("nombre") === "---" ? setValue("nombre", "") : null
+                }
+                onBlur={() =>
+                  getValues("nombre") === "---" ? setValue("nombre", "") : null
+                }
+                error={
+                  errors.nombre?.type === "required" ||
+                  errors.nombre?.type === "minLength"
+                    ? true
+                    : false
+                }
+                sx={{ width: "100%" }}
+              />
+              {(errors.nombre?.type === "required" ||
+                errors.nombre?.type === "minLength") && (
+                <ErrorText text="El Nombre es obligatorio" />
+              )}
+            </Grid>
+
+            {/* Descripcion Unidad */}
+            <Grid item xs={12} sx={{ p: 1 }}>
+              <TextField
+                {...register("descripcion")}
+                required
+                label="Descripcion"
+                defaultValue="---"
+                onFocus={() =>
+                  getValues("descripcion") === "---"
+                    ? setValue("descripcion", "")
+                    : null
+                }
+                onBlur={() =>
+                  getValues("descripcion") === "---"
+                    ? setValue("descripcion", "")
+                    : null
+                }
+                sx={{ width: "100%" }}
+              />
+            </Grid>
+
+            {/* Division */}
+            <Grid item xs={12} sx={{ p: 1 }}>
+              <Controller
+                name="division_id"
+                control={control}
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <Autocomplete
+                      value={
+                        value
+                          ? divisiones.find(
+                              (option) => value === option.division_id
+                            ) ?? null
+                          : null
+                      }
+                      getOptionLabel={(option) => option.nombre}
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props}>
+                          {option.nombre}
+                        </Box>
+                      )}
+                      onChange={(_event: any, newValue) =>
+                        onChange(newValue ? newValue.division_id : null)
+                      }
+                      options={divisiones}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Division"
+                          inputProps={{
+                            ...params.inputProps,
+                          }}
+                        />
+                      )}
+                    />
+                  );
+                }}
+              />
+            </Grid>
+          </Grid>
+        </Grid>
+
+        {/* Botones */}
+        <Grid container spacing={2}>
+          <Grid item xs={6} sm={3} md={2}>
+            <Button
+              size="medium"
+              variant="contained"
+              sx={{ width: { xs: "100%", sm: "initial" } }}
+              type="submit"
+            >
+              Guardar
+            </Button>
+          </Grid>
+
+          <Grid item xs={6} sm={3} md={2}>
+            <Button
+              size="medium"
+              variant="outlined"
+              sx={{ width: { xs: "100%", sm: "initial" } }}
+              onClick={cancel}
+            >
+              Cancelar
+            </Button>
+          </Grid>
+        </Grid>
+      </Box>
+    </FormBoxContainer>
+  );
+};
