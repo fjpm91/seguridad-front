@@ -72,6 +72,8 @@ export interface CentroCosto {
 export interface Division {
   division_id: number;
   nombre: string;
+  empresa_id?: number;
+  empresa_nombre?: string;
   unidades_negocio: UnidadNegocio[];
 }
 
@@ -227,8 +229,10 @@ interface Centrocostos2 {
 
 export interface UnidadOrganizativa {
   descripcion: string;
-  division_id: number;
+  division_id?: number;
   division_nombre: string;
+  empresa_id?: number;
+  empresa_nombre?: string;
   nombre: string;
   unidad_organizativa_id: number;
 }

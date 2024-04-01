@@ -26,6 +26,10 @@ export const DivisionTable = ({
         accessorKey: "nombre",
         header: "Nombre",
       },
+      {
+        accessorKey: "empresa_nombre",
+        header: "Empresa",
+      },
     ],
     [divisiones]
   );

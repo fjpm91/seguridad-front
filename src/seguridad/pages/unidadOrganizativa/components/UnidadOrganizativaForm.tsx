@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   BackendResponse,
   Division,
+  Empresa,
   UnidadOrganizativa,
 } from "../../../../interfaces/interfaces";
 import { ApiEndpoints, Messages } from "../../../../models/enums";
@@ -22,25 +23,57 @@ export const UnidadOrganizativaForm = ({ setOpen, setToastMessage }: Props) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [divisiones, setDivisiones] = useState<Division[]>([]);
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const {
     control,
     getValues,
     register,
     setValue,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<UnidadOrganizativa>();
   const { authState } = useAuth();
   const { user } = authState;
+  const empresaWatched = watch("empresa_id");
 
   useEffect(() => {
-    getDivisiones();
+    getEmpresas();
     getUnidadOrganizativaById();
   }, []);
 
-  const getDivisiones = async () => {
+  useEffect(() => {
+    if (empresaWatched) {
+      getDivisiones(empresaWatched);
+    }
+  }, [empresaWatched]);
+
+  const getEmpresas = async () => {
     const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.DIVISIONES}`
+      `/${ApiEndpoints.EMPRESAS}`
+    );
+
+    if (!data) {
+      showMessage(Messages.NO_SE_PUDO_COMPLETAR);
+      return;
+    }
+
+    if (!data.success) {
+      showMessage(data.message);
+      return;
+    }
+
+    setEmpresas([...data.data]);
+  };
+
+  const getDivisiones = async (empresaId: number = 0) => {
+    const { data } = await apiClient.get<BackendResponse>(
+      `/${ApiEndpoints.DIVISIONES}`,
+      {
+        params: {
+          empresaId,
+        },
+      }
     );
 
     if (!data) {
@@ -72,6 +105,7 @@ export const UnidadOrganizativaForm = ({ setOpen, setToastMessage }: Props) => {
 
     const modelData = response.data as UnidadOrganizativa;
     setValue("unidad_organizativa_id", modelData.unidad_organizativa_id);
+    setValue("empresa_id", modelData.empresa_id);
     setValue("division_id", modelData.division_id);
     setValue("nombre", modelData.nombre);
     setValue("division_nombre", modelData.division_nombre);
@@ -176,7 +210,7 @@ export const UnidadOrganizativaForm = ({ setOpen, setToastMessage }: Props) => {
             />
           </Grid>
 
-          <Grid container item xs={12} lg={6}>
+          <Grid container item xs={12} sm={10} md={8} lg={6}>
             {/* ID */}
             <Grid item xs={12} md={4} sx={{ p: 1 }}>
               <TextField
@@ -192,8 +226,99 @@ export const UnidadOrganizativaForm = ({ setOpen, setToastMessage }: Props) => {
               />
             </Grid>
 
-            {/* Nombre Unidad */}
+            {/* Empresa */}
             <Grid item xs={12} md={8} sx={{ p: 1 }}>
+              <Controller
+                name="empresa_id"
+                rules={{ required: true }}
+                control={control}
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <Autocomplete
+                      value={
+                        value
+                          ? empresas.find(
+                              (option) => value === option.empresa_id
+                            ) ?? null
+                          : null
+                      }
+                      getOptionLabel={(option) => option.nombre}
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props}>
+                          {option.nombre}
+                        </Box>
+                      )}
+                      onChange={(_event: any, newValue) =>
+                        onChange(newValue ? newValue.empresa_id : null)
+                      }
+                      options={empresas}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Empresa"
+                          error={
+                            errors.empresa_id?.type === "required"
+                              ? true
+                              : false
+                          }
+                          inputProps={{
+                            ...params.inputProps,
+                          }}
+                        />
+                      )}
+                    />
+                  );
+                }}
+              />
+              {errors.empresa_id?.type === "required" && (
+                <ErrorText text="La Empresa es obligatoria" />
+              )}
+            </Grid>
+
+            {/* Division */}
+            <Grid item xs={12} sx={{ p: 1 }}>
+              <Controller
+                name="division_id"
+                control={control}
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <Autocomplete
+                      value={
+                        value
+                          ? divisiones.find(
+                              (option) => value === option.division_id
+                            ) ?? null
+                          : null
+                      }
+                      getOptionLabel={(option) => option.nombre}
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props}>
+                          {option.nombre}
+                        </Box>
+                      )}
+                      onChange={(_event: any, newValue) =>
+                        onChange(newValue ? newValue.division_id : null)
+                      }
+                      options={divisiones}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Division"
+                          inputProps={{
+                            ...params.inputProps,
+                          }}
+                        />
+                      )}
+                    />
+                  );
+                }}
+              />
+            </Grid>
+
+            {/* Nombre Unidad */}
+            <Grid item xs={12} sx={{ p: 1 }}>
               <TextField
                 {...register("nombre", {
                   required: true,
@@ -240,47 +365,6 @@ export const UnidadOrganizativaForm = ({ setOpen, setToastMessage }: Props) => {
                     : null
                 }
                 sx={{ width: "100%" }}
-              />
-            </Grid>
-
-            {/* Division */}
-            <Grid item xs={12} sx={{ p: 1 }}>
-              <Controller
-                name="division_id"
-                control={control}
-                render={({ field }) => {
-                  const { onChange, value } = field;
-                  return (
-                    <Autocomplete
-                      value={
-                        value
-                          ? divisiones.find(
-                              (option) => value === option.division_id
-                            ) ?? null
-                          : null
-                      }
-                      getOptionLabel={(option) => option.nombre}
-                      renderOption={(props, option) => (
-                        <Box component="li" {...props}>
-                          {option.nombre}
-                        </Box>
-                      )}
-                      onChange={(_event: any, newValue) =>
-                        onChange(newValue ? newValue.division_id : null)
-                      }
-                      options={divisiones}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Division"
-                          inputProps={{
-                            ...params.inputProps,
-                          }}
-                        />
-                      )}
-                    />
-                  );
-                }}
               />
             </Grid>
           </Grid>

@@ -7,18 +7,21 @@ import {
   FormControlLabel,
   Checkbox,
   Button,
+  Autocomplete,
 } from "@mui/material";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   BackendResponse,
   UnidadNegocio,
   Division,
+  Empresa,
 } from "../../../../interfaces/interfaces";
 import { ApiEndpoints, Messages } from "../../../../models/enums";
 import apiClient from "../../../../services/api-client";
 import { useAuth } from "../../../../auth/context/useAuth";
 import { FormBoxContainer, PageTitle } from "../../../../components";
+import { ErrorText } from "../../../../components/ErrorText";
 
 interface Props {
   setOpen: (open: boolean) => void;
@@ -30,6 +33,7 @@ export const DivisionForm = ({ setOpen, setToastMessage }: Props) => {
   const navigate = useNavigate();
   const { authState } = useAuth();
   const {
+    control,
     register,
     getValues,
     setValue,
@@ -38,11 +42,31 @@ export const DivisionForm = ({ setOpen, setToastMessage }: Props) => {
   } = useForm();
   const [unidadesNegocio, setUnidadesNegocio] = useState<UnidadNegocio[]>([]);
   const [divisionActual, setDivisionActual] = useState<Division | null>(null);
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const { user } = authState;
 
   useEffect(() => {
     getUnidadesNegocio();
+    getEmpresas();
   }, []);
+
+  const getEmpresas = async () => {
+    const { data } = await apiClient.get<BackendResponse>(
+      `/${ApiEndpoints.EMPRESAS}`
+    );
+
+    if (!data) {
+      showMessage(Messages.NO_SE_PUDO_COMPLETAR);
+      return;
+    }
+
+    if (!data.success) {
+      showMessage(data.message);
+      return;
+    }
+
+    setEmpresas([...data.data]);
+  };
 
   const getUnidadesNegocio = async () => {
     const { data } = await apiClient.get<BackendResponse>(
@@ -88,6 +112,7 @@ export const DivisionForm = ({ setOpen, setToastMessage }: Props) => {
     const { data } = response;
     setValue("division_id", data.division_id);
     setValue("nombre", data.nombre);
+    if (data.empresa_id) setValue("empresa_id", data.empresa_id);
     setDivisionActual(data);
     const lista = listaUnidades ? listaUnidades : [];
     markCheckedUnidades(data.unidades_negocio, lista);
@@ -164,7 +189,7 @@ export const DivisionForm = ({ setOpen, setToastMessage }: Props) => {
     }
   };
 
-  const cancel = () => navigate("/divisiones");
+  const cancel = () => navigate("/" + ApiEndpoints.DIVISIONES);
 
   const showMessage = (text: string = "Operacion correcta") => {
     setToastMessage(text);
@@ -253,8 +278,56 @@ export const DivisionForm = ({ setOpen, setToastMessage }: Props) => {
             />
           </Grid>
 
-          {/* Nombre */}
+          {/* Empresa */}
           <Grid item xs={12} md={6}>
+            <Controller
+              name="empresa_id"
+              rules={{ required: true }}
+              control={control}
+              render={({ field }) => {
+                const { onChange, value } = field;
+                return (
+                  <Autocomplete
+                    value={
+                      value
+                        ? empresas.find(
+                            (option) => value === option.empresa_id
+                          ) ?? null
+                        : null
+                    }
+                    getOptionLabel={(option) => option.nombre}
+                    renderOption={(props, option) => (
+                      <Box component="li" {...props}>
+                        {option.nombre}
+                      </Box>
+                    )}
+                    onChange={(_event: any, newValue) =>
+                      onChange(newValue ? newValue.empresa_id : null)
+                    }
+                    options={empresas}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Seleccionar empresa"
+                        error={
+                          errors.empresa_id?.type === "required" ? true : false
+                        }
+                        inputProps={{
+                          ...params.inputProps,
+                        }}
+                      />
+                    )}
+                  />
+                );
+              }}
+            />
+            {errors.empresa_id?.type === "required" && (
+              <ErrorText text="La Empresa es obligatoria" />
+            )}
+          </Grid>
+
+          {/* Nombre */}
+          <Grid item xs={12}>
             <TextField
               {...register("nombre", {
                 required: true,
@@ -287,7 +360,7 @@ export const DivisionForm = ({ setOpen, setToastMessage }: Props) => {
 
           {/* Unidades de Negocio */}
           {id !== "0" ? (
-            <Grid item xs={12} sm={8} sx={{ pr: "16px" }}>
+            <Grid item xs={12} sx={{ pr: "16px" }}>
               {unidadesNegocio.map((unidad) => (
                 <div key={unidad.id}>
                   <FormControlLabel
