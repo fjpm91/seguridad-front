@@ -2,90 +2,77 @@ import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { Autocomplete, Box, Button, Grid, TextField } from "@mui/material";
-import apiClient from "../../../../services/api-client";
-import { useAuth } from "../../../../auth/context/useAuth";
 import {
   BackendResponse,
   Cargo,
-  Division,
   Empresa,
+  Persona,
   UnidadNegocio,
-  UnidadOrganizativa,
 } from "../../../../interfaces/interfaces";
 import { ApiEndpoints, Messages } from "../../../../models/enums";
 import { FormBoxContainer, PageTitle } from "../../../../components";
 import { ErrorText } from "../../../../components/ErrorText";
+import apiClient from "../../../../services/api-client";
 
 interface Props {
   setOpen: (open: boolean) => void;
   setToastMessage: (toastMessage: string) => void;
 }
 
-export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
+export const AsignarCargoForm = ({ setOpen, setToastMessage }: Props) => {
   const { id } = useParams();
-  const { authState } = useAuth();
   const {
     control,
-    getValues,
     register,
     setValue,
     handleSubmit,
     formState: { errors },
     watch,
-  } = useForm<Cargo>();
+  } = useForm();
   const navigate = useNavigate();
   const [unidades, setUnidadesNegocio] = useState<UnidadNegocio[]>([]);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [cargos, setCargos] = useState<Cargo[]>([]);
-  const [unidadesOrganizativas, setUnidadesOrganizativas] = useState<
-    UnidadOrganizativa[]
-  >([]);
-  const [divisiones, setDivisiones] = useState<Division[]>([]);
-  const { user } = authState;
+  const [personas, setPersonas] = useState<Persona[]>([]);
   const empresaWatched = watch("empresa_id");
-  const divisionWatched = watch("division_id");
+  const unidadNegocioWatched = watch("unidad_negocio_id");
+  const personaWatched = watch("persona_id");
 
   useEffect(() => {
     getEmpresas();
-    getCargos();
+    getPersonas({});
+    getCargos({});
     getCargoById();
     if (id === "0") {
       getUnidadesNegocio();
-      getCargos();
+      getCargos({});
     }
   }, []);
 
   useEffect(() => {
     if (empresaWatched) {
       getUnidadesNegocio(empresaWatched);
-      getCargos(empresaWatched);
-      getDivisiones(empresaWatched);
+      getPersonas({ empresaId: empresaWatched });
+      getCargos({ empresaId: empresaWatched });
     }
   }, [empresaWatched]);
 
   useEffect(() => {
-    if (divisionWatched) {
-      getUnidadesOrganizativas(divisionWatched);
+    if (unidadNegocioWatched) {
+      getPersonas({ unidadNegocioId: unidadNegocioWatched });
+      getCargos({ unidadNegocioId: unidadNegocioWatched });
+      setValue("cargo_nombre", "---");
     }
-  }, [divisionWatched]);
+  }, [unidadNegocioWatched]);
 
-  const getEmpresas = async () => {
-    const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.EMPRESAS}`
-    );
-
-    if (!data) {
-      showMessage(Messages.NO_SE_PUDO_COMPLETAR);
-      return;
+  useEffect(() => {
+    if (personaWatched) {
+      const personaBuscada = personas.find(
+        (x) => x.persona_id === personaWatched
+      );
+      setValue("cargo_nombre", personaBuscada?.cargos?.nombre || "---");
     }
-
-    if (!data.success) {
-      showMessage(data.message);
-      return;
-    }
-
-    setEmpresas([...data.data]);
-  };
+  }, [personaWatched]);
 
   const getUnidadesNegocio = async (empresaId?: number) => {
     const { data } = await apiClient.get<BackendResponse>(
@@ -109,12 +96,13 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
     setUnidadesNegocio([...data.data]);
   };
 
-  const getDivisiones = async (empresaId: number = 0) => {
+  const getPersonas = async ({ empresaId = 0, unidadNegocioId = 0 }) => {
     const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.DIVISIONES}`,
+      `/${ApiEndpoints.PERSONAS}`,
       {
         params: {
           empresaId,
+          unidadNegocioId,
         },
       }
     );
@@ -129,15 +117,12 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
       return;
     }
 
-    setDivisiones([...data.data]);
+    setPersonas([...data.data]);
   };
 
-  const getUnidadesOrganizativas = async (divisionId: number = 0) => {
+  const getEmpresas = async () => {
     const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.UNIDADES_ORGANIZATIVAS}`,
-      {
-        params: { divisionId },
-      }
+      `/${ApiEndpoints.EMPRESAS}`
     );
 
     if (!data) {
@@ -149,15 +134,17 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
       showMessage(data.message);
       return;
     }
-    setUnidadesOrganizativas([...data.data]);
+
+    setEmpresas([...data.data]);
   };
 
-  const getCargos = async (empresaId?: number) => {
+  const getCargos = async ({ empresaId = 0, unidadNegocioId = 0 }) => {
     const { data } = await apiClient.get<BackendResponse>(
       `/${ApiEndpoints.CARGOS}`,
       {
         params: {
-          empresaId: empresaId ? empresaId : 0,
+          empresaId,
+          unidadNegocioId,
         },
       }
     );
@@ -186,30 +173,17 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
     setValue("cargo_id", data.cargo_id);
     setValue("cargo_nombre", data.cargo_nombre);
     setValue("unidad_negocio_id", data.unidad_negocio_id);
-    setValue("empresa_id", data.empresa_id);
     data.superior_id ? setValue("superior_id", data.superior_id) : null;
-    data.division_id ? setValue("division_id", data.division_id) : null;
-    data.unidad_organizativa_id
-      ? setValue("unidad_organizativa_id", data.unidad_organizativa_id)
-      : null;
   };
 
   const store = async (formData: any) => {
-    const datos = { ...formData };
-    if (datos.area === "...") datos.area = null;
-    if (datos.url === "...") datos.url = null;
-    if (datos.descripcion === "...") datos.descripcion = null;
-    if (datos.base_datos === "...") datos.base_datos = null;
-    if (datos.icono === "...") datos.icono = null;
-    if (datos.ip_servidor === "...") datos.ip_servidor = null;
+    // const datos = { ...formData };
 
     try {
-      const { data } = await apiClient.post<BackendResponse>(
-        `/${ApiEndpoints.CARGOS}`,
+      const { data } = await apiClient.put<BackendResponse>(
+        `/${ApiEndpoints.ACTUALIZAR_CARGOS}`,
         {
-          ...datos,
-          user: user?.id,
-          codigo_app: import.meta.env.VITE_CODIGO_APP,
+          ...formData,
         }
       );
       if (!data) {
@@ -223,41 +197,9 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
 
       showMessage(data.message);
       setTimeout(() => {
-        cancel();
-      }, 1000);
-    } catch (error) {
-      console.log("🚀 ~ file: AplicacionForm.tsx:55 ~ store ~ error:", error);
-    }
-  };
-
-  const update = async (formData: any) => {
-    const datos = {
-      ...formData,
-      user: user?.id,
-      codigo_app: import.meta.env.VITE_CODIGO_APP,
-      habilitado: formData.habilitado ? 1 : 0,
-    };
-    if (datos.area === "...") datos.area = null;
-    if (datos.url === "...") datos.url = null;
-    if (datos.descripcion === "...") datos.descripcion = null;
-    if (datos.base_datos === "...") datos.base_datos = null;
-    if (datos.icono === "...") datos.icono = null;
-    datos.habilitado ? (datos.habilitado = 1) : (datos.habilitado = 0);
-
-    try {
-      const { data } = await apiClient.put<BackendResponse>(
-        `/${ApiEndpoints.CARGOS}/${id}`,
-        datos
-      );
-      if (!data) {
-        showMessage(Messages.NO_SE_PUDO_COMPLETAR);
-        return;
-      }
-
-      showMessage(data.message);
-      setTimeout(() => {
-        cancel();
-      }, 1000);
+        // cancel();
+        resetForm();
+      }, 500);
     } catch (error) {
       console.log("🚀 ~ file: AplicacionForm.tsx:55 ~ store ~ error:", error);
     }
@@ -266,16 +208,18 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
   const cancel = () => navigate(`/${ApiEndpoints.CARGOS}`);
 
   const submitForm = (event: any) => {
-    if (id === "0") {
-      store(event);
-    } else {
-      update(event);
-    }
+    store(event);
   };
 
   const showMessage = (text: string = "Operacion correcta") => {
     setToastMessage(text);
     setOpen(true);
+  };
+
+  const resetForm = () => {
+    setValue("persona_id", 0);
+    setValue("cargo_nombre", "---");
+    setValue("cargos_id", 0);
   };
 
   return (
@@ -295,21 +239,13 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
         <Grid container sx={{ mb: 4 }}>
           {/* Titulo Formulario */}
           <Grid item xs={12}>
-            <PageTitle title="Formulario de Cargos" variant="h5" />
+            <PageTitle
+              title="Formulario para Asignacion de Cargos"
+              variant="h5"
+            />
           </Grid>
 
           <Grid container item lg={6}>
-            {/* Id */}
-            <Grid item xs={12} lg={6} sx={{ mr: "auto", mt: 2 }}>
-              <TextField
-                {...register("cargo_id")}
-                label="Id"
-                defaultValue="0"
-                disabled
-                sx={{ width: "100%", pr: "16px" }}
-              />
-            </Grid>
-
             {/* Empresa */}
             <Grid item xs={10} sx={{ mt: 2 }}>
               <Controller
@@ -358,93 +294,6 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
               {errors.empresa_id?.type === "required" && (
                 <ErrorText text="La empresa es obligatoria" />
               )}
-            </Grid>
-
-            {/* Division */}
-            <Grid item xs={10} sx={{ mt: 2 }}>
-              <Controller
-                name="division_id"
-                rules={{ required: true }}
-                control={control}
-                render={({ field }) => {
-                  const { onChange, value } = field;
-                  return (
-                    <Autocomplete
-                      value={
-                        value
-                          ? divisiones.find(
-                              (option) => value === option.division_id
-                            ) ?? null
-                          : null
-                      }
-                      getOptionLabel={(option) => option.nombre}
-                      renderOption={(props, option) => (
-                        <Box component="li" {...props}>
-                          {option.nombre}
-                        </Box>
-                      )}
-                      onChange={(_event: any, newValue) =>
-                        onChange(newValue ? newValue.division_id : null)
-                      }
-                      options={divisiones}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Division *"
-                          inputProps={{
-                            ...params.inputProps,
-                          }}
-                        />
-                      )}
-                    />
-                  );
-                }}
-              />
-            </Grid>
-
-            {/* Unidad Organizativa */}
-            <Grid item xs={10} sx={{ mt: 2 }}>
-              <Controller
-                name="unidad_organizativa_id"
-                rules={{ required: true }}
-                control={control}
-                render={({ field }) => {
-                  const { onChange, value } = field;
-                  return (
-                    <Autocomplete
-                      value={
-                        value
-                          ? unidadesOrganizativas.find(
-                              (option) =>
-                                value === option.unidad_organizativa_id
-                            ) ?? null
-                          : null
-                      }
-                      getOptionLabel={(option) => option.nombre}
-                      renderOption={(props, option) => (
-                        <Box component="li" {...props}>
-                          {option.nombre}
-                        </Box>
-                      )}
-                      onChange={(_event: any, newValue) =>
-                        onChange(
-                          newValue ? newValue.unidad_organizativa_id : null
-                        )
-                      }
-                      options={unidadesOrganizativas}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Unidad Organizativa *"
-                          inputProps={{
-                            ...params.inputProps,
-                          }}
-                        />
-                      )}
-                    />
-                  );
-                }}
-              />
             </Grid>
 
             {/* Unidad de Negocio */}
@@ -498,10 +347,69 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
               )}
             </Grid>
 
-            {/* Cargo Superior */}
-            <Grid item xs={10} sx={{ mt: 2 }}>
+            {/* Colaborador */}
+            <Grid item xs={10}>
               <Controller
-                name="superior_id"
+                name="persona_id"
+                rules={{ required: true }}
+                control={control}
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <Autocomplete
+                      value={
+                        value
+                          ? personas.find(
+                              (option) => value === option.persona_id
+                            ) ?? null
+                          : null
+                      }
+                      getOptionLabel={(option) => option.nombre_completo}
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props}>
+                          {option.nombre_completo}
+                        </Box>
+                      )}
+                      onChange={(_event: any, newValue) =>
+                        onChange(newValue ? newValue.persona_id : null)
+                      }
+                      options={personas}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Colaborador *"
+                          inputProps={{
+                            ...params.inputProps,
+                          }}
+                          error={
+                            errors.persona_id?.type === "required"
+                              ? true
+                              : false
+                          }
+                        />
+                      )}
+                      sx={{ mt: 1 }}
+                    />
+                  );
+                }}
+              />
+            </Grid>
+
+            {/* Cargo Actual Colaborador */}
+            <Grid item xs={10}>
+              <TextField
+                {...register("cargo_nombre")}
+                label="Cargo Actual"
+                defaultValue="---"
+                disabled
+                sx={{ width: "100%", mt: 1 }}
+              />
+            </Grid>
+
+            {/* Cargos */}
+            <Grid item xs={10}>
+              <Controller
+                name="cargos_id"
                 rules={{ required: true }}
                 control={control}
                 render={({ field }) => {
@@ -515,73 +423,33 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
                             ) ?? null
                           : null
                       }
-                      getOptionLabel={(option) =>
-                        `${option.cargo_id} - ${option.cargo_nombre}`
-                      }
+                      getOptionLabel={(option) => option.cargo_nombre}
                       renderOption={(props, option) => (
                         <Box component="li" {...props}>
-                          {`${option.cargo_id} - ${option.cargo_nombre}`}
+                          {option.cargo_nombre}
                         </Box>
                       )}
-                      onChange={(_event: any, newValue) => {
-                        onChange(newValue ? newValue.cargo_id : null);
-                      }}
+                      onChange={(_event: any, newValue) =>
+                        onChange(newValue ? newValue.cargo_id : null)
+                      }
                       options={cargos}
                       renderInput={(params) => (
                         <TextField
                           {...params}
-                          label="Cargo Superior"
+                          label="Cargo *"
                           inputProps={{
                             ...params.inputProps,
                           }}
                           error={
-                            errors.unidad_negocio_id?.type === "required"
-                              ? true
-                              : false
+                            errors.cargos_id?.type === "required" ? true : false
                           }
                         />
                       )}
+                      sx={{ mt: 1 }}
                     />
                   );
                 }}
               />
-              {errors.unidad_negocio_id?.type === "required" && (
-                <ErrorText text="El Cargo Superior es obligatorio" />
-              )}
-            </Grid>
-
-            {/* Nombre */}
-            <Grid item xs={10} sx={{ mt: 2 }}>
-              <TextField
-                {...register("cargo_nombre", {
-                  required: true,
-                  minLength: { value: 4, message: "error message" },
-                })}
-                required
-                label="Nombre"
-                defaultValue="---"
-                error={
-                  errors.cargo_nombre?.type === "required" ||
-                  errors.cargo_nombre?.type === "minLength"
-                    ? true
-                    : false
-                }
-                onFocus={() =>
-                  getValues("cargo_nombre") === "---"
-                    ? setValue("cargo_nombre", "")
-                    : null
-                }
-                onBlur={() =>
-                  getValues("cargo_nombre") === ""
-                    ? setValue("cargo_nombre", "---")
-                    : null
-                }
-                sx={{ width: "100%" }}
-              />
-              {(errors.cargo_nombre?.type === "required" ||
-                errors.cargo_nombre?.type === "minLength") && (
-                <ErrorText text="El Nombre del Cargo debe ser mayor o igual a 3 caracteres" />
-              )}
             </Grid>
           </Grid>
         </Grid>

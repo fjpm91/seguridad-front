@@ -4,8 +4,9 @@ import { Variant } from "@mui/material/styles/createTypography";
 interface Props {
   title: string;
   variant?: Variant;
+  divider?: boolean;
 }
-export const PageTitle = ({ title, variant }: Props) => {
+export const PageTitle = ({ title, variant, divider }: Props) => {
   return (
     <>
       <Typography
@@ -15,7 +16,7 @@ export const PageTitle = ({ title, variant }: Props) => {
       >
         {title}
       </Typography>
-      <Divider />
+      {divider && <Divider sx={{ mb: 2 }} />}
     </>
   );
 };

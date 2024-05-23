@@ -22,11 +22,13 @@ export enum ModulosSistema {
   EMPRESA = "empresas",
   MODULOS = "modulos",
   PERSONAS = "personas",
+  PERSONAS_CENTROS_COSTO = "personascc",
   ROL_ASIGNACION = "rol_asignacion",
   ROLES = "roles",
   UNIDADES_NEGOCIO = "unidades_negocio",
   UNIDADES_ORGANIZATIVAS = "unidades-organizativas",
   USUARIOS = "users",
+  ASIGNAR_CARGOS = "asignar_cargos",
 }
 
 export enum TipoAcceso {
@@ -38,7 +40,8 @@ export enum TipoAcceso {
 
 export enum ApiEndpoints {
   ACCESOS = "accesos",
-  ACTUALIZAR_ENCARGADO_PCC = "personas-centro-costos/update-encargado",
+  ACTUALIZAR_CARGOS = "personas/update-cargo",
+  ACTUALIZAR_ENCARGADO_PCC = "personascc/update-encargado",
   APLICACIONES = "aplicaciones",
   APLICACIONES_CON_ROLES = "aplicaciones?habilitado=1&roles=1",
   BITACORA = "bitacoras",
@@ -62,7 +65,7 @@ export enum ApiEndpoints {
   MODULOS = "modulos",
   MODULOS_BY_APP = "modulos/app",
   PERSONAS = "personas",
-  PERSONAS_CENTROS_COSTO = "personas-centro-costos",
+  PERSONAS_CENTROS_COSTO = "personascc",
   ROL_ASIGNACION = "rol-asignaciones",
   ROLES = "roles",
   ROLES_ACCESOS = "roles/accesos",
@@ -71,6 +74,7 @@ export enum ApiEndpoints {
   USERS = "users",
   USUARIO_ROL = "usuario-rol",
   USUARIO_ROL_BASE = "usuario-rol/set-rol-base",
+  ASIGNAR_CARGOS = "asignar-cargos",
 }
 
 export enum Messages {

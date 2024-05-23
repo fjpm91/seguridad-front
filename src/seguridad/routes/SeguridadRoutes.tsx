@@ -27,9 +27,9 @@ import { DivisionForm, DivisionPage } from "../pages/division";
 import { PersonasCentroCostoForm, PersonasForm } from "../pages/personas";
 import { UseToastMessage } from "../../hooks/useToastMessage";
 import { Snackbar } from "@mui/material";
-import { CargoForm, CargosPage } from "../pages/cargos";
+import { AsignarCargoForm, CargoForm, CargosPage } from "../pages/cargos";
 import { CentroCostoForm, CentrosCostoPage } from "../pages/centrosCosto";
-import { ApiEndpoints, TipoAcceso } from "../../models/enums";
+import { ApiEndpoints, ModulosSistema, TipoAcceso } from "../../models/enums";
 import {
   UnidadOrganizativaForm,
   UnidadOrganizativaPage,
@@ -190,6 +190,34 @@ export const SeguridadRoutes = () => {
             />
           </Route>
 
+          {/* Personas Centro Costos */}
+          <Route
+            element={
+              <SeguridadProtectedRoutes
+                url={ModulosSistema.PERSONAS_CENTROS_COSTO + TipoAcceso.INDEX}
+              />
+            }
+          >
+            {/* <Route
+              path="personas"
+              element={
+                <PersonasPage
+                  setToastMessage={setToastMessage}
+                  setOpen={setOpen}
+                />
+              }
+            /> */}
+            <Route
+              path={ApiEndpoints.PERSONAS_CENTROS_COSTO}
+              element={
+                <PersonasCentroCostoForm
+                  setToastMessage={setToastMessage}
+                  setOpen={setOpen}
+                />
+              }
+            />
+          </Route>
+
           {/* Personas */}
           <Route element={<SeguridadProtectedRoutes url="personas_index" />}>
             <Route
@@ -205,32 +233,6 @@ export const SeguridadRoutes = () => {
               path="personas/:id"
               element={
                 <PersonasForm
-                  setToastMessage={setToastMessage}
-                  setOpen={setOpen}
-                />
-              }
-            />
-          </Route>
-
-          {/* Personas Centro Costos */}
-          <Route
-            element={
-              <SeguridadProtectedRoutes url="personas_centro_costos_index" />
-            }
-          >
-            <Route
-              path="personas"
-              element={
-                <PersonasPage
-                  setToastMessage={setToastMessage}
-                  setOpen={setOpen}
-                />
-              }
-            />
-            <Route
-              path="/personas-centro-costos/:id"
-              element={
-                <PersonasCentroCostoForm
                   setToastMessage={setToastMessage}
                   setOpen={setOpen}
                 />
@@ -461,6 +463,34 @@ export const SeguridadRoutes = () => {
               path={ApiEndpoints.UNIDADES_ORGANIZATIVAS + "/:id"}
               element={
                 <UnidadOrganizativaForm
+                  setToastMessage={setToastMessage}
+                  setOpen={setOpen}
+                />
+              }
+            />
+          </Route>
+
+          {/* Asignar Cargos */}
+          <Route
+            element={
+              <SeguridadProtectedRoutes
+                url={ModulosSistema.ASIGNAR_CARGOS + TipoAcceso.INDEX}
+              />
+            }
+          >
+            <Route
+              path={ApiEndpoints.ASIGNAR_CARGOS}
+              element={
+                <AsignarCargoForm
+                  setToastMessage={setToastMessage}
+                  setOpen={setOpen}
+                />
+              }
+            />
+            <Route
+              path={ApiEndpoints.ASIGNAR_CARGOS + "/:id"}
+              element={
+                <CargoForm
                   setToastMessage={setToastMessage}
                   setOpen={setOpen}
                 />

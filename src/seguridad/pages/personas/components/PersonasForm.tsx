@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import {
   BackendResponse,
+  Cargo,
+  Division,
   Empresa,
   Persona,
   UnidadNegocio,
+  UnidadOrganizativa,
 } from "../../../../interfaces/interfaces";
 import { Controller, useForm } from "react-hook-form";
 import apiClient from "../../../../services/api-client";
@@ -43,9 +46,16 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
   } = useForm();
   const [unidades, setUnidadesNegocio] = useState<UnidadNegocio[]>([]);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
+  const [cargos, setCargos] = useState<Cargo[]>([]);
+  const [unidadesOrganizativas, setUnidadesOrganizativas] = useState<
+    UnidadOrganizativa[]
+  >([]);
+  const [divisiones, setDivisiones] = useState<Division[]>([]);
   const { authState } = useAuth();
   const { user } = authState;
   const empresaWatched = watch("empresa_id");
+  const unWatched = watch("unidad_negocio_id");
+  const divisionWatched = watch("division_id");
 
   useEffect(() => {
     getEmpresas();
@@ -56,8 +66,21 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
   useEffect(() => {
     if (empresaWatched) {
       getUnidadesNegocio(empresaWatched);
+      getDivisiones(empresaWatched);
     }
   }, [empresaWatched]);
+
+  useEffect(() => {
+    if (unWatched) {
+      getCargos(unWatched);
+    }
+  }, [unWatched]);
+
+  useEffect(() => {
+    if (divisionWatched) {
+      getUnidadesOrganizativas(divisionWatched);
+    }
+  }, [divisionWatched]);
 
   const getEmpresas = async () => {
     const { data } = await apiClient.get<BackendResponse>(
@@ -97,6 +120,72 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
       return;
     }
     setUnidadesNegocio([...data.data]);
+  };
+
+  const getCargos = async (unidadNegocioId = 0) => {
+    const { data } = await apiClient.get<BackendResponse>(
+      `/${ApiEndpoints.CARGOS}`,
+      {
+        params: {
+          unidadNegocioId,
+        },
+      }
+    );
+
+    if (!data) {
+      showMessage(Messages.NO_SE_PUDO_COMPLETAR);
+      return;
+    }
+
+    if (!data.success) {
+      showMessage(data.message);
+      return;
+    }
+
+    setCargos([...data.data]);
+  };
+
+  const getDivisiones = async (empresaId: number = 0) => {
+    const { data } = await apiClient.get<BackendResponse>(
+      `/${ApiEndpoints.DIVISIONES}`,
+      {
+        params: {
+          empresaId,
+        },
+      }
+    );
+
+    if (!data) {
+      showMessage(Messages.NO_SE_PUDO_COMPLETAR);
+      return;
+    }
+
+    if (!data.success) {
+      showMessage(data.message);
+      return;
+    }
+
+    setDivisiones([...data.data]);
+  };
+
+  const getUnidadesOrganizativas = async (divisionId: number = 0) => {
+    const { data } = await apiClient.get<BackendResponse>(
+      `/${ApiEndpoints.UNIDADES_ORGANIZATIVAS}`,
+      {
+        params: { divisionId },
+      }
+    );
+
+    if (!data) {
+      showMessage(Messages.NO_SE_PUDO_COMPLETAR);
+      return;
+    }
+
+    if (!data.success) {
+      showMessage(data.message);
+      return;
+    }
+    setUnidadesOrganizativas([...data.data]);
   };
 
   const getPersonaById = async () => {
@@ -144,6 +233,11 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
       setValue("encargado", userdata.centro_costo_encargado === 1 ? true : 0);
     if (userdata.centro_costo_id)
       setValue("centro_costo_id", userdata.centro_costo_id);
+    userdata.division_id ? setValue("division_id", userdata.division_id) : null;
+    userdata.unidad_organizativa_id
+      ? setValue("unidad_organizativa_id", userdata.unidad_organizativa_id)
+      : null;
+    userdata.cargos_id ? setValue("cargos_id", userdata.cargos_id) : null;
   };
 
   const store = async (formData: any) => {
@@ -242,7 +336,11 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
         <Grid container sx={{ mb: 4 }}>
           {/* Titulo Formulario */}
           <Grid item xs={12}>
-            <PageTitle title="Formulario de Personas" variant="h5" />
+            <PageTitle
+              title="Formulario de Personas"
+              variant="h5"
+              divider={true}
+            />
           </Grid>
 
           <Grid container item lg={6}>
@@ -441,7 +539,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Unidad de Negocio */}
-            <Grid item xs={12} sx={{ p: 1 }}>
+            <Grid item xs={12} sm={6} sx={{ p: 1 }}>
               <Controller
                 name="unidad_negocio_id"
                 rules={{ required: true }}
@@ -489,6 +587,135 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
               {errors.unidad_negocio_id?.type === "required" && (
                 <ErrorText text="La Unidad de Negocio es obligatoria" />
               )}
+            </Grid>
+
+            {/* Divisiones */}
+            <Grid item xs={12} sm={6} sx={{ p: 1 }}>
+              <Controller
+                name="division_id"
+                rules={{ required: true }}
+                control={control}
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <Autocomplete
+                      value={
+                        value
+                          ? divisiones.find(
+                              (option) => value === option.division_id
+                            ) ?? null
+                          : null
+                      }
+                      getOptionLabel={(option) => option.nombre}
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props}>
+                          {option.nombre}
+                        </Box>
+                      )}
+                      onChange={(_event: any, newValue) => {
+                        onChange(newValue ? newValue.division_id : null);
+                      }}
+                      options={divisiones}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Divisiones"
+                          inputProps={{
+                            ...params.inputProps,
+                          }}
+                        />
+                      )}
+                    />
+                  );
+                }}
+              />
+            </Grid>
+
+            {/* Unidades Organizativas */}
+            <Grid item xs={12} sm={6} sx={{ p: 1 }}>
+              <Controller
+                name="unidad_organizativa_id"
+                rules={{ required: true }}
+                control={control}
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <Autocomplete
+                      value={
+                        value
+                          ? unidadesOrganizativas.find(
+                              (option) =>
+                                value === option.unidad_organizativa_id
+                            ) ?? null
+                          : null
+                      }
+                      getOptionLabel={(option) => option.nombre}
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props}>
+                          {option.nombre}
+                        </Box>
+                      )}
+                      onChange={(_event: any, newValue) => {
+                        onChange(
+                          newValue ? newValue.unidad_organizativa_id : null
+                        );
+                      }}
+                      options={unidadesOrganizativas}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Unidades Organizativas"
+                          inputProps={{
+                            ...params.inputProps,
+                          }}
+                        />
+                      )}
+                    />
+                  );
+                }}
+              />
+            </Grid>
+
+            {/* Cargos */}
+            <Grid item xs={12} sm={6} sx={{ p: 1 }}>
+              <Controller
+                name="cargos_id"
+                rules={{ required: true }}
+                control={control}
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <Autocomplete
+                      value={
+                        value
+                          ? cargos.find(
+                              (option) => value === option.cargo_id
+                            ) ?? null
+                          : null
+                      }
+                      getOptionLabel={(option) => option.cargo_nombre}
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props}>
+                          {option.cargo_nombre}
+                        </Box>
+                      )}
+                      onChange={(_event: any, newValue) => {
+                        onChange(newValue ? newValue.cargo_id : null);
+                      }}
+                      options={cargos}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Cargo"
+                          inputProps={{
+                            ...params.inputProps,
+                          }}
+                        />
+                      )}
+                    />
+                  );
+                }}
+              />
             </Grid>
 
             {/* Habilitado */}

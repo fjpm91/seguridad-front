@@ -10,6 +10,7 @@ export interface Persona {
   apellido_materno: string;
   apellido_paterno: string;
   cargo?: string;
+  cargos?: any;
   centro_costo_encargado?: number;
   centro_costo_id?: number;
   centros_costo?: CentroCosto[];
@@ -32,6 +33,9 @@ export interface Persona {
   ubicacion?: string;
   unidad_negocio_id: number;
   updated_at?: number;
+  division_id?: number;
+  cargos_id?: number;
+  unidad_organizativa_id?: number;
   user: any;
   persona_centros_costos?: PersonaCentroCosto[];
 }
@@ -198,11 +202,13 @@ export interface Cargo {
   cargo_nombre: string;
   cargo_superior_nombre?: string;
   created_at: string;
+  division_id?: number;
   empresa_id: number;
   empresa_nombre: string;
   superior_id?: number;
   unidad_negocio_id?: number;
   unidad_negocio_nombre: string;
+  unidad_organizativa_id?: number;
   updated_at: string;
 }
 
