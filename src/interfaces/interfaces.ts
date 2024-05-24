@@ -200,16 +200,18 @@ export interface BackendResponse {
 export interface Cargo {
   cargo_id: number;
   cargo_nombre: string;
-  cargo_superior_nombre?: string;
-  created_at: string;
+  cargo_salario: number;
+  cargo_descripcion?: string;
+  cargo_competencias?: string;
   division_id?: number;
-  empresa_id: number;
-  empresa_nombre: string;
-  superior_id?: number;
-  unidad_negocio_id?: number;
+  unidad_negocio_id: number;
   unidad_negocio_nombre: string;
+  empresa_id: number;
+  superior_id?: number;
+  cargo_superior_nombre?: string;
+  empresa_nombre: string;
   unidad_organizativa_id?: number;
-  updated_at: string;
+  unidad_organizativa_nombre?: string;
 }
 
 export interface PersonaCentroCosto {

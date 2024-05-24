@@ -181,7 +181,7 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
       `/${ApiEndpoints.CARGOS}/${id}`
     );
 
-    const { data } = dataResponse;
+    const data: Cargo = dataResponse.data;
     if (!data) return;
     setValue("cargo_id", data.cargo_id);
     setValue("cargo_nombre", data.cargo_nombre);
@@ -191,6 +191,13 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
     data.division_id ? setValue("division_id", data.division_id) : null;
     data.unidad_organizativa_id
       ? setValue("unidad_organizativa_id", data.unidad_organizativa_id)
+      : null;
+    data.cargo_descripcion
+      ? setValue("cargo_descripcion", data.cargo_descripcion)
+      : null;
+    data.cargo_salario ? setValue("cargo_salario", data.cargo_salario) : null;
+    data.cargo_competencias
+      ? setValue("cargo_competencias", data.cargo_competencias)
       : null;
   };
 
@@ -237,11 +244,6 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
       codigo_app: import.meta.env.VITE_CODIGO_APP,
       habilitado: formData.habilitado ? 1 : 0,
     };
-    if (datos.area === "...") datos.area = null;
-    if (datos.url === "...") datos.url = null;
-    if (datos.descripcion === "...") datos.descripcion = null;
-    if (datos.base_datos === "...") datos.base_datos = null;
-    if (datos.icono === "...") datos.icono = null;
     datos.habilitado ? (datos.habilitado = 1) : (datos.habilitado = 0);
 
     try {
@@ -580,6 +582,95 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
               />
               {(errors.cargo_nombre?.type === "required" ||
                 errors.cargo_nombre?.type === "minLength") && (
+                <ErrorText text="El Nombre del Cargo debe ser mayor o igual a 3 caracteres" />
+              )}
+            </Grid>
+
+            {/* Descripcion */}
+            <Grid item xs={10} sx={{ mt: 2 }}>
+              <TextField
+                {...register("cargo_descripcion", {
+                  required: true,
+                  minLength: { value: 4, message: "error message" },
+                })}
+                label="Descripcion"
+                defaultValue="---"
+                error={
+                  errors.cargo_descripcion?.type === "required" ||
+                  errors.cargo_descripcion?.type === "minLength"
+                    ? true
+                    : false
+                }
+                onFocus={() =>
+                  getValues("cargo_descripcion") === "---"
+                    ? setValue("cargo_descripcion", "")
+                    : null
+                }
+                onBlur={() =>
+                  getValues("cargo_descripcion") === ""
+                    ? setValue("cargo_descripcion", "---")
+                    : null
+                }
+                sx={{ width: "100%" }}
+              />
+              {(errors.cargo_descripcion?.type === "required" ||
+                errors.cargo_descripcion?.type === "minLength") && (
+                <ErrorText text="El Nombre del Cargo debe ser mayor o igual a 3 caracteres" />
+              )}
+            </Grid>
+
+            {/* Competencias */}
+            <Grid item xs={10} sx={{ mt: 2 }}>
+              <TextField
+                {...register("cargo_competencias", {
+                  required: true,
+                  minLength: { value: 4, message: "error message" },
+                })}
+                label="Competencias"
+                defaultValue="---"
+                error={
+                  errors.cargo_competencias?.type === "required" ||
+                  errors.cargo_competencias?.type === "minLength"
+                    ? true
+                    : false
+                }
+                onFocus={() =>
+                  getValues("cargo_competencias") === "---"
+                    ? setValue("cargo_competencias", "")
+                    : null
+                }
+                onBlur={() =>
+                  getValues("cargo_competencias") === ""
+                    ? setValue("cargo_competencias", "---")
+                    : null
+                }
+                sx={{ width: "100%" }}
+              />
+              {(errors.cargo_competencias?.type === "required" ||
+                errors.cargo_competencias?.type === "minLength") && (
+                <ErrorText text="El Nombre del Cargo debe ser mayor o igual a 3 caracteres" />
+              )}
+            </Grid>
+
+            {/* Salario */}
+            <Grid item xs={10} sx={{ mt: 2 }}>
+              <TextField
+                {...register("cargo_salario", {
+                  required: true,
+                  minLength: { value: 4, message: "error message" },
+                })}
+                label="Salario"
+                defaultValue={0}
+                error={
+                  errors.cargo_descripcion?.type === "required" ||
+                  errors.cargo_descripcion?.type === "minLength"
+                    ? true
+                    : false
+                }
+                sx={{ width: "100%" }}
+              />
+              {(errors.cargo_salario?.type === "required" ||
+                errors.cargo_salario?.type === "minLength") && (
                 <ErrorText text="El Nombre del Cargo debe ser mayor o igual a 3 caracteres" />
               )}
             </Grid>
