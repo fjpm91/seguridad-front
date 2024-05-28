@@ -15,6 +15,7 @@ import { IconoHabilitado } from "../../../../components";
 interface Props {
   allowUpdate: boolean;
   modulos: Modulo[];
+  filtroAplicaciones: string[];
   handleOpen: (modulo_id: number) => void;
   handleHabilitar: (modulo_id: number) => void;
 }
@@ -22,6 +23,7 @@ interface Props {
 export const ModuloTable = ({
   allowUpdate,
   modulos,
+  filtroAplicaciones,
   handleHabilitar,
   handleOpen,
 }: Props) => {
@@ -35,6 +37,8 @@ export const ModuloTable = ({
       {
         accessorKey: "aplicacion.codigo",
         header: "Aplicación",
+        filterVariant: "select",
+        filterSelectOptions: filtroAplicaciones,
         // enableColumnFilter: false,
       },
       {

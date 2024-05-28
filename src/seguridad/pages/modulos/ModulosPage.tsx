@@ -22,6 +22,7 @@ interface Props {
 export const ModulosPage = ({ setOpen, setToastMessage }: Props) => {
   const { authState } = useAuth();
   const [modulos, setModulos] = useState<Modulo[]>([]);
+  const [filtroAplicaciones, setFiltroAplicaciones] = useState<string[]>([]);
   const { accesos, user } = authState;
   const navigate = useNavigate();
   const { allowed: allowInsert } = useAutorizado(
@@ -53,6 +54,8 @@ export const ModulosPage = ({ setOpen, setToastMessage }: Props) => {
     }
 
     setModulos([...data.data]);
+    const apps = (data.data as Modulo[]).map((p) => p.aplicacion.codigo);
+    if (apps) setFiltroAplicaciones([...new Set(apps)]);
   };
 
   const handleOpen = (id: number) => {
@@ -121,6 +124,7 @@ export const ModulosPage = ({ setOpen, setToastMessage }: Props) => {
 
         {modulos && (
           <ModuloTable
+            filtroAplicaciones={filtroAplicaciones}
             allowUpdate={allowUpdate}
             modulos={modulos}
             handleHabilitar={handleHabilitar}
