@@ -187,18 +187,22 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
     setValue("cargo_nombre", data.cargo_nombre);
     setValue("unidad_negocio_id", data.unidad_negocio_id);
     setValue("empresa_id", data.empresa_id);
-    data.superior_id ? setValue("superior_id", data.superior_id) : null;
-    data.division_id ? setValue("division_id", data.division_id) : null;
-    data.unidad_organizativa_id
-      ? setValue("unidad_organizativa_id", data.unidad_organizativa_id)
-      : null;
-    data.cargo_descripcion
-      ? setValue("cargo_descripcion", data.cargo_descripcion)
-      : null;
-    data.cargo_salario ? setValue("cargo_salario", data.cargo_salario) : null;
-    data.cargo_competencias
-      ? setValue("cargo_competencias", data.cargo_competencias)
-      : null;
+    if (data.superior_id) setValue("superior_id", data.superior_id);
+    if (data.division_id) setValue("division_id", data.division_id);
+    if (data.unidad_organizativa_id)
+      setValue("unidad_organizativa_id", data.unidad_organizativa_id);
+    if (data.cargo_descripcion)
+      setValue("cargo_descripcion", data.cargo_descripcion);
+    if (data.cargo_salario) setValue("cargo_salario", data.cargo_salario);
+    if (data.cargo_competencias)
+      setValue("cargo_competencias", data.cargo_competencias);
+    if (data.monto_minimo_salario)
+      setValue("monto_minimo_salario", data.monto_minimo_salario);
+    if (data.monto_maximo_salario)
+      setValue("monto_maximo_salario", data.monto_maximo_salario);
+    if (data.total_vacantes) setValue("total_vacantes", data.total_vacantes);
+    if (data.vacantes_ocupadas)
+      setValue("vacantes_ocupadas", data.vacantes_ocupadas);
   };
 
   const store = async (formData: any) => {
@@ -297,12 +301,16 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
         <Grid container sx={{ mb: 4 }}>
           {/* Titulo Formulario */}
           <Grid item xs={12}>
-            <PageTitle title="Formulario de Cargos" variant="h5" />
+            <PageTitle
+              title="Formulario de Cargos"
+              variant="h5"
+              divider={true}
+            />
           </Grid>
 
           <Grid container item lg={6}>
             {/* Id */}
-            <Grid item xs={12} lg={6} sx={{ mr: "auto", mt: 2 }}>
+            <Grid item xs={12} lg={4} sx={{ p: 1 }}>
               <TextField
                 {...register("cargo_id")}
                 label="Id"
@@ -313,7 +321,7 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Empresa */}
-            <Grid item xs={10} sx={{ mt: 2 }}>
+            <Grid item xs={12} lg={8} sx={{ p: 1 }}>
               <Controller
                 name="empresa_id"
                 rules={{ required: true }}
@@ -363,7 +371,7 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Division */}
-            <Grid item xs={10} sx={{ mt: 2 }}>
+            <Grid item xs={12} sx={{ p: 1 }}>
               <Controller
                 name="division_id"
                 rules={{ required: true }}
@@ -392,7 +400,7 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
                       renderInput={(params) => (
                         <TextField
                           {...params}
-                          label="Division *"
+                          label="Division"
                           inputProps={{
                             ...params.inputProps,
                           }}
@@ -405,7 +413,7 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Unidad Organizativa */}
-            <Grid item xs={10} sx={{ mt: 2 }}>
+            <Grid item xs={12} sx={{ p: 1 }}>
               <Controller
                 name="unidad_organizativa_id"
                 rules={{ required: true }}
@@ -437,7 +445,7 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
                       renderInput={(params) => (
                         <TextField
                           {...params}
-                          label="Unidad Organizativa *"
+                          label="Unidad Organizativa"
                           inputProps={{
                             ...params.inputProps,
                           }}
@@ -450,7 +458,7 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Unidad de Negocio */}
-            <Grid item xs={10} sx={{ mt: 2 }}>
+            <Grid item xs={12} sx={{ p: 1 }}>
               <Controller
                 name="unidad_negocio_id"
                 rules={{ required: true }}
@@ -501,7 +509,7 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Cargo Superior */}
-            <Grid item xs={10} sx={{ mt: 2 }}>
+            <Grid item xs={12} sx={{ p: 1 }}>
               <Controller
                 name="superior_id"
                 rules={{ required: true }}
@@ -553,7 +561,7 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Nombre */}
-            <Grid item xs={10} sx={{ mt: 2 }}>
+            <Grid item xs={12} sx={{ p: 1 }}>
               <TextField
                 {...register("cargo_nombre", {
                   required: true,
@@ -587,7 +595,7 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Descripcion */}
-            <Grid item xs={10} sx={{ mt: 2 }}>
+            <Grid item xs={12} sx={{ p: 1 }}>
               <TextField
                 {...register("cargo_descripcion", {
                   required: true,
@@ -620,7 +628,7 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Competencias */}
-            <Grid item xs={10} sx={{ mt: 2 }}>
+            <Grid item xs={12} sx={{ p: 1 }}>
               <TextField
                 {...register("cargo_competencias", {
                   required: true,
@@ -652,27 +660,50 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
               )}
             </Grid>
 
-            {/* Salario */}
-            <Grid item xs={10} sx={{ mt: 2 }}>
+            {/* Salario Minimo */}
+            <Grid item xs={12} md={6} sx={{ p: 1 }}>
               <TextField
-                {...register("cargo_salario", {
-                  required: true,
-                  minLength: { value: 4, message: "error message" },
-                })}
-                label="Salario"
+                {...register("monto_minimo_salario", {})}
+                label="Monto Minimo Salario"
                 defaultValue={0}
-                error={
-                  errors.cargo_descripcion?.type === "required" ||
-                  errors.cargo_descripcion?.type === "minLength"
-                    ? true
-                    : false
-                }
+                type="number"
                 sx={{ width: "100%" }}
               />
-              {(errors.cargo_salario?.type === "required" ||
-                errors.cargo_salario?.type === "minLength") && (
-                <ErrorText text="El Nombre del Cargo debe ser mayor o igual a 3 caracteres" />
-              )}
+            </Grid>
+
+            {/* Salario Maximo */}
+            <Grid item xs={12} md={6} sx={{ p: 1 }}>
+              <TextField
+                {...register("monto_maximo_salario", {})}
+                label="Monto Maximo Salario"
+                defaultValue={0}
+                type="number"
+                sx={{ width: "100%" }}
+              />
+            </Grid>
+
+            {/* Total Vacantes */}
+            <Grid item xs={12} md={6} sx={{ p: 1 }}>
+              <TextField
+                {...register("total_vacantes", {})}
+                label="Total Vacantes"
+                defaultValue={0}
+                type="number"
+                sx={{ width: "100%" }}
+              />
+            </Grid>
+
+            {/* Vacantes Ocupadas */}
+            <Grid item xs={12} md={6} sx={{ p: 1 }}>
+              <TextField
+                {...register("vacantes_ocupadas", {})}
+                label="Vacantes Ocupadas"
+                defaultValue={0}
+                inputProps={{
+                  readOnly: true,
+                }}
+                sx={{ width: "100%" }}
+              />
             </Grid>
           </Grid>
         </Grid>

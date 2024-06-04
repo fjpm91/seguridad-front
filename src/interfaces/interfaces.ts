@@ -198,20 +198,24 @@ export interface BackendResponse {
 }
 
 export interface Cargo {
+  cargo_competencias?: string;
+  cargo_descripcion?: string;
   cargo_id: number;
   cargo_nombre: string;
   cargo_salario: number;
-  cargo_descripcion?: string;
-  cargo_competencias?: string;
+  cargo_superior_nombre?: string;
   division_id?: number;
+  empresa_id: number;
+  empresa_nombre: string;
+  monto_maximo_salario: number;
+  monto_minimo_salario: number;
+  superior_id?: number;
+  total_vacantes: number;
   unidad_negocio_id: number;
   unidad_negocio_nombre: string;
-  empresa_id: number;
-  superior_id?: number;
-  cargo_superior_nombre?: string;
-  empresa_nombre: string;
   unidad_organizativa_id?: number;
   unidad_organizativa_nombre?: string;
+  vacantes_ocupadas: number;
 }
 
 export interface PersonaCentroCosto {
