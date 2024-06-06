@@ -28,6 +28,7 @@ export const RolAsignacionPage = ({ setOpen, setToastMessage }: Props) => {
   const { authState } = useAuth();
   const [_aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
   const [rolAsignaciones, setRolAsignaciones] = useState<RolAsignacion[]>([]);
+  const [filtroAplicaciones, setFiltroAplicaciones] = useState<string[]>([]);
   const navigate = useNavigate();
   const { accesos, user } = authState;
   const { allowed: allowInsert } = useAutorizado(
@@ -62,6 +63,8 @@ export const RolAsignacionPage = ({ setOpen, setToastMessage }: Props) => {
     }
 
     setRolAsignaciones([...data.data]);
+    const apps = (data.data as RolAsignacion[]).map((p) => p.codigo_app);
+    if (apps) setFiltroAplicaciones([...new Set(apps)]);
   };
 
   const getAplicaciones = async () => {
@@ -180,6 +183,7 @@ export const RolAsignacionPage = ({ setOpen, setToastMessage }: Props) => {
           <RolAsignacionTable
             allowUpdate={allowUpdate}
             rolAsignaciones={rolAsignaciones}
+            filtroAplicaciones={filtroAplicaciones}
             handleHabilitar={handleHabilitar}
             handleOpen={handleOpen}
             handleEliminar={handleEliminar}

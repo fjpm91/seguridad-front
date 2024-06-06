@@ -164,15 +164,16 @@ export interface Componente {
 }
 
 export interface RolAsignacion {
+  aplicacion_id: number;
+  codigo_app: string;
+  componente_id: number;
+  editable: number;
+  habilitado: number;
+  nombre: string;
   rol_asignacion_id: number;
   rol_id: number;
-  aplicacion_id: number;
-  componente_id: number;
-  nombre: string;
   rol: string;
   visible: number;
-  habilitado: number;
-  editable: number;
 }
 
 export interface AuhtUser {

@@ -15,6 +15,7 @@ import { Delete, Edit } from "@mui/icons-material";
 interface Props {
   allowUpdate: boolean;
   rolAsignaciones: RolAsignacion[];
+  filtroAplicaciones: string[];
   handleOpen: (rol_asignacion_id: number) => void;
   handleHabilitar: (rol_asignacion_id: number) => void;
   handleEliminar: (rol_asignacion_id: number) => void;
@@ -22,6 +23,7 @@ interface Props {
 
 export const RolAsignacionTable = ({
   allowUpdate,
+  filtroAplicaciones,
   rolAsignaciones,
   handleHabilitar,
   handleOpen,
@@ -36,6 +38,12 @@ export const RolAsignacionTable = ({
       {
         accessorKey: "rol",
         header: "Rol",
+      },
+      {
+        accessorKey: "codigo_app",
+        header: "App",
+        filterVariant: "select",
+        filterSelectOptions: filtroAplicaciones,
       },
       {
         accessorKey: "visible",
