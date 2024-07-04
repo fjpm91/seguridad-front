@@ -53,10 +53,9 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
   }, []);
 
   useEffect(() => {
-    if (appWatched) {
-      getRoles(appWatched);
-    }
-  }, [appWatched]);
+    if (!appWatched || aplicaciones.length === 0) return;
+    getRoles(appWatched);
+  }, [appWatched, aplicaciones]);
 
   const getComponentes = async () => {
     const { data } = await apiClient.get<BackendResponse>(
