@@ -10,6 +10,7 @@ export interface Persona {
   apellido_materno: string;
   apellido_paterno: string;
   cargo?: string;
+  cargos_id?: number;
   cargos?: any;
   centro_costo_encargado?: number;
   centro_costo_id?: number;
@@ -21,6 +22,7 @@ export interface Persona {
   codigo: number;
   correo?: string;
   created_at?: number;
+  division_id?: number;
   empresa_id?: number;
   empresa: Empresa;
   fecha_nacimiento?: string;
@@ -28,16 +30,14 @@ export interface Persona {
   habilitado: number;
   nombre_completo: string;
   nombre?: string;
+  persona_centros_costos?: PersonaCentroCosto[];
   persona_id: number;
   telefono?: string;
   ubicacion?: string;
   unidad_negocio_id: number;
-  updated_at?: number;
-  division_id?: number;
-  cargos_id?: number;
   unidad_organizativa_id?: number;
+  updated_at?: number;
   user: any;
-  persona_centros_costos?: PersonaCentroCosto[];
 }
 
 export interface Rol {

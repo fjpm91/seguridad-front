@@ -43,7 +43,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
     handleSubmit,
     formState: { errors },
     watch,
-  } = useForm();
+  } = useForm<Persona>();
   const [unidades, setUnidadesNegocio] = useState<UnidadNegocio[]>([]);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [cargos, setCargos] = useState<Cargo[]>([]);
@@ -56,6 +56,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
   const empresaWatched = watch("empresa_id");
   const unWatched = watch("unidad_negocio_id");
   const divisionWatched = watch("division_id");
+  const codigoWatched = watch("codigo");
 
   useEffect(() => {
     getEmpresas();
@@ -224,13 +225,12 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
     setValue("unidad_negocio_id", userdata.unidad_negocio_id);
     if (userdata.empresa_id) setValue("empresa_id", userdata.empresa_id);
     if (userdata.user) setValue("user", userdata.user.name);
-    if (userdata.habilitado)
-      setValue("habilitado", userdata.habilitado ? true : false);
+    if (userdata.habilitado) setValue("habilitado", userdata.habilitado);
     // encargado
     // persona_id
     // centro_costo_id
-    if (userdata.centro_costo_encargado)
-      setValue("encargado", userdata.centro_costo_encargado === 1 ? true : 0);
+    // if (userdata.centro_costo_encargado)
+    //   setValue("encargado", userdata.centro_costo_encargado === 1 ? true : 0);
     if (userdata.centro_costo_id)
       setValue("centro_costo_id", userdata.centro_costo_id);
     userdata.division_id ? setValue("division_id", userdata.division_id) : null;
@@ -358,27 +358,25 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
             {/* Codigo */}
             <Grid item xs={12} sm={6} sx={{ p: 1 }}>
               <TextField
-                {...register("codigo", { required: true })}
+                {...register("codigo", {
+                  required: "El codigo es obligatorio",
+                  minLength: {
+                    value: 4,
+                    message: "El codigo debe ser mayor a 4 caracteres",
+                  },
+                })}
                 label="Codigo"
                 defaultValue="0"
+                required
                 error={
-                  errors.codigo?.type === "required" ||
-                  getValues("codigo") === "0"
+                  errors.codigo?.type === "required" || codigoWatched === 0
                     ? true
                     : false
                 }
-                onFocus={() =>
-                  getValues("codigo") === "0" ? setValue("codigo", "") : null
-                }
-                onBlur={() =>
-                  getValues("codigo") === "" ? setValue("codigo", "0") : null
-                }
                 sx={{ width: "100%", pr: "16px" }}
               />
-              {(errors.codigo?.type === "required" ||
-                errors.codigo?.type === "minLength" ||
-                getValues("codigo") === "0") && (
-                <ErrorText text="El Codigo del Usuario es obligatorio" />
+              {errors.codigo && (
+                <ErrorText text={errors.codigo.message || "Error"} />
               )}
             </Grid>
 
@@ -391,6 +389,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                 })}
                 label="Nombre"
                 defaultValue="..."
+                required
                 error={
                   errors.nombre?.type === "required" ||
                   errors.nombre?.type === "minLength"
@@ -422,6 +421,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                 })}
                 label="Apellido Paterno"
                 defaultValue="..."
+                required
                 error={
                   errors.apellido_paterno?.type === "required" ||
                   errors.apellido_paterno?.type === "minLength"
@@ -472,6 +472,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                 {...register("ubicacion")}
                 label="Ciudad"
                 defaultValue="..."
+                required
                 onFocus={() =>
                   getValues("ubicacion") === "..."
                     ? setValue("ubicacion", "")
@@ -518,7 +519,8 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                       renderInput={(params) => (
                         <TextField
                           {...params}
-                          label="Empresa *"
+                          label="Empresa"
+                          required
                           inputProps={{
                             ...params.inputProps,
                           }}
@@ -570,6 +572,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                         <TextField
                           {...params}
                           label="Unidad de Negocio"
+                          required
                           inputProps={{
                             ...params.inputProps,
                           }}
@@ -593,7 +596,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
             <Grid item xs={12} sm={6} sx={{ p: 1 }}>
               <Controller
                 name="division_id"
-                rules={{ required: true }}
+                rules={{ required: "La Division es obligatoria" }}
                 control={control}
                 render={({ field }) => {
                   const { onChange, value } = field;
@@ -620,22 +623,33 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                         <TextField
                           {...params}
                           label="Divisiones"
+                          required
                           inputProps={{
                             ...params.inputProps,
                           }}
+                          error={
+                            errors.division_id?.type === "required"
+                              ? true
+                              : false
+                          }
                         />
                       )}
                     />
                   );
                 }}
               />
+              {errors.division_id?.type === "required" && (
+                <ErrorText
+                  text={errors.unidad_organizativa_id?.message || "Error"}
+                />
+              )}
             </Grid>
 
             {/* Unidades Organizativas */}
             <Grid item xs={12} sm={6} sx={{ p: 1 }}>
               <Controller
                 name="unidad_organizativa_id"
-                rules={{ required: true }}
+                rules={{ required: "La Unidad Organizativa es Obligatoria" }}
                 control={control}
                 render={({ field }) => {
                   const { onChange, value } = field;
@@ -665,22 +679,33 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                         <TextField
                           {...params}
                           label="Unidades Organizativas"
+                          required
                           inputProps={{
                             ...params.inputProps,
                           }}
+                          error={
+                            errors.unidad_organizativa_id?.type === "required"
+                              ? true
+                              : false
+                          }
                         />
                       )}
                     />
                   );
                 }}
               />
+              {errors.unidad_organizativa_id?.type === "required" && (
+                <ErrorText
+                  text={errors.unidad_organizativa_id.message || "Error"}
+                />
+              )}
             </Grid>
 
             {/* Cargos */}
             <Grid item xs={12} sm={6} sx={{ p: 1 }}>
               <Controller
                 name="cargos_id"
-                rules={{ required: true }}
+                rules={{ required: "El Cargo es obligatorio" }}
                 control={control}
                 render={({ field }) => {
                   const { onChange, value } = field;
@@ -707,15 +732,22 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                         <TextField
                           {...params}
                           label="Cargo"
+                          required
                           inputProps={{
                             ...params.inputProps,
                           }}
+                          error={
+                            errors.cargos_id?.type === "required" ? true : false
+                          }
                         />
                       )}
                     />
                   );
                 }}
               />
+              {errors.cargos_id?.type === "required" && (
+                <ErrorText text={errors.cargos_id.message || "Error"} />
+              )}
             </Grid>
 
             {/* Habilitado */}
@@ -731,7 +763,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                         control={
                           <Checkbox
                             onChange={(e) => field.onChange(e.target.checked)}
-                            checked={field.value || false}
+                            checked={field.value ? true : false}
                           />
                         }
                         label="Habilitado"
