@@ -49,6 +49,7 @@ export interface Rol {
   updated_at?: number;
   aplicacion: Aplicacion;
   modulos: Modulo[];
+  users: any[];
 }
 
 export interface UnidadNegocio {
@@ -248,4 +249,12 @@ export interface UnidadOrganizativa {
   empresa_nombre?: string;
   nombre: string;
   unidad_organizativa_id: number;
+}
+
+export interface UsuarioRol {
+  usuario_rol_id: number;
+  user_id: number;
+  rol_id: number;
+  usuario?: any;
+  rol?: any;
 }

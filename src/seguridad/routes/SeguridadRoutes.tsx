@@ -12,7 +12,7 @@ import { ComponentesPage } from "../pages/componentes/ComponentesPage";
 import { ModuloForm, ModulosPage } from "../pages/modulos";
 import { NavBar, SideBar } from "../../ui";
 import { RolesPage } from "../pages/roles/RolesPage";
-import { RolForm } from "../pages/roles/components";
+import { RolFormPage } from "../pages/roles/components";
 import { SeguridadProtectedRoutes } from "./SeguridadProtectedRoutes";
 import { UsuariosPage } from "../pages/usuarios/UsuariosPage";
 import { EmpresaForm } from "../pages/empresas";
@@ -274,7 +274,10 @@ export const SeguridadRoutes = () => {
             <Route
               path="roles/:id"
               element={
-                <RolForm setToastMessage={setToastMessage} setOpen={setOpen} />
+                <RolFormPage
+                  setToastMessage={setToastMessage}
+                  setOpen={setOpen}
+                />
               }
             />
           </Route>

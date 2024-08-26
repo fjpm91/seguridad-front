@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
 import apiClient from "../../../../services/api-client";
-import { BackendResponse, Rol, User } from "../../../../interfaces/interfaces";
+import {
+  BackendResponse,
+  Rol,
+  User,
+  UsuarioRol,
+} from "../../../../interfaces/interfaces";
 import { ApiEndpoints, Messages } from "../../../../models/enums";
 import { useAuth } from "../../../../auth/context/useAuth";
 import { useNavigate, useParams } from "react-router-dom";
 import {
+  Alert,
   Autocomplete,
   Box,
   Button,
@@ -13,31 +19,45 @@ import {
   Typography,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
-import { FormBoxContainer, PageTitle } from "../../../../components";
+import { BasicTable } from "../../../../components";
+import { LoadingButton } from "@mui/lab";
+import { SolicitudButtonStyle } from "../../../../models/constants";
 
 interface Props {
   setOpen: (open: boolean) => void;
   setToastMessage: (toastMessage: string) => void;
 }
 
+const tableHeaders = ["id", "Nombre", "PersonaId", "Acciones"];
+
 export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
   const { id } = useParams();
   const { authState } = useAuth();
-  const [users, setUsers] = useState<User[]>([]);
-  const [roles, setRoles] = useState<Rol[]>([]);
   const navigate = useNavigate();
   const { user } = authState;
   const {
     control,
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
-  } = useForm();
+  } = useForm<UsuarioRol>();
+  const [users, setUsers] = useState<User[]>([]);
+  const [roles, setRoles] = useState<Rol[]>([]);
+  const [rolActual, setRolActual] = useState<Rol | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   useEffect(() => {
     getUsers();
     getRoles();
+    getRolById();
   }, []);
+
+  useEffect(() => {
+    if (!rolActual) return;
+    setValue("rol_id", rolActual.rol_id);
+  }, [rolActual]);
 
   const getUsers = async () => {
     const { data } = await apiClient.get<BackendResponse>(
@@ -82,6 +102,7 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
     };
 
     try {
+      setIsLoading(true);
       const { data } = await apiClient.post<BackendResponse>(
         `/${ApiEndpoints.USUARIO_ROL}`,
         { ...datos }
@@ -97,50 +118,25 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
 
       showMessage(data.message);
       setTimeout(() => {
-        navigate("/users");
+        // navigate("/users");
+        getRolById();
       }, 1000);
     } catch (error) {
       console.log("🚀 ~ file: AplicacionForm.tsx:55 ~ store ~ error:", error);
-      showMessage(JSON.stringify(error));
+      setErrorMessage(JSON.stringify(error));
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const update = async (formData: any) => {
-    const datos = {
-      ...formData,
-      codigo_app: import.meta.env.VITE_CODIGO_APP,
-      user: user?.id,
-    };
-    console.log("🚀 ~ file: RolForm.tsx:120 ~ update ~ datos:", datos);
-    // return;
-    try {
-      const { data } = await apiClient.put<BackendResponse>(
-        `/${ApiEndpoints.ROLES}/${id}`,
-        datos
-      );
-      if (!data) {
-        showMessage(Messages.NO_SE_PUDO_COMPLETAR);
-        return;
-      }
-
-      showMessage(data.message);
-      setTimeout(() => {
-        navigate("/roles");
-      }, 1000);
-    } catch (error) {
-      console.log("🚀 ~ file: AplicacionForm.tsx:55 ~ store ~ error:", error);
-      showMessage(JSON.stringify(error));
-    }
-  };
-
-  const cancel = () => navigate("/users");
+  const cancel = () => navigate("/roles");
 
   const submitForm = (event: any) => {
-    if (id === "0") {
-      store(event);
-    } else {
-      update(event);
-    }
+    store(event);
+    // if (id === "0") {
+    // } else {
+    //   update(event);
+    // }
   };
 
   const showMessage = (text: string = "Operacion correcta") => {
@@ -148,39 +144,96 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
     setOpen(true);
   };
 
-  return (
-    <FormBoxContainer>
-      <Box
-        component="form"
-        autoComplete="off"
-        onSubmit={handleSubmit(submitForm)}
-        noValidate
-        sx={{
-          backgroundColor: "white",
-          p: 4, // 4 * 8
-          borderRadius: 2, // 4 * 4
-        }}
-      >
-        {/* Formulario */}
-        <Grid container spacing={2} sx={{ mb: 4 }}>
-          {/* Titulo Formulario */}
-          <Grid item xs={12}>
-            <PageTitle title="Asignación de Roles" />
-          </Grid>
+  const getRolById = async () => {
+    if (!id || id === "0") return;
 
+    const { data } = await apiClient.get<Rol>(`/${ApiEndpoints.ROLES}/${id}`, {
+      params: { withUsers: 1 },
+    });
+
+    if (!data) return;
+    setRolActual(data);
+  };
+
+  const handleOpen = (personaId: number) => {
+    navigate("/users/" + personaId);
+    console.log("🚀 ~ handleOpen ~ personaId:", personaId);
+  };
+
+  const handleDelete = async (user_id: number) => {
+    try {
+      setIsLoading(true);
+      const datos = {
+        user_id: user_id,
+        rol_id: rolActual?.rol_id,
+        codigo_app: import.meta.env.VITE_CODIGO_APP,
+      };
+      const { data } = await apiClient.post<BackendResponse>(
+        `/${ApiEndpoints.ELIMINAR_USUARIO_ROL}`,
+        datos
+      );
+
+      if (!data) {
+        setErrorMessage("No se pudo completar la operación");
+        return;
+      }
+
+      if (!data.success) {
+        setErrorMessage(data.message);
+        return;
+      }
+
+      showMessage(data.message);
+      getRolById();
+    } catch (error) {
+      setErrorMessage(JSON.stringify(error));
+      console.log(JSON.stringify(error));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getTableItems = () => {
+    if (!rolActual || !rolActual.users || rolActual.users?.length === 0)
+      return [];
+    return rolActual.users.map((p) => {
+      return {
+        id: p.id,
+        name: p.name,
+        // persona_id: p.persona_id,
+        user_id: p.pivot.user_id,
+      };
+    });
+  };
+
+  return (
+    <Box
+      component="form"
+      autoComplete="off"
+      onSubmit={handleSubmit(submitForm)}
+      noValidate
+      sx={{
+        backgroundColor: "white",
+        p: 2, // 4 * 8
+        borderRadius: 2, // 4 * 4
+      }}
+    >
+      <Grid container spacing={2} sx={{ mb: 2 }}>
+        {/* Formulario */}
+        <Grid item container xs={12} md={8} lg={6} alignContent="flex-start">
           {/* Id */}
-          <Grid item xs={12} sm={4} md={3} lg={2}>
+          <Grid item xs={12} sm={4} md={3} sx={{ p: 1 }}>
             <TextField
               {...register("rol_id")}
               label="Id"
               defaultValue="0"
               disabled
-              sx={{ width: "100%", pr: "16px" }}
+              sx={{ width: "100%" }}
             />
           </Grid>
 
           {/* Usuario */}
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid item xs={12} sm={8} md={9} sx={{ p: 1 }}>
             <Controller
               name="user_id"
               rules={{ required: true }}
@@ -228,7 +281,7 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
           </Grid>
 
           {/* Rol */}
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid item xs={12} sx={{ p: 1 }}>
             <Controller
               name="rol_id"
               rules={{ required: true }}
@@ -277,23 +330,61 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
               </Typography>
             )}
           </Grid>
-        </Grid>
 
-        {/* Botones */}
-        <Grid container spacing={2}>
-          <Grid item>
-            <Button size="medium" variant="contained" type="submit">
-              Guardar
-            </Button>
+          {/* Botones */}
+          <Grid container spacing={2}>
+            <Grid item>
+              <LoadingButton
+                loading={isLoading}
+                type="submit"
+                variant="contained"
+                sx={SolicitudButtonStyle}
+              >
+                <span>Guardar</span>
+              </LoadingButton>
+            </Grid>
+
+            <Grid item>
+              <Button size="medium" variant="outlined" onClick={cancel}>
+                Cancelar
+              </Button>
+            </Grid>
           </Grid>
 
-          <Grid item>
-            <Button size="medium" variant="outlined" onClick={cancel}>
-              Cancelar
-            </Button>
-          </Grid>
+          {errorMessage && (
+            <Grid item xs={12} sx={{ p: 1 }}>
+              <Alert severity="error">{errorMessage}</Alert>
+            </Grid>
+          )}
         </Grid>
-      </Box>
-    </FormBoxContainer>
+
+        {/* Listado de Personas */}
+        <Grid item xs={12} md={8} lg={6} sx={{ pt: 2 }}>
+          {rolActual?.users?.length === 0 && (
+            <Grid item xs={12} sx={{ p: 1 }}>
+              <Alert severity="info">
+                No existen Usuarios asociados a este Rol
+              </Alert>
+            </Grid>
+          )}
+
+          {rolActual?.users && rolActual?.users?.length > 0 && (
+            <>
+              {/* <Divider sx={{ mt: 1 }} /> */}
+              <Typography variant="body1" sx={{ my: 1 }}>
+                Usuarios asociados a este Rol
+              </Typography>
+              <BasicTable
+                items={getTableItems()}
+                headers={tableHeaders}
+                canEdit="fecha_retiro"
+                handleOpen={handleOpen}
+                handleDelete={handleDelete}
+              />
+            </>
+          )}
+        </Grid>
+      </Grid>
+    </Box>
   );
 };

@@ -110,13 +110,13 @@ export const RolesPage = ({ setOpen, setToastMessage }: Props) => {
   return (
     <PageBox>
       <Container>
-        <PageTitle title="Roles" />
+        <PageTitle title="Roles" divider={true} />
 
         {allowInsert && (
           <Button
             variant="contained"
             onClick={() => handleOpen(0)}
-            sx={{ mt: 2, mb: 2 }}
+            sx={{ mb: 2 }}
           >
             Nuevo Rol
           </Button>
