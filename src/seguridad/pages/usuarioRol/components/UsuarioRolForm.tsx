@@ -8,7 +8,7 @@ import {
 } from "../../../../interfaces/interfaces";
 import { ApiEndpoints, Messages } from "../../../../models/enums";
 import { useAuth } from "../../../../auth/context/useAuth";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   Alert,
   Autocomplete,
@@ -19,7 +19,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
-import { BasicTable } from "../../../../components";
+import { BasicTable, PageTitle } from "../../../../components";
 import { LoadingButton } from "@mui/lab";
 import { SolicitudButtonStyle } from "../../../../models/constants";
 
@@ -34,6 +34,7 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
   const { id } = useParams();
   const { authState } = useAuth();
   const navigate = useNavigate();
+  const rutaActual = useLocation();
   const { user } = authState;
   const {
     control,
@@ -215,12 +216,24 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
       sx={{
         backgroundColor: "white",
         p: 2, // 4 * 8
-        borderRadius: 2, // 4 * 4
+        borderRadius: 2, // 4 * 4,
+        minHeight: rutaActual.pathname.includes(ApiEndpoints.USUARIO_ROL)
+          ? { xs: "calc(100vh - 56px)", sm: "calc(100vh - 64px)" }
+          : "initial",
+        pt: rutaActual.pathname.includes(ApiEndpoints.USUARIO_ROL)
+          ? { xs: "64px", md: "72px" }
+          : "0px",
       }}
     >
       <Grid container spacing={2} sx={{ mb: 2 }}>
         {/* Formulario */}
         <Grid item container xs={12} md={8} lg={6} alignContent="flex-start">
+          {rutaActual.pathname.includes(ApiEndpoints.USUARIO_ROL) && (
+            <Grid item xs={12}>
+              <PageTitle title="Asignar Usuario Rol" divider={true} />
+            </Grid>
+          )}
+
           {/* Id */}
           <Grid item xs={12} sm={4} md={3} sx={{ p: 1 }}>
             <TextField
