@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import apiClient from "../../../../services/api-client";
 import {
+  Aplicacion,
   BackendResponse,
   Rol,
   User,
@@ -21,7 +22,7 @@ import {
 import { Controller, useForm } from "react-hook-form";
 import { BasicTable, PageTitle } from "../../../../components";
 import { LoadingButton } from "@mui/lab";
-import { SolicitudButtonStyle } from "../../../../models/constants";
+import { GreyBox, SolicitudButtonStyle } from "../../../../models/constants";
 
 interface Props {
   setOpen: (open: boolean) => void;
@@ -42,16 +43,20 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
     handleSubmit,
     setValue,
     formState: { errors },
+    watch,
   } = useForm<UsuarioRol>();
   const [users, setUsers] = useState<User[]>([]);
   const [roles, setRoles] = useState<Rol[]>([]);
   const [rolActual, setRolActual] = useState<Rol | null>(null);
+  const [aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const aplicacionWatched = watch("aplicacion_id");
 
   useEffect(() => {
     getUsers();
     getRoles();
+    getAplicaciones();
     getRolById();
   }, []);
 
@@ -59,6 +64,11 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
     if (!rolActual) return;
     setValue("rol_id", rolActual.rol_id);
   }, [rolActual]);
+
+  useEffect(() => {
+    if (!aplicacionWatched) return;
+    getRoles(aplicacionWatched);
+  }, [aplicacionWatched]);
 
   const getUsers = async () => {
     const { data } = await apiClient.get<BackendResponse>(
@@ -78,9 +88,14 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
     setUsers([...data.data]);
   };
 
-  const getRoles = async () => {
+  const getRoles = async (aplicacionId = 0) => {
     const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.ROLES}`
+      `/${ApiEndpoints.ROLES}`,
+      {
+        params: {
+          aplicacionId,
+        },
+      }
     );
 
     if (!data) {
@@ -93,6 +108,30 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
       return;
     }
     setRoles([...data.data]);
+  };
+
+  const getAplicaciones = async () => {
+    const { data } = await apiClient.get<BackendResponse>(
+      `/${ApiEndpoints.APLICACIONES}`
+    );
+
+    if (!data) {
+      showMessage("No se pudo completar la operacion");
+      return;
+    }
+
+    if (!data.success) {
+      showMessage(data.message);
+      return;
+    }
+
+    const apps: Aplicacion[] = (data.data as Aplicacion[]).map((aplicacion) => {
+      return {
+        ...aplicacion,
+        codigo_nombre: `${aplicacion.codigo} - ${aplicacion.nombre}`,
+      };
+    });
+    setAplicaciones([...apps]);
   };
 
   const store = async (formData: any) => {
@@ -207,197 +246,243 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
     });
   };
 
+  const backgrounStyle = rutaActual.pathname.includes(ApiEndpoints.USUARIO_ROL)
+    ? GreyBox
+    : {};
+
   return (
-    <Box
-      component="form"
-      autoComplete="off"
-      onSubmit={handleSubmit(submitForm)}
-      noValidate
-      sx={{
-        backgroundColor: "white",
-        p: 2, // 4 * 8
-        borderRadius: 2, // 4 * 4,
-        minHeight: rutaActual.pathname.includes(ApiEndpoints.USUARIO_ROL)
-          ? { xs: "calc(100vh - 56px)", sm: "calc(100vh - 64px)" }
-          : "initial",
-        pt: rutaActual.pathname.includes(ApiEndpoints.USUARIO_ROL)
-          ? { xs: "64px", md: "72px" }
-          : "0px",
-      }}
-    >
-      <Grid container spacing={2} sx={{ mb: 2 }}>
-        {/* Formulario */}
-        <Grid item container xs={12} md={8} lg={6} alignContent="flex-start">
-          {rutaActual.pathname.includes(ApiEndpoints.USUARIO_ROL) && (
-            <Grid item xs={12}>
-              <PageTitle title="Asignar Usuario Rol" divider={true} />
-            </Grid>
-          )}
-
-          {/* Id */}
-          <Grid item xs={12} sm={4} md={3} sx={{ p: 1 }}>
-            <TextField
-              {...register("rol_id")}
-              label="Id"
-              defaultValue="0"
-              disabled
-              sx={{ width: "100%" }}
-            />
-          </Grid>
-
-          {/* Usuario */}
-          <Grid item xs={12} sm={8} md={9} sx={{ p: 1 }}>
-            <Controller
-              name="user_id"
-              rules={{ required: true }}
-              control={control}
-              render={({ field }) => {
-                const { onChange, value } = field;
-                return (
-                  <Autocomplete
-                    value={
-                      value
-                        ? users.find((option) => value === option.id) ?? null
-                        : null
-                    }
-                    getOptionLabel={(option) => option.name}
-                    renderOption={(props, option) => (
-                      <Box component="li" {...props}>
-                        {option.name} - {option.persona.nombre_completo}
-                      </Box>
-                    )}
-                    onChange={(_event: any, newValue) =>
-                      onChange(newValue ? newValue.id : null)
-                    }
-                    options={users}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Usuario *"
-                        inputProps={{
-                          ...params.inputProps,
-                        }}
-                        error={
-                          errors.user_id?.type === "required" ? true : false
-                        }
-                      />
-                    )}
-                  />
-                );
-              }}
-            />
-            {errors.user_id?.type === "required" && (
-              <Typography color={"#d32f2f"} paddingTop={1} fontSize={12.5}>
-                El Usuario es obligatorio
-              </Typography>
+    <Box sx={backgrounStyle}>
+      <Box
+        component="form"
+        autoComplete="off"
+        onSubmit={handleSubmit(submitForm)}
+        noValidate
+        sx={{
+          backgroundColor: "white",
+          p: 2, // 4 * 8
+          borderRadius: 2, // 4 * 4,
+        }}
+      >
+        <Grid container spacing={2} sx={{ mb: 2 }}>
+          {/* Formulario */}
+          <Grid item container xs={12} md={8} lg={6} alignContent="flex-start">
+            {rutaActual.pathname.includes(ApiEndpoints.USUARIO_ROL) && (
+              <Grid item xs={12}>
+                <PageTitle title="Asignar Usuario Rol" divider={true} />
+              </Grid>
             )}
-          </Grid>
 
-          {/* Rol */}
-          <Grid item xs={12} sx={{ p: 1 }}>
-            <Controller
-              name="rol_id"
-              rules={{ required: true }}
-              control={control}
-              render={({ field }) => {
-                const { onChange, value } = field;
-                return (
-                  <Autocomplete
-                    value={
-                      value
-                        ? roles.find((option) => value === option.rol_id) ??
-                          null
-                        : null
-                    }
-                    getOptionLabel={(option) =>
-                      `${option.aplicacion.codigo} - ${option.nombre}`
-                    }
-                    renderOption={(props, option) => (
-                      <Box component="li" {...props}>
-                        {`${option.aplicacion.codigo} - ${option.nombre}`}
-                      </Box>
-                    )}
-                    onChange={(_event: any, newValue) =>
-                      onChange(newValue ? newValue.rol_id : null)
-                    }
-                    options={roles}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Rol *"
-                        inputProps={{
-                          ...params.inputProps,
-                        }}
-                        error={
-                          errors.rol_id?.type === "required" ? true : false
-                        }
-                      />
-                    )}
-                  />
-                );
-              }}
-            />
-            {errors.rol_id?.type === "required" && (
-              <Typography color={"#d32f2f"} paddingTop={1} fontSize={12.5}>
-                El Rol es obligatorio
-              </Typography>
-            )}
-          </Grid>
-
-          {/* Botones */}
-          <Grid container spacing={2}>
-            <Grid item>
-              <LoadingButton
-                loading={isLoading}
-                type="submit"
-                variant="contained"
-                sx={SolicitudButtonStyle}
-              >
-                <span>Guardar</span>
-              </LoadingButton>
-            </Grid>
-
-            <Grid item>
-              <Button size="medium" variant="outlined" onClick={cancel}>
-                Cancelar
-              </Button>
-            </Grid>
-          </Grid>
-
-          {errorMessage && (
-            <Grid item xs={12} sx={{ p: 1 }}>
-              <Alert severity="error">{errorMessage}</Alert>
-            </Grid>
-          )}
-        </Grid>
-
-        {/* Listado de Personas */}
-        <Grid item xs={12} md={8} lg={6} sx={{ pt: 2 }}>
-          {rolActual?.users?.length === 0 && (
-            <Grid item xs={12} sx={{ p: 1 }}>
-              <Alert severity="info">
-                No existen Usuarios asociados a este Rol
-              </Alert>
-            </Grid>
-          )}
-
-          {rolActual?.users && rolActual?.users?.length > 0 && (
-            <>
-              {/* <Divider sx={{ mt: 1 }} /> */}
-              <Typography variant="body1" sx={{ my: 1 }}>
-                Usuarios asociados a este Rol
-              </Typography>
-              <BasicTable
-                items={getTableItems()}
-                headers={tableHeaders}
-                canEdit="fecha_retiro"
-                handleOpen={handleOpen}
-                handleDelete={handleDelete}
+            {/* Id */}
+            <Grid item xs={12} sm={4} md={3} sx={{ p: 1 }}>
+              <TextField
+                {...register("rol_id")}
+                label="Id"
+                defaultValue="0"
+                disabled
+                sx={{ width: "100%" }}
               />
-            </>
-          )}
+            </Grid>
+
+            {/* Usuario */}
+            <Grid item xs={12} sm={8} md={9} sx={{ p: 1 }}>
+              <Controller
+                name="user_id"
+                rules={{ required: true }}
+                control={control}
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <Autocomplete
+                      value={
+                        value
+                          ? users.find((option) => value === option.id) ?? null
+                          : null
+                      }
+                      getOptionLabel={(option) =>
+                        `${option.name} - ${option.persona.nombre_completo}`
+                      }
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props}>
+                          {option.name} - {option.persona.nombre_completo}
+                        </Box>
+                      )}
+                      onChange={(_event: any, newValue) =>
+                        onChange(newValue ? newValue.id : null)
+                      }
+                      options={users}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Usuario *"
+                          inputProps={{
+                            ...params.inputProps,
+                          }}
+                          error={
+                            errors.user_id?.type === "required" ? true : false
+                          }
+                        />
+                      )}
+                    />
+                  );
+                }}
+              />
+              {errors.user_id?.type === "required" && (
+                <Typography color={"#d32f2f"} paddingTop={1} fontSize={12.5}>
+                  El Usuario es obligatorio
+                </Typography>
+              )}
+            </Grid>
+
+            {/* Aplicacion */}
+            <Grid item xs={12} sx={{ p: 1 }}>
+              <Controller
+                name="aplicacion_id"
+                // rules={{ required: true }}
+                control={control}
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <Autocomplete
+                      value={
+                        value
+                          ? aplicaciones.find(
+                              (option) => value === option.aplicacion_id
+                            ) ?? null
+                          : null
+                      }
+                      getOptionLabel={(option) =>
+                        `${option.codigo} - ${option.nombre}`
+                      }
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props}>
+                          {option.codigo_nombre} - {option.nombre}
+                        </Box>
+                      )}
+                      onChange={(_event: any, newValue) =>
+                        onChange(newValue ? newValue.aplicacion_id : null)
+                      }
+                      options={aplicaciones}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Aplicación"
+                          inputProps={{
+                            ...params.inputProps,
+                          }}
+                        />
+                      )}
+                    />
+                  );
+                }}
+              />
+            </Grid>
+
+            {/* Rol */}
+            <Grid item xs={12} sx={{ p: 1 }}>
+              <Controller
+                name="rol_id"
+                rules={{ required: true }}
+                control={control}
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <Autocomplete
+                      value={
+                        value
+                          ? roles.find((option) => value === option.rol_id) ??
+                            null
+                          : null
+                      }
+                      getOptionLabel={(option) =>
+                        `${option.aplicacion.codigo} - ${option.nombre}`
+                      }
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props}>
+                          {`${option.aplicacion.codigo} - ${option.nombre}`}
+                        </Box>
+                      )}
+                      onChange={(_event: any, newValue) =>
+                        onChange(newValue ? newValue.rol_id : null)
+                      }
+                      options={roles}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Rol *"
+                          inputProps={{
+                            ...params.inputProps,
+                          }}
+                          error={
+                            errors.rol_id?.type === "required" ? true : false
+                          }
+                        />
+                      )}
+                    />
+                  );
+                }}
+              />
+              {errors.rol_id?.type === "required" && (
+                <Typography color={"#d32f2f"} paddingTop={1} fontSize={12.5}>
+                  El Rol es obligatorio
+                </Typography>
+              )}
+            </Grid>
+
+            {/* Botones */}
+            <Grid container spacing={2}>
+              <Grid item>
+                <LoadingButton
+                  loading={isLoading}
+                  type="submit"
+                  variant="contained"
+                  sx={SolicitudButtonStyle}
+                >
+                  <span>Guardar</span>
+                </LoadingButton>
+              </Grid>
+
+              <Grid item>
+                <Button size="medium" variant="outlined" onClick={cancel}>
+                  Cancelar
+                </Button>
+              </Grid>
+            </Grid>
+
+            {errorMessage && (
+              <Grid item xs={12} sx={{ p: 1 }}>
+                <Alert severity="error">{errorMessage}</Alert>
+              </Grid>
+            )}
+          </Grid>
+
+          {/* Listado de Personas */}
+          <Grid item xs={12} md={8} lg={6} sx={{ pt: 2 }}>
+            {rolActual?.users?.length === 0 && (
+              <Grid item xs={12} sx={{ p: 1 }}>
+                <Alert severity="info">
+                  No existen Usuarios asociados a este Rol
+                </Alert>
+              </Grid>
+            )}
+
+            {rolActual?.users && rolActual?.users?.length > 0 && (
+              <>
+                {/* <Divider sx={{ mt: 1 }} /> */}
+                <Typography variant="body1" sx={{ my: 1 }}>
+                  Usuarios asociados a este Rol
+                </Typography>
+                <BasicTable
+                  items={getTableItems()}
+                  headers={tableHeaders}
+                  canEdit="fecha_retiro"
+                  handleOpen={handleOpen}
+                  handleDelete={handleDelete}
+                />
+              </>
+            )}
+          </Grid>
         </Grid>
-      </Grid>
+      </Box>
     </Box>
   );
 };

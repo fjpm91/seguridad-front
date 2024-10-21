@@ -3,8 +3,8 @@ import {
   BackendResponse,
   CentroCosto,
   Empresa,
+  PCC,
   Persona,
-  PersonaCentroCosto,
   UnidadNegocio,
 } from "../../../../interfaces/interfaces";
 import { Controller, useForm } from "react-hook-form";
@@ -53,9 +53,7 @@ export const PersonasCentroCostoForm = ({
   } = useForm();
   const [unidades, setUnidadesNegocio] = useState<UnidadNegocio[]>([]);
   const [centrosCosto, setCentrosCosto] = useState<CentroCosto[]>([]);
-  const [centrosCostoPersona, setCentrosCostoPersona] = useState<
-    PersonaCentroCosto[]
-  >([]);
+  const [centrosCostoPersona, setCentrosCostoPersona] = useState<PCC[]>([]);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const empresaWatched = watch("empresa_id");
   const unidadNegocioWatched = watch("unidad_negocio_id");
@@ -247,12 +245,12 @@ export const PersonasCentroCostoForm = ({
 
   const cancel = () => navigate("/personas");
 
-  const handleEliminar = async (centroCosto: PersonaCentroCosto) => {
+  const handleEliminar = async (centroCosto: PCC) => {
     try {
       const datos = {
         persona_id: centroCosto.persona_id,
         persona_centro_costo_id: centroCosto.id,
-        centro_costo_id: centroCosto.centro_costo_id,
+        centro_costo_id: centroCosto.cc_id,
       };
       const { data } = await apiClient.post<BackendResponse>(
         `/${ApiEndpoints.ELIMINAR_ASIGNACION_PCC}`,
@@ -276,14 +274,14 @@ export const PersonasCentroCostoForm = ({
     }
   };
 
-  const handleActualizarEncargado = async (pcc: PersonaCentroCosto) => {
+  const handleActualizarEncargado = async (pcc: PCC) => {
     console.log("🚀 ~ handleActualizarEncargado ~ centroCosto:", pcc);
     try {
       const datos = {
         persona_id: pcc.persona_id,
         persona_centro_costo_id: pcc.id,
-        centro_costo_id: pcc.centro_costos.id,
-        encargado: pcc.encargado,
+        centro_costo_id: pcc.cc_id,
+        encargado: pcc.cc_encargado,
       };
       const { data } = await apiClient.post<BackendResponse>(
         `/${ApiEndpoints.ACTUALIZAR_ENCARGADO_PCC}`,
@@ -329,10 +327,14 @@ export const PersonasCentroCostoForm = ({
         <Grid container sx={{ mb: 4 }}>
           {/* Titulo Formulario */}
           <Grid item xs={12}>
-            <PageTitle title="Asignacion de Centros de Costo" variant="h5" />
+            <PageTitle
+              title="Asignacion de Centros de Costo"
+              variant="h5"
+              divider={true}
+            />
           </Grid>
 
-          <Grid container item lg={6} sx={{ pt: 2 }}>
+          <Grid container item xs={12} lg={6}>
             {/* Id */}
             {/* <Grid item xs={12} md={5} sx={{ p: 1 }}>
               <TextField
@@ -562,48 +564,46 @@ export const PersonasCentroCostoForm = ({
                 </Button>
               </Grid>
             </Grid>
+          </Grid>
 
-            {/* Centros de Costo */}
-            <Grid item xs={12} sx={{ pt: 2 }}>
-              <Typography variant="body2">
-                Centros de Costo Asignados
-              </Typography>
-              <Divider />
-              <List>
-                {centrosCostoPersona.map((cc) => (
-                  <ListItem key={cc.id}>
-                    <ListItemText
-                      primary={`${cc.centro_costos.codigo} - ${cc.centro_costos.nombre}`}
-                      secondary={cc.encargado ? "Encargado" : "---"}
-                    />
+          {/* Centros de Costo */}
+          <Grid item xs={12} lg={6} sx={{ pl: 2 }}>
+            <Typography variant="body2">Centros de Costo Asignados</Typography>
+            <Divider />
+            <List>
+              {centrosCostoPersona.map((cc) => (
+                <ListItem key={cc.id}>
+                  <ListItemText
+                    primary={`${cc.cc_codigo} - ${cc.cc_nombre}`}
+                    secondary={cc.cc_encargado ? "Encargado" : "---"}
+                  />
 
-                    <Tooltip
-                      title={
-                        cc.encargado
-                          ? "Quitar Encargado"
-                          : "Marcar como Encargado"
-                      }
+                  <Tooltip
+                    title={
+                      cc.cc_encargado
+                        ? "Quitar Encargado"
+                        : "Marcar como Encargado"
+                    }
+                  >
+                    <IconButton
+                      color={cc.cc_encargado ? "warning" : "default"}
+                      onClick={() => handleActualizarEncargado(cc)}
                     >
-                      <IconButton
-                        color={cc.encargado ? "warning" : "default"}
-                        onClick={() => handleActualizarEncargado(cc)}
-                      >
-                        {cc.encargado ? <Close /> : <Check />}
-                      </IconButton>
-                    </Tooltip>
+                      {cc.cc_encargado ? <Close /> : <Check />}
+                    </IconButton>
+                  </Tooltip>
 
-                    <Tooltip title="Eliminar Asignacion de CC">
-                      <IconButton
-                        color="error"
-                        onClick={() => handleEliminar(cc)}
-                      >
-                        <Delete />
-                      </IconButton>
-                    </Tooltip>
-                  </ListItem>
-                ))}
-              </List>
-            </Grid>
+                  <Tooltip title="Eliminar Asignacion de CC">
+                    <IconButton
+                      color="error"
+                      onClick={() => handleEliminar(cc)}
+                    >
+                      <Delete />
+                    </IconButton>
+                  </Tooltip>
+                </ListItem>
+              ))}
+            </List>
           </Grid>
         </Grid>
       </Box>

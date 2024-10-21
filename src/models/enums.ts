@@ -14,6 +14,7 @@ export enum StorageKeys {
 export enum ModulosSistema {
   ACCESOS = "accesos",
   APLICACIONES = "aplicaciones",
+  ASIGNAR_CARGOS = "asignar_cargos",
   BITACORA = "bitacora",
   CARGOS = "cargos",
   CENTROS_COSTO = "centros_costo",
@@ -22,13 +23,12 @@ export enum ModulosSistema {
   EMPRESA = "empresas",
   MODULOS = "modulos",
   PERSONAS = "personas",
-  PERSONAS_CENTROS_COSTO = "personascc",
+  PERSONAS_CENTROS_COSTO = "personas-centro-costos",
   ROL_ASIGNACION = "rol_asignacion",
   ROLES = "roles",
   UNIDADES_NEGOCIO = "unidades_negocio",
   UNIDADES_ORGANIZATIVAS = "unidades-organizativas",
   USUARIOS = "users",
-  ASIGNAR_CARGOS = "asignar_cargos",
 }
 
 export enum TipoAcceso {
@@ -41,7 +41,7 @@ export enum TipoAcceso {
 export enum ApiEndpoints {
   ACCESOS = "accesos",
   ACTUALIZAR_CARGOS = "personas/update-cargo",
-  ACTUALIZAR_ENCARGADO_PCC = "personascc/update-encargado",
+  ACTUALIZAR_ENCARGADO_PCC = "personas-centro-costos/update-encargado",
   APLICACIONES = "aplicaciones",
   APLICACIONES_CON_ROLES = "aplicaciones?habilitado=1&roles=1",
   BITACORA = "bitacoras",
@@ -65,7 +65,7 @@ export enum ApiEndpoints {
   MODULOS = "modulos",
   MODULOS_BY_APP = "modulos/app",
   PERSONAS = "personas",
-  PERSONAS_CENTROS_COSTO = "personascc",
+  PERSONAS_CENTROS_COSTO = "personas-centro-costos",
   ROL_ASIGNACION = "rol-asignaciones",
   ROLES = "roles",
   ROLES_ACCESOS = "roles/accesos",

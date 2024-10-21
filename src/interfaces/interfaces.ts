@@ -30,7 +30,7 @@ export interface Persona {
   habilitado: number;
   nombre_completo: string;
   nombre?: string;
-  persona_centros_costos?: PersonaCentroCosto[];
+  persona_centros_costos?: PCC[];
   persona_id: number;
   telefono?: string;
   ubicacion?: string;
@@ -213,6 +213,7 @@ export interface Cargo {
   monto_minimo_salario: number;
   superior_id?: number;
   total_vacantes: number;
+  unidad_negocio_codigo: string;
   unidad_negocio_id: number;
   unidad_negocio_nombre: string;
   unidad_organizativa_id?: number;
@@ -221,24 +222,24 @@ export interface Cargo {
 }
 
 export interface PersonaCentroCosto {
+  centro_costo_id: number;
+  codigo?: number;
+  created_at: string;
+  encargado: number;
   id: number;
   nombre?: string;
-  codigo?: number;
-  encargado: number;
   persona_id: number;
-  centro_costo_id: number;
-  created_at: string;
   updated_at: string;
-  centro_costos: Centrocostos2;
 }
 
-interface Centrocostos2 {
+export interface PCC {
   id: number;
-  nombre: string;
-  codigo: number;
-  unidad_negocio_id: number;
-  created_at?: any;
-  updated_at?: any;
+  cc_id: number;
+  cc_codigo: number;
+  cc_nombre: string;
+  cc_encargado: number;
+  persona_id: number;
+  persona_nombre: string;
 }
 
 export interface UnidadOrganizativa {
@@ -252,9 +253,10 @@ export interface UnidadOrganizativa {
 }
 
 export interface UsuarioRol {
-  usuario_rol_id: number;
-  user_id: number;
+  aplicacion_id: number;
   rol_id: number;
-  usuario?: any;
   rol?: any;
+  user_id: number;
+  usuario_rol_id: number;
+  usuario?: any;
 }

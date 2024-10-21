@@ -280,6 +280,7 @@ export const UnidadOrganizativaForm = ({ setOpen, setToastMessage }: Props) => {
             <Grid item xs={12} sx={{ p: 1 }}>
               <Controller
                 name="division_id"
+                rules={{ required: "La division es obligatoria" }}
                 control={control}
                 render={({ field }) => {
                   const { onChange, value } = field;
@@ -306,6 +307,12 @@ export const UnidadOrganizativaForm = ({ setOpen, setToastMessage }: Props) => {
                         <TextField
                           {...params}
                           label="Division"
+                          error={!!errors.division_id}
+                          helperText={
+                            errors.division_id
+                              ? errors.division_id.message?.toString()
+                              : ""
+                          }
                           inputProps={{
                             ...params.inputProps,
                           }}
@@ -331,20 +338,12 @@ export const UnidadOrganizativaForm = ({ setOpen, setToastMessage }: Props) => {
                   getValues("nombre") === "---" ? setValue("nombre", "") : null
                 }
                 onBlur={() =>
-                  getValues("nombre") === "---" ? setValue("nombre", "") : null
+                  getValues("nombre") === "" ? setValue("nombre", "---") : null
                 }
-                error={
-                  errors.nombre?.type === "required" ||
-                  errors.nombre?.type === "minLength"
-                    ? true
-                    : false
-                }
+                error={!!errors.nombre}
                 sx={{ width: "100%" }}
               />
-              {(errors.nombre?.type === "required" ||
-                errors.nombre?.type === "minLength") && (
-                <ErrorText text="El Nombre es obligatorio" />
-              )}
+              {errors.nombre && <ErrorText text="El Nombre es obligatorio" />}
             </Grid>
 
             {/* Descripcion Unidad */}
@@ -353,15 +352,15 @@ export const UnidadOrganizativaForm = ({ setOpen, setToastMessage }: Props) => {
                 {...register("descripcion")}
                 required
                 label="Descripcion"
-                defaultValue="---"
+                defaultValue="----"
                 onFocus={() =>
-                  getValues("descripcion") === "---"
+                  getValues("descripcion") === "----"
                     ? setValue("descripcion", "")
                     : null
                 }
                 onBlur={() =>
-                  getValues("descripcion") === "---"
-                    ? setValue("descripcion", "")
+                  getValues("descripcion") === ""
+                    ? setValue("descripcion", "----")
                     : null
                 }
                 sx={{ width: "100%" }}

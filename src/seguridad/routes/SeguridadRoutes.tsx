@@ -208,7 +208,7 @@ export const SeguridadRoutes = () => {
               }
             /> */}
             <Route
-              path={ApiEndpoints.PERSONAS_CENTROS_COSTO}
+              path={ApiEndpoints.PERSONAS_CENTROS_COSTO + "/:id"}
               element={
                 <PersonasCentroCostoForm
                   setToastMessage={setToastMessage}
