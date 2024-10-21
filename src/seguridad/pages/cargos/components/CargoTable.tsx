@@ -8,10 +8,18 @@ import { Cargo } from "../../../../interfaces/interfaces";
 interface Props {
   allowUpdate: boolean;
   cargos: Cargo[];
+  filtroEmpresas: string[];
+  filtroUnidades: string[];
   handleOpen: (cargo_id: number) => void;
 }
 
-export const CargoTable = ({ allowUpdate, cargos, handleOpen }: Props) => {
+export const CargoTable = ({
+  allowUpdate,
+  cargos,
+  handleOpen,
+  filtroEmpresas,
+  filtroUnidades,
+}: Props) => {
   const columns = useMemo<MRT_ColumnDef<Cargo>[]>(
     () => [
       {
@@ -22,39 +30,22 @@ export const CargoTable = ({ allowUpdate, cargos, handleOpen }: Props) => {
       {
         accessorKey: "cargo_nombre",
         header: "Nombre",
+
         // size: 180,
       },
       {
-        accessorKey: "unidad_negocio_id",
-        header: "#UN",
-      },
-      {
-        accessorKey: "unidad_negocio_nombre",
+        accessorFn: (row) =>
+          `${row.unidad_negocio_codigo} - ${row.unidad_negocio_nombre}`,
         header: "UN",
+        filterVariant: "select",
+        filterSelectOptions: filtroUnidades,
       },
       {
         accessorKey: "empresa_nombre",
         header: "Empresa",
+        filterVariant: "select",
+        filterSelectOptions: filtroEmpresas,
       },
-      // {
-      //   accessorKey: "habilitado",
-      //   header: "Habilitado",
-      //   enableColumnActions: false,
-      //   enableColumnFilter: false,
-      //   Cell: ({ cell }) => (
-      //     <FormGroup>
-      //       <FormControlLabel
-      //         control={
-      //           <Checkbox
-      //             checked={cell.getValue<number>() === 1 ? true : false}
-      //             disabled
-      //           />
-      //         }
-      //         label=""
-      //       />
-      //     </FormGroup>
-      //   ),
-      // },
     ],
     [cargos]
   );
@@ -66,7 +57,7 @@ export const CargoTable = ({ allowUpdate, cargos, handleOpen }: Props) => {
       localization={MRT_Localization_ES}
       enableRowActions={allowUpdate}
       positionActionsColumn="last"
-      initialState={{ density: "compact" }}
+      initialState={{ density: "compact", showColumnFilters: true }}
       defaultColumn={{
         size: 50,
       }}

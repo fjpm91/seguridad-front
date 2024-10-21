@@ -3,7 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { Button, Container } from "@mui/material";
 import apiClient from "../../../services/api-client";
 import { useAuth } from "../../../auth/context/useAuth";
-import { BackendResponse, Cargo } from "../../../interfaces/interfaces";
+import {
+  BackendResponse,
+  Cargo,
+  Empresa,
+  UnidadNegocio,
+} from "../../../interfaces/interfaces";
 import {
   ApiEndpoints,
   ModulosSistema,
@@ -21,6 +26,9 @@ interface Props {
 export const CargosPage = ({ setOpen, setToastMessage }: Props) => {
   const { authState } = useAuth();
   const [cargos, setCargos] = useState<Cargo[]>([]);
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
+  const [filtroEmpresas, setFiltroEmpresas] = useState<string[]>([]);
+  const [filtroUN, setFiltroUN] = useState<string[]>([]);
   const navigate = useNavigate();
   const { accesos } = authState;
   const { allowed: allowInsert } = useAutorizado(
@@ -34,6 +42,8 @@ export const CargosPage = ({ setOpen, setToastMessage }: Props) => {
 
   useEffect(() => {
     getAplicaciones();
+    getEmpresas();
+    getUnidadesNegocio();
   }, []);
 
   const getAplicaciones = async () => {
@@ -52,6 +62,46 @@ export const CargosPage = ({ setOpen, setToastMessage }: Props) => {
     }
 
     setCargos([...data.data]);
+  };
+
+  const getEmpresas = async () => {
+    const { data } = await apiClient.get<BackendResponse>(
+      `/${ApiEndpoints.EMPRESAS}`
+    );
+
+    if (!data) {
+      showMessage("No se pudo completar la operacion");
+      return;
+    }
+
+    if (!data.success) {
+      showMessage(data.message);
+      return;
+    }
+
+    setEmpresas([...data.data]);
+    const emp = (data.data as Empresa[]).map((p) => p.nombre);
+    if (empresas) setFiltroEmpresas([...new Set(emp)]);
+  };
+
+  const getUnidadesNegocio = async () => {
+    const { data } = await apiClient.get<BackendResponse>(
+      `/${ApiEndpoints.UNIDAD_NEGOCIO}`
+    );
+
+    if (!data) {
+      showMessage("No se pudo completar la operacion");
+      return;
+    }
+
+    if (!data.success) {
+      showMessage(data.message);
+      return;
+    }
+
+    // setUnidadesNegocio([...data.data]);
+    const unidadesNegocio = (data.data as UnidadNegocio[]).map((p) => p.nombre);
+    if (empresas) setFiltroUN([...new Set(unidadesNegocio)]);
   };
 
   const handleOpen = (id: number) => {
@@ -83,6 +133,8 @@ export const CargosPage = ({ setOpen, setToastMessage }: Props) => {
             allowUpdate={allowUpdate}
             cargos={cargos}
             handleOpen={handleOpen}
+            filtroEmpresas={filtroEmpresas}
+            filtroUnidades={filtroUN}
           />
         )}
       </Container>
