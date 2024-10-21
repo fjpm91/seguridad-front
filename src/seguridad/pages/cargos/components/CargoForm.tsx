@@ -512,7 +512,7 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
             <Grid item xs={12} sx={{ p: 1 }}>
               <Controller
                 name="superior_id"
-                rules={{ required: true }}
+                // rules={{ required: true }}
                 control={control}
                 render={({ field }) => {
                   const { onChange, value } = field;
@@ -544,38 +544,32 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
                           inputProps={{
                             ...params.inputProps,
                           }}
-                          error={
-                            errors.unidad_negocio_id?.type === "required"
-                              ? true
-                              : false
-                          }
                         />
                       )}
                     />
                   );
                 }}
               />
-              {errors.unidad_negocio_id?.type === "required" && (
-                <ErrorText text="El Cargo Superior es obligatorio" />
-              )}
             </Grid>
 
             {/* Nombre */}
             <Grid item xs={12} sx={{ p: 1 }}>
               <TextField
                 {...register("cargo_nombre", {
-                  required: true,
-                  minLength: { value: 4, message: "error message" },
+                  required: {
+                    value: true,
+                    message: "El nombre del cargo es obligatorio",
+                  },
+                  minLength: {
+                    value: 4,
+                    message:
+                      "El Nombre del Cargo debe ser mayor o igual a 4 caracteres",
+                  },
                 })}
                 required
                 label="Nombre"
                 defaultValue="---"
-                error={
-                  errors.cargo_nombre?.type === "required" ||
-                  errors.cargo_nombre?.type === "minLength"
-                    ? true
-                    : false
-                }
+                error={!!errors.cargo_nombre}
                 onFocus={() =>
                   getValues("cargo_nombre") === "---"
                     ? setValue("cargo_nombre", "")
@@ -588,9 +582,10 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
                 }
                 sx={{ width: "100%" }}
               />
-              {(errors.cargo_nombre?.type === "required" ||
-                errors.cargo_nombre?.type === "minLength") && (
-                <ErrorText text="El Nombre del Cargo debe ser mayor o igual a 3 caracteres" />
+              {errors.cargo_nombre && (
+                <ErrorText
+                  text={errors.cargo_nombre.message?.toString() || "Error"}
+                />
               )}
             </Grid>
 
@@ -598,32 +593,34 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
             <Grid item xs={12} sx={{ p: 1 }}>
               <TextField
                 {...register("cargo_descripcion", {
-                  required: true,
-                  minLength: { value: 4, message: "error message" },
+                  required: {
+                    value: true,
+                    message: "La descripcion es obligatoria",
+                  },
+                  minLength: {
+                    value: 4,
+                    message: "La descripcion debe ser mayor a 4 caracteres",
+                  },
                 })}
                 label="Descripcion"
-                defaultValue="---"
-                error={
-                  errors.cargo_descripcion?.type === "required" ||
-                  errors.cargo_descripcion?.type === "minLength"
-                    ? true
-                    : false
-                }
+                defaultValue="-----"
+                error={!!errors.cargo_descripcion}
                 onFocus={() =>
-                  getValues("cargo_descripcion") === "---"
+                  getValues("cargo_descripcion") === "-----"
                     ? setValue("cargo_descripcion", "")
                     : null
                 }
                 onBlur={() =>
                   getValues("cargo_descripcion") === ""
-                    ? setValue("cargo_descripcion", "---")
+                    ? setValue("cargo_descripcion", "-----")
                     : null
                 }
                 sx={{ width: "100%" }}
               />
-              {(errors.cargo_descripcion?.type === "required" ||
-                errors.cargo_descripcion?.type === "minLength") && (
-                <ErrorText text="El Nombre del Cargo debe ser mayor o igual a 3 caracteres" />
+              {errors.cargo_descripcion && (
+                <ErrorText
+                  text={errors.cargo_descripcion.message?.toString() || "Error"}
+                />
               )}
             </Grid>
 
