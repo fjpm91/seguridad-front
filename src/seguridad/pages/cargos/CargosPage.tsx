@@ -3,12 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button, Container } from "@mui/material";
 import apiClient from "../../../services/api-client";
 import { useAuth } from "../../../auth/context/useAuth";
-import {
-  BackendResponse,
-  Cargo,
-  Empresa,
-  UnidadNegocio,
-} from "../../../interfaces/interfaces";
+import { BackendResponse, Cargo } from "../../../interfaces/interfaces";
 import {
   ApiEndpoints,
   ModulosSistema,
@@ -26,7 +21,6 @@ interface Props {
 export const CargosPage = ({ setOpen, setToastMessage }: Props) => {
   const { authState } = useAuth();
   const [cargos, setCargos] = useState<Cargo[]>([]);
-  const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [filtroEmpresas, setFiltroEmpresas] = useState<string[]>([]);
   const [filtroUN, setFiltroUN] = useState<string[]>([]);
   const navigate = useNavigate();
@@ -41,12 +35,10 @@ export const CargosPage = ({ setOpen, setToastMessage }: Props) => {
   );
 
   useEffect(() => {
-    getAplicaciones();
-    getEmpresas();
-    getUnidadesNegocio();
+    getCargos();
   }, []);
 
-  const getAplicaciones = async () => {
+  const getCargos = async () => {
     const { data } = await apiClient.get<BackendResponse>(
       `/${ApiEndpoints.CARGOS}`
     );
@@ -61,47 +53,25 @@ export const CargosPage = ({ setOpen, setToastMessage }: Props) => {
       return;
     }
 
+    const cargosData = (data.data as Cargo[]).sort(
+      (a, b) => a.unidad_negocio_codigo - b.unidad_negocio_codigo
+    );
     setCargos([...data.data]);
-  };
-
-  const getEmpresas = async () => {
-    const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.EMPRESAS}`
+    const empresasUnicas = Array.from(
+      new Set(cargosData.map((cargo) => cargo.empresa_nombre.toUpperCase()))
     );
-
-    if (!data) {
-      showMessage("No se pudo completar la operacion");
-      return;
-    }
-
-    if (!data.success) {
-      showMessage(data.message);
-      return;
-    }
-
-    setEmpresas([...data.data]);
-    const emp = (data.data as Empresa[]).map((p) => p.nombre);
-    if (empresas) setFiltroEmpresas([...new Set(emp)]);
-  };
-
-  const getUnidadesNegocio = async () => {
-    const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.UNIDAD_NEGOCIO}`
+    if (empresasUnicas) setFiltroEmpresas([...new Set(empresasUnicas)]);
+    const unidadesUnicas = Array.from(
+      new Set(
+        cargosData.map(
+          (cargo) =>
+            cargo.unidad_negocio_codigo +
+            " - " +
+            cargo.unidad_negocio_nombre.toUpperCase()
+        )
+      )
     );
-
-    if (!data) {
-      showMessage("No se pudo completar la operacion");
-      return;
-    }
-
-    if (!data.success) {
-      showMessage(data.message);
-      return;
-    }
-
-    // setUnidadesNegocio([...data.data]);
-    const unidadesNegocio = (data.data as UnidadNegocio[]).map((p) => p.nombre);
-    if (empresas) setFiltroUN([...new Set(unidadesNegocio)]);
+    if (unidadesUnicas) setFiltroUN([...new Set(unidadesUnicas)]);
   };
 
   const handleOpen = (id: number) => {

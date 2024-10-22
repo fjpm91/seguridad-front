@@ -213,7 +213,7 @@ export interface Cargo {
   monto_minimo_salario: number;
   superior_id?: number;
   total_vacantes: number;
-  unidad_negocio_codigo: string;
+  unidad_negocio_codigo: number;
   unidad_negocio_id: number;
   unidad_negocio_nombre: string;
   unidad_organizativa_id?: number;
