@@ -8,12 +8,14 @@ import { Division } from "../../../../interfaces/interfaces";
 interface Props {
   allowUpdate: boolean;
   divisiones: Division[];
+  filtroEmpresas: string[];
   handleOpen: (aplicacion_id: number) => void;
 }
 
 export const DivisionTable = ({
   allowUpdate,
   divisiones,
+  filtroEmpresas,
   handleOpen,
 }: Props) => {
   const columns = useMemo<MRT_ColumnDef<Division>[]>(
@@ -27,8 +29,10 @@ export const DivisionTable = ({
         header: "Nombre",
       },
       {
-        accessorKey: "empresa_nombre",
+        accessorFn: (row) => row.empresa_nombre ?? "",
         header: "Empresa",
+        filterVariant: "select",
+        filterSelectOptions: filtroEmpresas,
       },
     ],
     [divisiones]

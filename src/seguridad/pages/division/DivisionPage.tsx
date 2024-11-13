@@ -20,10 +20,11 @@ interface Props {
 }
 
 export const DivisionPage = ({ setOpen, setToastMessage }: Props) => {
+  const navigate = useNavigate();
   const { authState } = useAuth();
   const [divisiones, setDivisiones] = useState<Division[]>([]);
   const { accesos } = authState;
-  const navigate = useNavigate();
+  const [filtroEmpresas, setFiltroEmpresas] = useState<string[]>([]);
   const { allowed: allowInsert } = useAutorizado(
     ModulosSistema.PERSONAS + TipoAcceso.INSERT,
     accesos
@@ -52,6 +53,10 @@ export const DivisionPage = ({ setOpen, setToastMessage }: Props) => {
       return;
     }
     setDivisiones([...data.data]);
+    const empresas = (data.data as Division[])
+      .map((division) => division.empresa_nombre ?? "")
+      .filter((x) => x !== null && x !== "");
+    setFiltroEmpresas([...new Set(empresas)]);
   };
 
   const handleOpen = (id: number) => {
@@ -66,13 +71,13 @@ export const DivisionPage = ({ setOpen, setToastMessage }: Props) => {
   return (
     <PageBox>
       <Container>
-        <PageTitle title="Divisiones" />
+        <PageTitle title="Divisiones" divider={true} />
 
         {allowInsert && (
           <Button
             variant="contained"
             onClick={() => handleOpen(0)}
-            sx={{ mt: 2, mb: 2 }}
+            sx={{ mb: 2 }}
           >
             Nueva Division
           </Button>
@@ -82,6 +87,7 @@ export const DivisionPage = ({ setOpen, setToastMessage }: Props) => {
           <DivisionTable
             allowUpdate={allowUpdate}
             divisiones={divisiones}
+            filtroEmpresas={filtroEmpresas}
             handleOpen={handleOpen}
           />
         )}

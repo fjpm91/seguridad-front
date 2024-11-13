@@ -39,16 +39,23 @@ export const DivisionForm = ({ setOpen, setToastMessage }: Props) => {
     setValue,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm();
   const [unidadesNegocio, setUnidadesNegocio] = useState<UnidadNegocio[]>([]);
   const [divisionActual, setDivisionActual] = useState<Division | null>(null);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const { user } = authState;
+  const empresaWatched = watch("empresa_id");
 
   useEffect(() => {
-    getUnidadesNegocio();
+    // getUnidadesNegocio();
     getEmpresas();
   }, []);
+
+  useEffect(() => {
+    if (!empresaWatched) return;
+    getUnidadesNegocio(empresaWatched);
+  }, [empresaWatched]);
 
   const getEmpresas = async () => {
     const { data } = await apiClient.get<BackendResponse>(
@@ -68,9 +75,10 @@ export const DivisionForm = ({ setOpen, setToastMessage }: Props) => {
     setEmpresas([...data.data]);
   };
 
-  const getUnidadesNegocio = async () => {
+  const getUnidadesNegocio = async (empresaId = 0) => {
     const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.UNIDAD_NEGOCIO}`
+      `/${ApiEndpoints.UNIDAD_NEGOCIO}`,
+      { params: { empresaId } }
     );
 
     if (!data) {
@@ -264,7 +272,11 @@ export const DivisionForm = ({ setOpen, setToastMessage }: Props) => {
         <Grid container spacing={2} sx={{ mb: 4 }}>
           {/* Titulo Formulario */}
           <Grid item xs={12}>
-            <PageTitle title="Formulario de Divisiones" variant="h5" />
+            <PageTitle
+              title="Formulario de Divisiones"
+              variant="h5"
+              divider={true}
+            />
           </Grid>
 
           {/* Id */}
