@@ -226,11 +226,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
     if (userdata.empresa_id) setValue("empresa_id", userdata.empresa_id);
     if (userdata.user) setValue("user", userdata.user.name);
     if (userdata.habilitado) setValue("habilitado", userdata.habilitado);
-    // encargado
-    // persona_id
-    // centro_costo_id
-    // if (userdata.centro_costo_encargado)
-    //   setValue("encargado", userdata.centro_costo_encargado === 1 ? true : 0);
+    if (userdata.division_id) setValue("division_id", userdata.division_id);
     if (userdata.centro_costo_id)
       setValue("centro_costo_id", userdata.centro_costo_id);
     userdata.division_id ? setValue("division_id", userdata.division_id) : null;
