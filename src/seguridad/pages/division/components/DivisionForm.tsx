@@ -48,7 +48,7 @@ export const DivisionForm = ({ setOpen, setToastMessage }: Props) => {
   const empresaWatched = watch("empresa_id");
 
   useEffect(() => {
-    // getUnidadesNegocio();
+    getUnidadesNegocio();
     getEmpresas();
   }, []);
 
