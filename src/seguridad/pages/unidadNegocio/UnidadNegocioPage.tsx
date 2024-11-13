@@ -22,6 +22,8 @@ interface Props {
 export const UnidadNegocioPage = ({ setOpen, setToastMessage }: Props) => {
   const { authState } = useAuth();
   const [unidadesNegocio, setUnidadesNegocio] = useState<UnidadNegocio[]>([]);
+  const [filtroEmpresas, setFiltroEmpresas] = useState<string[]>([]);
+  const [filtroDivisiones, setFiltroDivisiones] = useState<string[]>([]);
   const { accesos, user } = authState;
   const navigate = useNavigate();
   const { allowed: allowInsert } = useAutorizado(
@@ -52,6 +54,14 @@ export const UnidadNegocioPage = ({ setOpen, setToastMessage }: Props) => {
       return;
     }
     setUnidadesNegocio([...data.data]);
+    const empresas = (data.data as UnidadNegocio[])
+      .map((division) => division.empresa.nombre ?? "")
+      .filter((x) => x !== null && x !== "");
+    setFiltroEmpresas([...new Set(empresas)]);
+    const divisiones = (data.data as UnidadNegocio[])
+      .map((division) => division.nombre ?? "")
+      .filter((x) => x !== null && x !== "");
+    setFiltroDivisiones([...new Set(divisiones)]);
   };
 
   const handleOpen = (id: number) => {
@@ -106,13 +116,13 @@ export const UnidadNegocioPage = ({ setOpen, setToastMessage }: Props) => {
   return (
     <PageBox>
       <Container>
-        <PageTitle title="Unidades de Negocio" />
+        <PageTitle title="Unidades de Negocio" divider={true} />
 
         {allowInsert && (
           <Button
             variant="contained"
             onClick={() => handleOpen(0)}
-            sx={{ mt: 2, mb: 2 }}
+            sx={{ mb: 2 }}
           >
             Nueva Unidad de Negocio
           </Button>
@@ -122,6 +132,8 @@ export const UnidadNegocioPage = ({ setOpen, setToastMessage }: Props) => {
           <UnidadNegocioTable
             allowUpdate={allowUpdate}
             unidades={unidadesNegocio}
+            filtroEmpresas={filtroEmpresas}
+            filtroDivisiones={filtroDivisiones}
             handleHabilitar={handleHabilitar}
             handleOpen={handleOpen}
           />

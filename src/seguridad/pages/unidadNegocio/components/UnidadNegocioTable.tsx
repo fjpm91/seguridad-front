@@ -8,6 +8,8 @@ import { UnidadNegocio } from "../../../../interfaces/interfaces";
 interface Props {
   allowUpdate: boolean;
   unidades: UnidadNegocio[];
+  filtroEmpresas: string[];
+  filtroDivisiones: string[];
   handleOpen: (aplicacion_id: number) => void;
   handleHabilitar: (aplicacion_id: number) => void;
 }
@@ -15,6 +17,8 @@ interface Props {
 export const UnidadNegocioTable = ({
   allowUpdate,
   unidades,
+  filtroEmpresas,
+  filtroDivisiones,
   handleOpen,
 }: Props) => {
   const columns = useMemo<MRT_ColumnDef<UnidadNegocio>[]>(
@@ -28,12 +32,16 @@ export const UnidadNegocioTable = ({
         header: "Nombre",
       },
       {
-        accessorKey: "empresa.nombre",
+        accessorFn: (row) => row.empresa.nombre ?? "",
         header: "Empresa",
+        filterVariant: "select",
+        filterSelectOptions: filtroEmpresas,
       },
       {
         accessorFn: (row) => (row?.division ? row.division.nombre : ""),
         header: "Division",
+        filterVariant: "select",
+        filterSelectOptions: filtroDivisiones,
       },
     ],
     [unidades]
