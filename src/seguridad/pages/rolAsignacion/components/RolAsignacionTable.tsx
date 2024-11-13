@@ -16,6 +16,7 @@ interface Props {
   allowUpdate: boolean;
   rolAsignaciones: RolAsignacion[];
   filtroAplicaciones: string[];
+  filtroFormularios: string[];
   handleOpen: (rol_asignacion_id: number) => void;
   handleHabilitar: (rol_asignacion_id: number) => void;
   handleEliminar: (rol_asignacion_id: number) => void;
@@ -24,15 +25,16 @@ interface Props {
 export const RolAsignacionTable = ({
   allowUpdate,
   filtroAplicaciones,
-  rolAsignaciones,
+  filtroFormularios,
+  handleEliminar,
   handleHabilitar,
   handleOpen,
-  handleEliminar,
+  rolAsignaciones,
 }: Props) => {
   const columns = useMemo<MRT_ColumnDef<RolAsignacion>[]>(
     () => [
       {
-        accessorKey: "nombre",
+        accessorKey: "nombre_componente",
         header: "Nombre",
       },
       {
@@ -40,10 +42,16 @@ export const RolAsignacionTable = ({
         header: "Rol",
       },
       {
-        accessorKey: "codigo_app",
+        accessorFn: (row) => row.codigo_app ?? "",
         header: "App",
         filterVariant: "select",
         filterSelectOptions: filtroAplicaciones,
+      },
+      {
+        accessorFn: (row) => row.formulario ?? "",
+        header: "Formulario",
+        filterVariant: "select",
+        filterSelectOptions: filtroFormularios,
       },
       {
         accessorKey: "visible",
@@ -113,7 +121,13 @@ export const RolAsignacionTable = ({
       localization={MRT_Localization_ES}
       enableRowActions={allowUpdate}
       positionActionsColumn="last"
-      initialState={{ density: "compact" }}
+      initialState={{
+        density: "compact",
+        pagination: {
+          pageIndex: 0,
+          pageSize: 25,
+        },
+      }}
       defaultColumn={{
         size: 50,
       }}

@@ -1,11 +1,5 @@
-import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../../../../auth/context/useAuth";
-import { Controller, useForm } from "react-hook-form";
-import apiClient from "../../../../services/api-client";
-import { BackendResponse, Componente } from "../../../../interfaces/interfaces";
-import { ApiEndpoints, Messages } from "../../../../models/enums";
 import {
+  Autocomplete,
   Box,
   Button,
   Checkbox,
@@ -14,9 +8,21 @@ import {
   FormLabel,
   Grid,
   TextField,
-  Typography,
 } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../../../../auth/context/useAuth";
 import { FormBoxContainer, PageTitle } from "../../../../components";
+import { ErrorText } from "../../../../components/ErrorText";
+import {
+  Aplicacion,
+  BackendResponse,
+  Componente,
+  ComponenteForm,
+} from "../../../../interfaces/interfaces";
+import { ApiEndpoints, Messages } from "../../../../models/enums";
+import apiClient from "../../../../services/api-client";
 
 interface Props {
   setOpen: (open: boolean) => void;
@@ -33,12 +39,14 @@ export const ComponentsForm = ({ setOpen, setToastMessage }: Props) => {
     setValue,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<ComponenteForm>();
   const navigate = useNavigate();
+  const [aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
   const { user } = authState;
 
   useEffect(() => {
     getComponentById();
+    getAplicaciones();
   }, []);
 
   const getComponentById = async () => {
@@ -52,11 +60,34 @@ export const ComponentsForm = ({ setOpen, setToastMessage }: Props) => {
     const componenteData = data.data as Componente;
     setValue("componente_id", componenteData.componente_id);
     setValue("nombre", componenteData.nombre);
-    setValue("habilitado", componenteData.habilitado === 1 ? true : false);
+    setValue("habilitadoForm", componenteData.habilitado === 1 ? true : false);
+    if (componenteData.aplicacion_id)
+      setValue("aplicacion_id", componenteData.aplicacion_id);
+    if (componenteData.ruta) setValue("ruta", componenteData.ruta);
+    if (componenteData.formulario)
+      setValue("formulario", componenteData.formulario);
+  };
+
+  const getAplicaciones = async () => {
+    const { data } = await apiClient.get<BackendResponse>(
+      `/${ApiEndpoints.APLICACIONES_CON_ROLES}`
+    );
+
+    if (!data) {
+      showMessage(Messages.NO_SE_PUDO_COMPLETAR);
+      return;
+    }
+
+    if (!data.success) {
+      showMessage(data.message);
+      return;
+    }
+
+    setAplicaciones([...data.data]);
   };
 
   const store = async (formData: any) => {
-    const datos = { ...formData };
+    const datos = { ...formData, habilitado: formData.habilitadoForm ? 1 : 0 };
 
     try {
       const { data } = await apiClient.post<BackendResponse>(
@@ -88,8 +119,9 @@ export const ComponentsForm = ({ setOpen, setToastMessage }: Props) => {
   const update = async (formData: any) => {
     const datos = {
       ...formData,
-      user: user?.id,
       codigo_app: import.meta.env.VITE_CODIGO_APP,
+      habilitado: formData.habilitadoForm ? 1 : 0,
+      user: user?.id,
     };
 
     try {
@@ -140,107 +172,186 @@ export const ComponentsForm = ({ setOpen, setToastMessage }: Props) => {
         }}
       >
         {/* Formulario */}
-        <Grid container spacing={2} sx={{ mb: 4 }}>
-          {/* Titulo Formulario */}
-          <Grid item xs={12}>
-            <PageTitle title="Formulario de Componentes" variant="h5" />
-          </Grid>
+        <Grid container sx={{ mb: 4, justifyContent: "center" }}>
+          <Grid container item xs={12} md={10} lg={8} xl={6}>
+            {/* Titulo Formulario */}
+            <Grid item xs={12}>
+              <PageTitle
+                title="Formulario de Componentes"
+                variant="h5"
+                divider={true}
+              />
+            </Grid>
 
-          {/* Id */}
-          <Grid item xs={12} sm={4} md={2}>
-            <TextField
-              {...register("componente_id")}
-              label="Id"
-              defaultValue="0"
-              disabled
-              sx={{ width: "100%", pr: "16px" }}
-            />
-          </Grid>
+            {/* Id */}
+            <Grid item xs={12} sm={4} md={3} sx={{ p: 1 }}>
+              <TextField
+                {...register("componente_id")}
+                label="Id"
+                defaultValue="0"
+                disabled
+                sx={{ width: "100%" }}
+              />
+            </Grid>
 
-          {/* Nombre */}
-          <Grid item xs={12} sm={4}>
-            <TextField
-              {...register("nombre", {
-                required: true,
-                minLength: { value: 4, message: "error message" },
-              })}
-              required
-              label="Nombre"
-              defaultValue="---"
-              error={
-                errors.nombre?.type === "required" ||
-                errors.nombre?.type === "minLength"
-                  ? true
-                  : false
-              }
-              onFocus={() =>
-                getValues("nombre") === "---" ? setValue("nombre", "") : null
-              }
-              onBlur={() =>
-                getValues("nombre") === "" ? setValue("nombre", "---") : null
-              }
-              sx={{ width: "100%", pr: "16px" }}
-            />
-            {(errors.nombre?.type === "required" ||
-              errors.nombre?.type === "minLength") && (
-              <Typography
-                paddingLeft={2}
-                paddingTop={1}
-                fontSize={12.5}
-                color={"#F36892"}
-              >
-                El nombre del componente es obligatorio
-              </Typography>
-            )}
-          </Grid>
-
-          {/* Habilitado */}
-          <Grid item xs={12} sm={4} md={3}>
-            <Controller
-              name="habilitado"
-              control={control}
-              render={({ field }) => (
-                <>
-                  <FormLabel component="legend">Estado</FormLabel>
-                  <FormGroup>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          onChange={(e) => field.onChange(e.target.checked)}
-                          checked={field.value || false}
-                        />
-                      }
-                      label="Habilitado"
-                    />
-                  </FormGroup>
-                </>
+            {/* Nombre */}
+            <Grid item xs={12} sm={9} sx={{ p: 1 }}>
+              <TextField
+                {...register("nombre", {
+                  required: true,
+                  minLength: { value: 4, message: "error message" },
+                })}
+                required
+                label="Nombre"
+                defaultValue="---"
+                error={
+                  errors.nombre?.type === "required" ||
+                  errors.nombre?.type === "minLength"
+                    ? true
+                    : false
+                }
+                onFocus={() =>
+                  getValues("nombre") === "---" ? setValue("nombre", "") : null
+                }
+                onBlur={() =>
+                  getValues("nombre") === "" ? setValue("nombre", "---") : null
+                }
+                sx={{ width: "100%" }}
+              />
+              {(errors.nombre?.type === "required" ||
+                errors.nombre?.type === "minLength") && (
+                <ErrorText text="El nombre del componente es obligatorio" />
               )}
-            />
-          </Grid>
-        </Grid>
+            </Grid>
 
-        {/* Botones */}
-        <Grid container spacing={2}>
-          <Grid item xs={6} sm={3} md={2}>
-            <Button
-              size="medium"
-              variant="contained"
-              sx={{ width: { xs: "100%", sm: "initial" } }}
-              type="submit"
-            >
-              Guardar
-            </Button>
-          </Grid>
+            {/* Aplicacion */}
+            <Grid item xs={12} sx={{ p: 1 }}>
+              <Controller
+                name="aplicacion_id"
+                rules={{ required: true }}
+                control={control}
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <Autocomplete
+                      value={
+                        value
+                          ? aplicaciones.find(
+                              (option) => value === option.aplicacion_id
+                            ) ?? null
+                          : null
+                      }
+                      getOptionLabel={(option) =>
+                        `${option.codigo} - ${option.nombre}`
+                      }
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props}>
+                          {`${option.codigo} - ${option.nombre}`}
+                        </Box>
+                      )}
+                      onChange={(_event: any, newValue) => {
+                        onChange(newValue ? newValue.aplicacion_id : null);
+                        // setRolesByApp(newValue ? newValue : null);
+                      }}
+                      options={aplicaciones}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Aplicacion *"
+                          error={
+                            errors.aplicacion_id?.type === "required"
+                              ? true
+                              : false
+                          }
+                          inputProps={{
+                            ...params.inputProps,
+                          }}
+                        />
+                      )}
+                    />
+                  );
+                }}
+              />
+              {(errors.aplicacion_id?.type === "required" ||
+                errors.aplicacion_id?.type === "minLength") && (
+                <ErrorText text="La aplicacion es obligatoria" />
+              )}
+            </Grid>
 
-          <Grid item xs={6} sm={3} md={2}>
-            <Button
-              size="medium"
-              variant="outlined"
-              sx={{ width: { xs: "100%", sm: "initial" } }}
-              onClick={cancel}
-            >
-              Cancelar
-            </Button>
+            {/* Formulario */}
+            <Grid item xs={12} sm={8} lg={6} sx={{ p: 1 }}>
+              <TextField
+                {...register("formulario")}
+                label="Formulario"
+                defaultValue="---"
+                onFocus={() =>
+                  getValues("formulario") === "---"
+                    ? setValue("formulario", "")
+                    : null
+                }
+                onBlur={() =>
+                  getValues("formulario") === ""
+                    ? setValue("formulario", "---")
+                    : null
+                }
+                sx={{ width: "100%" }}
+              />
+            </Grid>
+
+            {/* Ruta */}
+            <Grid item xs={12} sm={8} lg={6} sx={{ p: 1 }}>
+              <TextField
+                {...register("ruta")}
+                label="Ruta"
+                defaultValue="---"
+                onFocus={() =>
+                  getValues("ruta") === "---" ? setValue("ruta", "") : null
+                }
+                onBlur={() =>
+                  getValues("ruta") === "" ? setValue("ruta", "---") : null
+                }
+                sx={{ width: "100%" }}
+              />
+            </Grid>
+
+            {/* Habilitado */}
+            <Grid item xs={12} sm={4} margin={1}>
+              <Controller
+                name="habilitadoForm"
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <FormLabel component="legend">Estado</FormLabel>
+                    <FormGroup>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            onChange={(e) => field.onChange(e.target.checked)}
+                            checked={field.value || false}
+                          />
+                        }
+                        label="Habilitado"
+                      />
+                    </FormGroup>
+                  </>
+                )}
+              />
+            </Grid>
+
+            {/* Botones */}
+            <Grid container spacing={2} margin={1}>
+              <Button size="medium" variant="contained" type="submit">
+                Guardar
+              </Button>
+              <Button
+                size="medium"
+                variant="outlined"
+                sx={{ ml: 1 }}
+                onClick={cancel}
+              >
+                Cancelar
+              </Button>
+            </Grid>
           </Grid>
         </Grid>
       </Box>

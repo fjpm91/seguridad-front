@@ -29,6 +29,7 @@ export const RolAsignacionPage = ({ setOpen, setToastMessage }: Props) => {
   const [_aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
   const [rolAsignaciones, setRolAsignaciones] = useState<RolAsignacion[]>([]);
   const [filtroAplicaciones, setFiltroAplicaciones] = useState<string[]>([]);
+  const [filtroFormularios, setFiltroFormularios] = useState<string[]>([]);
   const navigate = useNavigate();
   const { accesos, user } = authState;
   const { allowed: allowInsert } = useAutorizado(
@@ -48,8 +49,8 @@ export const RolAsignacionPage = ({ setOpen, setToastMessage }: Props) => {
   const getRolAsignacion = async (aplicacion_id?: string) => {
     const fullRoute =
       aplicacion_id && aplicacion_id !== "0"
-        ? `/${ApiEndpoints.ROL_ASIGNACION}?aplicacion-id=${aplicacion_id}`
-        : `/${ApiEndpoints.ROL_ASIGNACION}`;
+        ? `/${ApiEndpoints.ROL_ASIGNACION_V2}?aplicacion-id=${aplicacion_id}`
+        : `/${ApiEndpoints.ROL_ASIGNACION_V2}`;
     const { data } = await apiClient.get<BackendResponse>(fullRoute);
 
     if (!data) {
@@ -63,8 +64,14 @@ export const RolAsignacionPage = ({ setOpen, setToastMessage }: Props) => {
     }
 
     setRolAsignaciones([...data.data]);
-    const apps = (data.data as RolAsignacion[]).map((p) => p.codigo_app);
+    const apps = (data.data as RolAsignacion[])
+      .map((p) => p.codigo_app ?? "----")
+      .filter((codigo) => codigo !== null);
     if (apps) setFiltroAplicaciones([...new Set(apps)]);
+    const formularios = (data.data as RolAsignacion[])
+      .map((p) => p.formulario ?? "----")
+      .filter((x) => x !== null);
+    if (formularios) setFiltroFormularios([...new Set(formularios)]);
   };
 
   const getAplicaciones = async () => {
@@ -167,13 +174,13 @@ export const RolAsignacionPage = ({ setOpen, setToastMessage }: Props) => {
       }}
     >
       <Container>
-        <PageTitle title="Rol Asignacion" />
+        <PageTitle title="Rol Asignacion" divider={true} />
 
         {allowInsert && (
           <Button
             variant="contained"
             onClick={() => handleOpen(0)}
-            sx={{ mb: 2, mt: 2 }}
+            sx={{ mb: 2 }}
           >
             Nuevo Rol Asignacion
           </Button>
@@ -184,6 +191,7 @@ export const RolAsignacionPage = ({ setOpen, setToastMessage }: Props) => {
             allowUpdate={allowUpdate}
             rolAsignaciones={rolAsignaciones}
             filtroAplicaciones={filtroAplicaciones}
+            filtroFormularios={filtroFormularios}
             handleHabilitar={handleHabilitar}
             handleOpen={handleOpen}
             handleEliminar={handleEliminar}

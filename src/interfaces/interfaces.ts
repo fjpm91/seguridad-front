@@ -159,18 +159,28 @@ export interface RolAcceso {
 }
 
 export interface Componente {
+  aplicacion_id: number;
   componente_id: number;
+  aplicacion_codigo: string;
+  formulario: string;
   habilitado: number;
   nombre: string;
+  ruta: string;
+}
+
+export interface ComponenteForm extends Componente {
+  habilitadoForm: boolean;
 }
 
 export interface RolAsignacion {
   aplicacion_id: number;
-  codigo_app: string;
+  codigo_app: string | null;
   componente_id: number;
   editable: number;
+  formulario: string | null;
   habilitado: number;
   nombre: string;
+  nombre_componente: string;
   rol_asignacion_id: number;
   rol_id: number;
   rol: string;

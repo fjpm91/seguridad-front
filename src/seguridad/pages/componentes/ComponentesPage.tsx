@@ -21,6 +21,8 @@ interface Props {
 export const ComponentesPage = ({ setOpen, setToastMessage }: Props) => {
   const { authState } = useAuth();
   const [componentes, setComponentes] = useState<Componente[]>([]);
+  const [filtroAplicaciones, setFiltroAplicaciones] = useState<string[]>([]);
+  const [filtroFormularios, setFiltroFormularios] = useState<string[]>([]);
   const navigate = useNavigate();
   const { accesos, user } = authState;
   const { allowed: allowInsert } = useAutorizado(
@@ -38,7 +40,7 @@ export const ComponentesPage = ({ setOpen, setToastMessage }: Props) => {
 
   const getComponentes = async () => {
     const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.COMPONENTES}`
+      `/${ApiEndpoints.COMPONENTESV2}`
     );
 
     if (!data) {
@@ -52,6 +54,14 @@ export const ComponentesPage = ({ setOpen, setToastMessage }: Props) => {
     }
 
     setComponentes([...data.data]);
+    const aplicaciones = (data.data as Componente[])
+      .map((p) => p.aplicacion_codigo)
+      .filter((x) => x !== null);
+    setFiltroAplicaciones([...new Set(aplicaciones)]);
+    const formularios = (data.data as Componente[])
+      .map((p) => p.formulario)
+      .filter((x) => x !== null);
+    setFiltroFormularios([...new Set(formularios)]);
   };
 
   const handleOpen = (id: number) => {
@@ -105,13 +115,13 @@ export const ComponentesPage = ({ setOpen, setToastMessage }: Props) => {
   return (
     <PageBox>
       <Container>
-        <PageTitle title="Componentes" />
+        <PageTitle title="Componentes" divider={true} />
 
         {allowInsert && (
           <Button
             variant="contained"
             onClick={() => handleOpen(0)}
-            sx={{ mb: 2, mt: 2 }}
+            sx={{ mb: 2 }}
           >
             Nuevo Componente
           </Button>
@@ -121,6 +131,8 @@ export const ComponentesPage = ({ setOpen, setToastMessage }: Props) => {
           <ComponentsTable
             allowUpdate={allowUpdate}
             componentes={componentes}
+            filtroAplicaciones={filtroAplicaciones}
+            filtroFormularios={filtroFormularios}
             handleHabilitar={handleHabilitar}
             handleOpen={handleOpen}
             handleAsignar={handleAsignar}

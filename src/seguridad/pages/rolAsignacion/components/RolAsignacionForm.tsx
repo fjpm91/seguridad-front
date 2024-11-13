@@ -55,25 +55,8 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
   useEffect(() => {
     if (!appWatched || aplicaciones.length === 0) return;
     getRoles(appWatched);
+    getComponentes(appWatched);
   }, [appWatched, aplicaciones]);
-
-  const getComponentes = async () => {
-    const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.COMPONENTES}`
-    );
-
-    if (!data) {
-      showMessage("No se pudo completar la operacion");
-      return;
-    }
-
-    if (!data.success) {
-      showMessage(data.message);
-      return;
-    }
-
-    setComponentes([...data.data]);
-  };
 
   const getAplicaciones = async () => {
     const { data } = await apiClient.get<BackendResponse>(
@@ -91,6 +74,28 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
     }
 
     setAplicaciones([...data.data]);
+  };
+
+  const getComponentes = async (aplicacionId = 0) => {
+    const { data } = await apiClient.get<BackendResponse>(
+      `/${ApiEndpoints.COMPONENTESV2}`,
+      {
+        params: {
+          aplicacionId,
+        },
+      }
+    );
+
+    if (!data) {
+      showMessage("No se pudo completar la operacion");
+      return;
+    }
+
+    if (!data.success) {
+      showMessage(data.message);
+      return;
+    }
+    setComponentes([...data.data]);
   };
 
   const getRoles = async (aplicacionId: number) => {
@@ -242,11 +247,15 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
           <Grid item container xs={12} lg={6}>
             {/* Titulo Formulario */}
             <Grid item xs={12}>
-              <PageTitle title="Formulario de Rol Asignación" variant="h5" />
+              <PageTitle
+                title="Formulario de Rol Asignación"
+                variant="h5"
+                divider={true}
+              />
             </Grid>
 
             {/* Id */}
-            <Grid item xs={12} lg={3} sx={{ p: 1 }}>
+            <Grid item xs={12} md={3} sx={{ p: 1 }}>
               <TextField
                 {...register("componente_id")}
                 label="Id"
@@ -256,66 +265,8 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
               />
             </Grid>
 
-            {/* Componentes */}
-            <Grid item xs={12} lg={9} sx={{ p: 1 }}>
-              <Controller
-                name="componente_id"
-                rules={{ required: true }}
-                control={control}
-                render={({ field }) => {
-                  const { onChange, value } = field;
-                  return (
-                    <Autocomplete
-                      value={
-                        value
-                          ? componentes.find(
-                              (option) => value === option.componente_id
-                            ) ?? null
-                          : null
-                      }
-                      getOptionLabel={(option) => option.nombre}
-                      renderOption={(props, option) => (
-                        <Box component="li" {...props}>
-                          {option.nombre}
-                        </Box>
-                      )}
-                      onChange={(_event: any, newValue) => {
-                        onChange(newValue ? newValue.componente_id : null);
-                      }}
-                      options={componentes}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Componente *"
-                          error={
-                            errors.componente_id?.type === "required"
-                              ? true
-                              : false
-                          }
-                          inputProps={{
-                            ...params.inputProps,
-                          }}
-                        />
-                      )}
-                    />
-                  );
-                }}
-              />
-              {(errors.componente_id?.type === "required" ||
-                errors.componente_id?.type === "minLength") && (
-                <Typography
-                  paddingLeft={2}
-                  paddingTop={1}
-                  fontSize={12.5}
-                  color={"#F36892"}
-                >
-                  El componente es obligatorio
-                </Typography>
-              )}
-            </Grid>
-
             {/* Aplicacion */}
-            <Grid item xs={12} sx={{ p: 1 }}>
+            <Grid item xs={12} md={9} sx={{ p: 1 }}>
               <Controller
                 name="aplicacion_id"
                 rules={{ required: true }}
@@ -430,8 +381,76 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
               )}
             </Grid>
 
+            {/* Componentes */}
+            <Grid item xs={12} sx={{ p: 1 }}>
+              <Controller
+                name="componente_id"
+                rules={{ required: true }}
+                control={control}
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <Autocomplete
+                      value={
+                        value
+                          ? componentes.find(
+                              (option) => value === option.componente_id
+                            ) ?? null
+                          : null
+                      }
+                      getOptionLabel={(option) =>
+                        option.formulario
+                          ? `${option.formulario.toUpperCase()} - ${
+                              option.nombre
+                            }`
+                          : option.nombre
+                      }
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props}>
+                          {option.formulario
+                            ? `${option.formulario.toUpperCase()} - ${
+                                option.nombre
+                              }`
+                            : option.nombre}
+                        </Box>
+                      )}
+                      onChange={(_event: any, newValue) => {
+                        onChange(newValue ? newValue.componente_id : null);
+                      }}
+                      options={componentes}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Componente *"
+                          error={
+                            errors.componente_id?.type === "required"
+                              ? true
+                              : false
+                          }
+                          inputProps={{
+                            ...params.inputProps,
+                          }}
+                        />
+                      )}
+                    />
+                  );
+                }}
+              />
+              {(errors.componente_id?.type === "required" ||
+                errors.componente_id?.type === "minLength") && (
+                <Typography
+                  paddingLeft={2}
+                  paddingTop={1}
+                  fontSize={12.5}
+                  color={"#F36892"}
+                >
+                  El componente es obligatorio
+                </Typography>
+              )}
+            </Grid>
+
             {/* Visible */}
-            <Grid item xs={12} lg={4} sx={{ p: 1 }}>
+            <Grid item xs={12} md={4} sx={{ p: 1 }}>
               <Controller
                 name="visible"
                 control={control}
@@ -450,7 +469,7 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Editable */}
-            <Grid item xs={12} lg={4} sx={{ p: 1 }}>
+            <Grid item xs={12} md={4} sx={{ p: 1 }}>
               <Controller
                 name="editable"
                 control={control}
@@ -469,7 +488,7 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Habilitado */}
-            <Grid item xs={12} lg={4} sx={{ p: 1 }}>
+            <Grid item xs={12} md={4} sx={{ p: 1 }}>
               <Controller
                 name="habilitado"
                 control={control}

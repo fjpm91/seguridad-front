@@ -15,6 +15,8 @@ import { Edit } from "@mui/icons-material";
 interface Props {
   allowUpdate: boolean;
   componentes: Componente[];
+  filtroAplicaciones: string[];
+  filtroFormularios: string[];
   handleOpen: (modulo_id: number) => void;
   handleHabilitar: (modulo_id: number) => void;
   handleAsignar: (modulo_id: number) => void;
@@ -23,6 +25,8 @@ interface Props {
 export const ComponentsTable = ({
   allowUpdate,
   componentes,
+  filtroAplicaciones,
+  filtroFormularios,
   handleHabilitar,
   handleOpen,
 }: Props) => {
@@ -35,6 +39,18 @@ export const ComponentsTable = ({
       {
         accessorKey: "nombre",
         header: "Nombre",
+      },
+      {
+        accessorFn: (row) => row.aplicacion_codigo ?? "",
+        header: "App",
+        filterVariant: "select",
+        filterSelectOptions: filtroAplicaciones,
+      },
+      {
+        accessorFn: (row) => row.formulario ?? "",
+        header: "Form",
+        filterVariant: "select",
+        filterSelectOptions: filtroFormularios,
       },
       {
         accessorKey: "habilitado",
