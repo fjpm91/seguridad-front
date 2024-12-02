@@ -210,7 +210,11 @@ export const RolesAccesosForm = ({ setOpen, setToastMessage }: Props) => {
         <Grid container spacing={2} sx={{ mb: 4 }}>
           {/* Titulo Formulario */}
           <Grid item xs={12}>
-            <PageTitle title="Formulario de Roles y Accesos" variant="h5" />
+            <PageTitle
+              title="Formulario de Roles y Accesos"
+              variant="h5"
+              divider={true}
+            />
           </Grid>
 
           {/* Aplicaciones */}

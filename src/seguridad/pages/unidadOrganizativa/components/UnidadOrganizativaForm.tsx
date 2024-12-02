@@ -207,6 +207,7 @@ export const UnidadOrganizativaForm = ({ setOpen, setToastMessage }: Props) => {
             <PageTitle
               title="Formulario de Unidades Organizativas"
               variant="h5"
+              divider={true}
             />
           </Grid>
 

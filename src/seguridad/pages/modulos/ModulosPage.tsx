@@ -110,13 +110,13 @@ export const ModulosPage = ({ setOpen, setToastMessage }: Props) => {
   return (
     <PageBox>
       <Container>
-        <PageTitle title="Modulos" />
+        <PageTitle title="Modulos" divider={true} />
 
         {allowInsert && (
           <Button
             variant="contained"
             onClick={() => handleOpen(0)}
-            sx={{ mb: 2, mt: 2 }}
+            sx={{ mb: 2 }}
           >
             Nuevo Modulo
           </Button>
