@@ -55,15 +55,15 @@ export const UsuariosPage = ({ setOpen, setToastMessage }: Props) => {
   };
 
   const handleOpen = (id: number) => {
-    navigate(`/users/${id}`);
+    navigate(`/${ApiEndpoints.USERS}/${id}`);
   };
 
   const handleOpenUsuarioRol = (id: number) => {
-    navigate(`/usuario-rol/${id ? id : 0}`);
+    navigate(`/${ApiEndpoints.USUARIO_ROL}/${id ? id : 0}`);
   };
 
   const handleOpenUsuarioRolBase = () => {
-    navigate(`/usuario-rol-base`);
+    navigate("/" + ApiEndpoints.USUARIO_ROL_BASE);
   };
 
   const handleHabilitar = async (id: number) => {
@@ -109,9 +109,9 @@ export const UsuariosPage = ({ setOpen, setToastMessage }: Props) => {
   return (
     <PageBox>
       <Container maxWidth="xl">
-        <PageTitle title="Usuarios" />
+        <PageTitle title="Usuarios" divider={true} />
 
-        <Box sx={{ mt: 2 }}>
+        <Box>
           {allowInsert && (
             <Button
               variant="contained"

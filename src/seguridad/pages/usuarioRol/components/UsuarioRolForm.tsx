@@ -169,7 +169,7 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
     }
   };
 
-  const cancel = () => navigate("/roles");
+  const cancel = () => navigate("/" + ApiEndpoints.USERS);
 
   const submitForm = (event: any) => {
     store(event);

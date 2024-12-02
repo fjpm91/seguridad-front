@@ -201,204 +201,212 @@ export const UnidadNegocioForm = ({ setOpen, setToastMessage }: Props) => {
         }}
       >
         {/* Formulario */}
-        <Grid container spacing={2} sx={{ mb: 4 }}>
-          {/* Titulo Formulario */}
-          <Grid item xs={12}>
-            <PageTitle title="Formulario de Unidades de Negocio" variant="h5" />
-          </Grid>
+        <Grid container sx={{ mb: 4, justifyContent: "center" }}>
+          <Grid container item xs={12} md={10}>
+            {/* Titulo Formulario */}
+            <Grid item xs={12}>
+              <PageTitle
+                title="Formulario de Unidades de Negocio"
+                variant="h5"
+                divider={true}
+              />
+            </Grid>
 
-          {/* ID */}
-          <Grid item xs={12} sm={3} md={2}>
-            <TextField
-              {...register("id")}
-              label="Id"
-              defaultValue={0}
-              type="number"
-              disabled
-              inputProps={{
-                readOnly: true,
-              }}
-              sx={{ width: "100%", pr: "16px" }}
-            />
-          </Grid>
+            {/* ID */}
+            <Grid item xs={12} sm={3} sx={{ p: 1 }}>
+              <TextField
+                {...register("id")}
+                label="Id"
+                defaultValue={0}
+                type="number"
+                disabled
+                inputProps={{
+                  readOnly: true,
+                }}
+                sx={{ width: "100%" }}
+              />
+            </Grid>
 
-          {/* Codigo */}
-          <Grid item xs={12} sm={3} md={2}>
-            <TextField
-              {...register("codigo")}
-              label="Codigo"
-              defaultValue={0}
-              type="number"
-              sx={{ width: "100%", pr: "16px" }}
-            />
-          </Grid>
+            {/* Codigo */}
+            <Grid item xs={12} sm={3} sx={{ p: 1 }}>
+              <TextField
+                {...register("codigo")}
+                label="Codigo"
+                defaultValue={0}
+                type="number"
+                sx={{ width: "100%" }}
+              />
+            </Grid>
 
-          {/* Empresa */}
-          <Grid item xs={12} sm={6} md={4} lg={3}>
-            <Controller
-              name="empresa_id"
-              rules={{ required: true }}
-              control={control}
-              render={({ field }) => {
-                const { onChange, value } = field;
-                return (
-                  <Autocomplete
-                    value={
-                      value
-                        ? empresas.find(
-                            (option) => value === option.empresa_id
-                          ) ?? null
-                        : null
-                    }
-                    getOptionLabel={(option) => option.nombre}
-                    renderOption={(props, option) => (
-                      <Box component="li" {...props}>
-                        {option.nombre}
-                      </Box>
-                    )}
-                    onChange={(_event: any, newValue) =>
-                      onChange(newValue ? newValue.empresa_id : null)
-                    }
-                    options={empresas}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Seleccionar empresa"
-                        error={
-                          errors.empresa_id?.type === "required" ? true : false
-                        }
-                        inputProps={{
-                          ...params.inputProps,
-                        }}
-                      />
-                    )}
-                  />
-                );
-              }}
-            />
-            {errors.empresa_id?.type === "required" && (
-              <ErrorText text="La Empresa es obligatoria" />
-            )}
-          </Grid>
-
-          {/* Nombre Unidad */}
-          <Grid item xs={12} md={5}>
-            <TextField
-              {...register("nombre", {
-                required: true,
-                minLength: { value: 4, message: "error message" },
-              })}
-              required
-              label="Nombre"
-              defaultValue="..."
-              onFocus={() =>
-                getValues("nombre") === "..." ? setValue("nombre", "") : null
-              }
-              onBlur={() =>
-                getValues("nombre") === "..." ? setValue("nombre", "") : null
-              }
-              error={
-                errors.nombre?.type === "required" ||
-                errors.nombre?.type === "minLength"
-                  ? true
-                  : false
-              }
-              sx={{ width: "100%" }}
-            />
-            {(errors.nombre?.type === "required" ||
-              errors.nombre?.type === "minLength") && (
-              <ErrorText text="El Nombre es obligatorio" />
-            )}
-          </Grid>
-
-          {/* Division */}
-          <Grid item xs={12} sm={6} md={4} lg={3}>
-            <Controller
-              name="division_id"
-              control={control}
-              render={({ field }) => {
-                const { onChange, value } = field;
-                return (
-                  <Autocomplete
-                    value={
-                      value
-                        ? divisiones.find(
-                            (option) => value === option.division_id
-                          ) ?? null
-                        : null
-                    }
-                    getOptionLabel={(option) => option.nombre}
-                    renderOption={(props, option) => (
-                      <Box component="li" {...props}>
-                        {option.nombre}
-                      </Box>
-                    )}
-                    onChange={(_event: any, newValue) =>
-                      onChange(newValue ? newValue.division_id : null)
-                    }
-                    options={divisiones}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Division"
-                        inputProps={{
-                          ...params.inputProps,
-                        }}
-                      />
-                    )}
-                  />
-                );
-              }}
-            />
-          </Grid>
-
-          {/* Habilitado */}
-          <Grid item xs={12} sm={3}>
-            <Controller
-              name="habilitado"
-              control={control}
-              render={({ field }) => (
-                <>
-                  <FormLabel component="legend">Estado</FormLabel>
-                  <FormGroup>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          onChange={(e) => field.onChange(e.target.checked)}
-                          checked={field.value || false}
-                        />
+            {/* Empresa */}
+            <Grid item xs={12} sm={6} sx={{ p: 1 }}>
+              <Controller
+                name="empresa_id"
+                rules={{ required: true }}
+                control={control}
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <Autocomplete
+                      value={
+                        value
+                          ? empresas.find(
+                              (option) => value === option.empresa_id
+                            ) ?? null
+                          : null
                       }
-                      label="Habilitado"
+                      getOptionLabel={(option) => option.nombre}
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props}>
+                          {option.nombre}
+                        </Box>
+                      )}
+                      onChange={(_event: any, newValue) =>
+                        onChange(newValue ? newValue.empresa_id : null)
+                      }
+                      options={empresas}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Seleccionar empresa"
+                          error={
+                            errors.empresa_id?.type === "required"
+                              ? true
+                              : false
+                          }
+                          inputProps={{
+                            ...params.inputProps,
+                          }}
+                        />
+                      )}
                     />
-                  </FormGroup>
-                </>
+                  );
+                }}
+              />
+              {errors.empresa_id?.type === "required" && (
+                <ErrorText text="La Empresa es obligatoria" />
               )}
-            />
-          </Grid>
-        </Grid>
+            </Grid>
 
-        {/* Botones */}
-        <Grid container spacing={2}>
-          <Grid item xs={6} sm={3} md={2}>
-            <Button
-              size="medium"
-              variant="contained"
-              sx={{ width: { xs: "100%", sm: "initial" } }}
-              type="submit"
-            >
-              Guardar
-            </Button>
-          </Grid>
+            {/* Nombre Unidad */}
+            <Grid item xs={12} sm={6} sx={{ p: 1 }}>
+              <TextField
+                {...register("nombre", {
+                  required: true,
+                  minLength: { value: 4, message: "error message" },
+                })}
+                required
+                label="Nombre"
+                defaultValue="..."
+                onFocus={() =>
+                  getValues("nombre") === "..." ? setValue("nombre", "") : null
+                }
+                onBlur={() =>
+                  getValues("nombre") === "..." ? setValue("nombre", "") : null
+                }
+                error={
+                  errors.nombre?.type === "required" ||
+                  errors.nombre?.type === "minLength"
+                    ? true
+                    : false
+                }
+                sx={{ width: "100%" }}
+              />
+              {(errors.nombre?.type === "required" ||
+                errors.nombre?.type === "minLength") && (
+                <ErrorText text="El Nombre es obligatorio" />
+              )}
+            </Grid>
 
-          <Grid item xs={6} sm={3} md={2}>
-            <Button
-              size="medium"
-              variant="outlined"
-              sx={{ width: { xs: "100%", sm: "initial" } }}
-              onClick={cancel}
-            >
-              Cancelar
-            </Button>
+            {/* Division */}
+            <Grid item xs={12} sm={6} sx={{ p: 1 }}>
+              <Controller
+                name="division_id"
+                control={control}
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <Autocomplete
+                      value={
+                        value
+                          ? divisiones.find(
+                              (option) => value === option.division_id
+                            ) ?? null
+                          : null
+                      }
+                      getOptionLabel={(option) => option.nombre}
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props}>
+                          {option.nombre}
+                        </Box>
+                      )}
+                      onChange={(_event: any, newValue) =>
+                        onChange(newValue ? newValue.division_id : null)
+                      }
+                      options={divisiones}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Division"
+                          inputProps={{
+                            ...params.inputProps,
+                          }}
+                        />
+                      )}
+                    />
+                  );
+                }}
+              />
+            </Grid>
+
+            {/* Habilitado */}
+            <Grid item xs={12} sm={3} sx={{ p: 1 }}>
+              <Controller
+                name="habilitado"
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <FormLabel component="legend">Estado</FormLabel>
+                    <FormGroup>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            onChange={(e) => field.onChange(e.target.checked)}
+                            checked={field.value || false}
+                          />
+                        }
+                        label="Habilitado"
+                      />
+                    </FormGroup>
+                  </>
+                )}
+              />
+            </Grid>
+
+            {/* Botones */}
+            <Grid container spacing={2}>
+              <Grid item xs={6} sm={3} md={2}>
+                <Button
+                  size="medium"
+                  variant="contained"
+                  sx={{ width: { xs: "100%", sm: "initial" } }}
+                  type="submit"
+                >
+                  Guardar
+                </Button>
+              </Grid>
+
+              <Grid item xs={6} sm={3} md={2}>
+                <Button
+                  size="medium"
+                  variant="outlined"
+                  sx={{ width: { xs: "100%", sm: "initial" } }}
+                  onClick={cancel}
+                >
+                  Cancelar
+                </Button>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </Box>
