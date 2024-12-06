@@ -1,5 +1,18 @@
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  TextField,
+} from "@mui/material";
 import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../../../auth/context/useAuth";
+import { FormBoxContainer, PageTitle } from "../../../../components";
+import { ErrorText } from "../../../../components/ErrorText";
 import {
   Aplicacion,
   BackendResponse,
@@ -7,21 +20,8 @@ import {
   Rol,
   RolAsignacion,
 } from "../../../../interfaces/interfaces";
-import {
-  Box,
-  Grid,
-  Typography,
-  Autocomplete,
-  TextField,
-  FormControlLabel,
-  Checkbox,
-  Button,
-} from "@mui/material";
-import { useForm, Controller } from "react-hook-form";
-import { useNavigate, useParams } from "react-router-dom";
 import { ApiEndpoints, Messages } from "../../../../models/enums";
 import apiClient from "../../../../services/api-client";
-import { FormBoxContainer, PageTitle } from "../../../../components";
 
 interface Props {
   setOpen: (open: boolean) => void;
@@ -269,7 +269,7 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
             <Grid item xs={12} md={9} sx={{ p: 1 }}>
               <Controller
                 name="aplicacion_id"
-                rules={{ required: true }}
+                rules={{ required: "La aplicacion es obligatoria" }}
                 control={control}
                 render={({ field }) => {
                   const { onChange, value } = field;
@@ -299,11 +299,7 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
                         <TextField
                           {...params}
                           label="Aplicacion *"
-                          error={
-                            errors.aplicacion_id?.type === "required"
-                              ? true
-                              : false
-                          }
+                          error={!!errors.aplicacion_id}
                           inputProps={{
                             ...params.inputProps,
                           }}
@@ -313,16 +309,10 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
                   );
                 }}
               />
-              {(errors.aplicacion_id?.type === "required" ||
-                errors.aplicacion_id?.type === "minLength") && (
-                <Typography
-                  paddingLeft={2}
-                  paddingTop={1}
-                  fontSize={12.5}
-                  color={"#F36892"}
-                >
-                  La aplicacion es obligatoria
-                </Typography>
+              {!!errors.aplicacion_id && (
+                <ErrorText
+                  text={errors.aplicacion_id.message?.toString() || "Error"}
+                />
               )}
             </Grid>
 
@@ -330,7 +320,7 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
             <Grid item xs={12} sx={{ p: 1 }}>
               <Controller
                 name="rol_id"
-                rules={{ required: true }}
+                rules={{ required: "El rol es obligatorio" }}
                 control={control}
                 render={({ field }) => {
                   const { onChange, value } = field;
@@ -356,9 +346,7 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
                         <TextField
                           {...params}
                           label="Rol *"
-                          error={
-                            errors.rol_id?.type === "required" ? true : false
-                          }
+                          error={!!errors.rol_id}
                           inputProps={{
                             ...params.inputProps,
                           }}
@@ -368,16 +356,10 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
                   );
                 }}
               />
-              {(errors.rol_id?.type === "required" ||
-                errors.rol_id?.type === "minLength") && (
-                <Typography
-                  paddingLeft={2}
-                  paddingTop={1}
-                  fontSize={12.5}
-                  color={"#F36892"}
-                >
-                  El rol es obligatorio
-                </Typography>
+              {!!errors.rol_id && (
+                <ErrorText
+                  text={errors.rol_id.message?.toString() || "Error"}
+                />
               )}
             </Grid>
 
@@ -385,7 +367,7 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
             <Grid item xs={12} sx={{ p: 1 }}>
               <Controller
                 name="componente_id"
-                rules={{ required: true }}
+                rules={{ required: "El componente es obligatorio" }}
                 control={control}
                 render={({ field }) => {
                   const { onChange, value } = field;
@@ -422,11 +404,7 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
                         <TextField
                           {...params}
                           label="Componente *"
-                          error={
-                            errors.componente_id?.type === "required"
-                              ? true
-                              : false
-                          }
+                          error={!!errors.componente_id}
                           inputProps={{
                             ...params.inputProps,
                           }}
@@ -436,16 +414,10 @@ export const RolAsignacionForm = ({ setOpen, setToastMessage }: Props) => {
                   );
                 }}
               />
-              {(errors.componente_id?.type === "required" ||
-                errors.componente_id?.type === "minLength") && (
-                <Typography
-                  paddingLeft={2}
-                  paddingTop={1}
-                  fontSize={12.5}
-                  color={"#F36892"}
-                >
-                  El componente es obligatorio
-                </Typography>
+              {!!errors.componente_id && (
+                <ErrorText
+                  text={errors.componente_id.message?.toString() || "Error"}
+                />
               )}
             </Grid>
 
