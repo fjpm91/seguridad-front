@@ -37,6 +37,7 @@ export const UnidadOrganizativaPage = ({ setOpen, setToastMessage }: Props) => {
     ModulosSistema.UNIDADES_ORGANIZATIVAS + TipoAcceso.UPDATE,
     accesos
   );
+  const [filtroDivisiones, setFiltroDivisiones] = useState<string[]>([]);
 
   useEffect(() => {
     getUnidadesOrganizativas();
@@ -57,51 +58,15 @@ export const UnidadOrganizativaPage = ({ setOpen, setToastMessage }: Props) => {
       return;
     }
     setUnidadesOrganizativas([...data.data]);
+    const divisiones = (data.data as UnidadOrganizativa[])
+      .map((unidad) => unidad.division_nombre ?? "")
+      .filter((x) => x !== null && x !== "");
+    setFiltroDivisiones([...new Set(divisiones)]);
   };
 
   const handleOpen = (id: number) => {
     navigate(`/${ApiEndpoints.UNIDADES_ORGANIZATIVAS}/${id}`);
   };
-
-  // const handleHabilitar = async (id: number) => {
-  //   const unidadSeleccionada = unidadesOrganizativas.find(
-  //     (unidad) => unidad.id === id
-  //   );
-  //   if (!unidadSeleccionada) return;
-
-  //   try {
-  //     const datos = {
-  //       user: user?.id,
-  //       codigo_app: import.meta.env.VITE_CODIGO_APP,
-  //     };
-  //     const { data } = await apiClient.put<BackendResponse>(
-  //       `/${ApiEndpoints.HABILITAR_ROLES}/${id}`,
-  //       { ...datos }
-  //     );
-
-  //     if (!data) {
-  //       showMessage(Messages.NO_SE_PUDO_COMPLETAR);
-  //       return;
-  //     }
-
-  //     if (!data.success) {
-  //       showMessage(data.message);
-  //       return;
-  //     }
-
-  //     const unidadModificada = data.data as UnidadNegocio;
-  //     const newAplicaciones = unidadesOrganizativas.map((unidad) => {
-  //       if (unidad.id === unidadModificada.id) {
-  //         unidad.habilitado = unidadModificada.habilitado;
-  //       }
-  //       return unidad;
-  //     });
-  //     showMessage(data.message);
-  //     setUnidadesOrganizativas(newAplicaciones);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
 
   const showMessage = (text: string = "Operacion correcta") => {
     setToastMessage(text);
@@ -111,13 +76,13 @@ export const UnidadOrganizativaPage = ({ setOpen, setToastMessage }: Props) => {
   return (
     <PageBox>
       <Container>
-        <PageTitle title="Unidades Organizativas" />
+        <PageTitle title="Unidades Organizativas" divider={true} />
 
         {allowInsert && (
           <Button
             variant="contained"
             onClick={() => handleOpen(0)}
-            sx={{ mt: 2, mb: 2 }}
+            sx={{ mb: 2 }}
           >
             Nueva Unidad Organizativa
           </Button>
@@ -126,6 +91,7 @@ export const UnidadOrganizativaPage = ({ setOpen, setToastMessage }: Props) => {
         {unidadesOrganizativas && (
           <UnidadOrganizativaTable
             allowUpdate={allowUpdate}
+            filtroDivisiones={filtroDivisiones}
             unidades={unidadesOrganizativas}
             handleOpen={handleOpen}
           />

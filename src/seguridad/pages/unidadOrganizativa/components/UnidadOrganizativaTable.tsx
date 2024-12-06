@@ -8,12 +8,14 @@ import { UnidadOrganizativa } from "../../../../interfaces/interfaces";
 interface Props {
   allowUpdate: boolean;
   unidades: UnidadOrganizativa[];
+  filtroDivisiones: string[];
   handleOpen: (model_id: number) => void;
 }
 
 export const UnidadOrganizativaTable = ({
   allowUpdate,
   unidades,
+  filtroDivisiones,
   handleOpen,
 }: Props) => {
   const columns = useMemo<MRT_ColumnDef<UnidadOrganizativa>[]>(
@@ -33,6 +35,8 @@ export const UnidadOrganizativaTable = ({
       {
         accessorKey: "division_nombre",
         header: "Division",
+        filterVariant: "select",
+        filterSelectOptions: filtroDivisiones,
       },
     ],
     [unidades]
