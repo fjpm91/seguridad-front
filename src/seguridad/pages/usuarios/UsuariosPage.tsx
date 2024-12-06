@@ -1,17 +1,17 @@
-import { Box, Button, Container } from "@mui/material";
-import { useAuth } from "../../../auth/context/useAuth";
+import { Box, Button, Container, Modal } from "@mui/material";
 import { useEffect, useState } from "react";
-import { BackendResponse, User } from "../../../interfaces/interfaces";
 import { useNavigate } from "react-router-dom";
-import apiClient from "../../../services/api-client";
+import { ModalRolesByUser, UsersTable } from ".";
+import { useAuth } from "../../../auth/context/useAuth";
+import { PageBox, PageTitle } from "../../../components";
+import useAutorizado from "../../../hooks/useAutorizado";
+import { BackendResponse, User } from "../../../interfaces/interfaces";
 import {
   ApiEndpoints,
   ModulosSistema,
   TipoAcceso,
 } from "../../../models/enums";
-import { UsersTable } from ".";
-import { PageBox, PageTitle } from "../../../components";
-import useAutorizado from "../../../hooks/useAutorizado";
+import apiClient from "../../../services/api-client";
 
 interface Props {
   setOpen: (open: boolean) => void;
@@ -19,9 +19,11 @@ interface Props {
 }
 
 export const UsuariosPage = ({ setOpen, setToastMessage }: Props) => {
+  const navigate = useNavigate();
   const { authState } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
-  const navigate = useNavigate();
+  const [selecteUser, setSelecteUser] = useState<User | null>(null);
+  const [show, setShow] = useState(false);
   const { accesos, user } = authState;
   const { allowed: allowInsert } = useAutorizado(
     ModulosSistema.PERSONAS + TipoAcceso.INSERT,
@@ -101,6 +103,16 @@ export const UsuariosPage = ({ setOpen, setToastMessage }: Props) => {
     }
   };
 
+  const handleVerRoles = async (usuario: User) => {
+    setSelecteUser(usuario);
+    setShow(true);
+  };
+
+  const handleCloseModal = () => {
+    setShow(false);
+    setSelecteUser(null);
+  };
+
   const showMessage = (text: string = "Operacion correcta") => {
     setToastMessage(text);
     setOpen(true);
@@ -149,9 +161,23 @@ export const UsuariosPage = ({ setOpen, setToastMessage }: Props) => {
             users={users}
             handleHabilitar={handleHabilitar}
             handleOpen={handleOpen}
+            handleVerRoles={handleVerRoles}
           />
         ) : null}
       </Container>
+
+      <Modal
+        disableEnforceFocus
+        open={show}
+        onClose={handleCloseModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <ModalRolesByUser
+          user={selecteUser}
+          handleCloseModal={handleCloseModal}
+        />
+      </Modal>
     </PageBox>
   );
 };

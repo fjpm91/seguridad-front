@@ -10,20 +10,22 @@ import {
 } from "@mui/material";
 import { MRT_Localization_ES } from "material-react-table/locales/es";
 import { IconoHabilitado } from "../../../../components";
-import { AccountCircle, Edit } from "@mui/icons-material";
+import { AccountCircle, AccountTree, Edit } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 interface Props {
   allowUpdate: boolean;
   users: User[];
-  handleOpen: (aplicacion_id: number) => void;
-  handleHabilitar: (aplicacion_id: number) => void;
+  handleOpen: (user_id: number) => void;
+  handleHabilitar: (user_id: number) => void;
+  handleVerRoles: (usuario: User) => void;
 }
 
 export const UsersTable = ({
   allowUpdate,
   users,
   handleHabilitar,
+  handleVerRoles,
   handleOpen,
 }: Props) => {
   const navigate = useNavigate();
@@ -104,6 +106,12 @@ export const UsersTable = ({
               }
             >
               <AccountCircle color="secondary" />
+            </IconButton>
+          )}
+
+          {row.original.roles.length > 0 && (
+            <IconButton onClick={() => handleVerRoles(row.original)}>
+              <AccountTree color="info" />
             </IconButton>
           )}
         </Box>,
