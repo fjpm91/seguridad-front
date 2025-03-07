@@ -492,7 +492,6 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                         label="Tipo"
                         value={value}
                         onChange={onChange}
-                        readOnly={id !== "0"}
                         error={!!errors.ubicacion}
                       >
                         <MenuItem key="seleccionar" value="seleccionar">
