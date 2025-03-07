@@ -16,10 +16,14 @@ import {
   Box,
   Button,
   Checkbox,
+  FormControl,
   FormControlLabel,
   FormGroup,
   FormLabel,
   Grid,
+  InputLabel,
+  MenuItem,
+  Select,
   TextField,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
@@ -31,6 +35,8 @@ interface Props {
   setOpen: (open: boolean) => void;
   setToastMessage: (toastMessage: string) => void;
 }
+
+const ciudades = ["SANTA CRUZ", "COCHABAMBA", "LA PAZ"];
 
 export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
   const { id } = useParams();
@@ -315,6 +321,10 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
 
   const cancel = () => navigate("/personas");
 
+  const validateType = (value: any) => {
+    return value !== "Seleccionar" ? true : "Debes seleccionar una Ciudad";
+  };
+
   return (
     <FormBoxContainer>
       <Box
@@ -328,10 +338,9 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
           borderRadius: 2, // 4 * 4
         }}
       >
-        {/* Formulario */}
-        <Grid container sx={{ mb: 4 }}>
+        <Grid container justifyContent="center">
           {/* Titulo Formulario */}
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={10} md={8}>
             <PageTitle
               title="Formulario de Personas"
               variant="h5"
@@ -339,7 +348,8 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
             />
           </Grid>
 
-          <Grid container item lg={6}>
+          {/* Formulario */}
+          <Grid container item sm={10} md={8}>
             {/* Id */}
             <Grid item xs={12} sm={6} sx={{ p: 1 }}>
               <TextField
@@ -464,23 +474,45 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
 
             {/* Ciudad */}
             <Grid item xs={12} sm={6} sx={{ p: 1 }}>
-              <TextField
-                {...register("ubicacion")}
-                label="Ciudad"
-                defaultValue="..."
-                required
-                onFocus={() =>
-                  getValues("ubicacion") === "..."
-                    ? setValue("ubicacion", "")
-                    : null
-                }
-                onBlur={() =>
-                  getValues("ubicacion") === ""
-                    ? setValue("ubicacion", "...")
-                    : null
-                }
-                sx={{ width: "100%", pr: "16px" }}
-              />
+              <FormControl sx={{ width: "100%" }}>
+                <InputLabel>Tipo</InputLabel>
+                <Controller
+                  name="ubicacion"
+                  rules={{
+                    required: "El tipo es obligatorio",
+                    validate: validateType,
+                  }}
+                  control={control}
+                  defaultValue="seleccionar"
+                  render={({ field }) => {
+                    const { onChange, value } = field;
+                    return (
+                      <Select
+                        {...register("ubicacion")}
+                        label="Tipo"
+                        value={value}
+                        onChange={onChange}
+                        readOnly={id !== "0"}
+                        error={!!errors.ubicacion}
+                      >
+                        <MenuItem key="seleccionar" value="seleccionar">
+                          Seleccionar
+                        </MenuItem>
+                        {ciudades.map((ciudad) => (
+                          <MenuItem key={ciudad} value={ciudad}>
+                            {ciudad}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    );
+                  }}
+                />
+                {!!errors.ubicacion && (
+                  <ErrorText
+                    text={errors.ubicacion.message?.toString() || "Error"}
+                  />
+                )}
+              </FormControl>
             </Grid>
 
             <Grid item xs={6} sx={{ p: 1 }}></Grid>
@@ -781,30 +813,30 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
               />
             </Grid>
           </Grid>
-        </Grid>
 
-        {/* Botones */}
-        <Grid container spacing={2}>
-          <Grid item xs={6} sm={3} md={2}>
-            <Button
-              size="medium"
-              variant="contained"
-              sx={{ width: { xs: "100%", sm: "initial" } }}
-              type="submit"
-            >
-              Guardar
-            </Button>
-          </Grid>
+          {/* Botones */}
+          <Grid container item sm={10} md={8} paddingTop={2}>
+            <Grid item xs={6} sm={3} md={2}>
+              <Button
+                size="medium"
+                variant="contained"
+                sx={{ width: { xs: "100%", sm: "initial" } }}
+                type="submit"
+              >
+                Guardar
+              </Button>
+            </Grid>
 
-          <Grid item xs={6} sm={3} md={2}>
-            <Button
-              size="medium"
-              variant="outlined"
-              sx={{ width: { xs: "100%", sm: "initial" } }}
-              onClick={cancel}
-            >
-              Cancelar
-            </Button>
+            <Grid item xs={6} sm={3} md={2}>
+              <Button
+                size="medium"
+                variant="outlined"
+                sx={{ width: { xs: "100%", sm: "initial" } }}
+                onClick={cancel}
+              >
+                Cancelar
+              </Button>
+            </Grid>
           </Grid>
         </Grid>
       </Box>
