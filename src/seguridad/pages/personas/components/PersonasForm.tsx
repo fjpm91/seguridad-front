@@ -475,11 +475,11 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
             {/* Ciudad */}
             <Grid item xs={12} sm={6} sx={{ p: 1 }}>
               <FormControl sx={{ width: "100%" }}>
-                <InputLabel>Tipo</InputLabel>
+                <InputLabel>Ciudad</InputLabel>
                 <Controller
                   name="ubicacion"
                   rules={{
-                    required: "El tipo es obligatorio",
+                    required: "El Ciudad es obligatorio",
                     validate: validateType,
                   }}
                   control={control}
