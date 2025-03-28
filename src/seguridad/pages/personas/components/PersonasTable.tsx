@@ -84,7 +84,7 @@ export const PersonasTable = ({
       localization={MRT_Localization_ES}
       enableRowActions={allowUpdate}
       positionActionsColumn="last"
-      initialState={{ density: "compact" }}
+      initialState={{ density: "compact", showColumnFilters: true }}
       defaultColumn={{
         size: 50,
       }}
