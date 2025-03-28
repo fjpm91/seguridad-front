@@ -268,10 +268,12 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
                             ) ?? null
                           : null
                       }
-                      getOptionLabel={(option) => option.nombre_completo}
+                      getOptionLabel={(option) =>
+                        `${option.persona_id}. ${option.nombre_completo}`
+                      }
                       renderOption={(props, option) => (
                         <Box component="li" {...props}>
-                          {option.nombre_completo}
+                          {option.persona_id}. {option.nombre_completo}
                         </Box>
                       )}
                       onChange={(_event: any, newValue) => {
