@@ -11,7 +11,12 @@ import {
 } from "@mui/material";
 import { MRT_Localization_ES } from "material-react-table/locales/es";
 import { IconoHabilitado } from "../../../../components";
-import { AccountCircle, AddToPhotos, Edit } from "@mui/icons-material";
+import {
+  AccountCircle,
+  AddToPhotos,
+  AssignmentInd,
+  Edit,
+} from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 interface Props {
@@ -53,6 +58,12 @@ export const PersonasTable = ({
       {
         accessorFn: (row) => (row?.user ? row.user.name : ""),
         header: "Usuario",
+      },
+      {
+        accessorKey: "ubicacion",
+        header: "Ciudad",
+        filterVariant: "select",
+        filterSelectOptions: ["SANTA CRUZ", "LA PAZ", "COCHABAMBA"],
       },
       {
         accessorKey: "habilitado",
@@ -125,6 +136,15 @@ export const PersonasTable = ({
                 onClick={() => navigate(`/users/${row.original.user.id}`)}
               >
                 <AccountCircle color="secondary" />
+              </IconButton>
+            </Tooltip>
+          )}
+          {row.original.cargos_id && (
+            <Tooltip title="Ver Cargo">
+              <IconButton
+                onClick={() => navigate(`/cargos/${row.original.cargos_id}`)}
+              >
+                <AssignmentInd color="warning" />
               </IconButton>
             </Tooltip>
           )}
