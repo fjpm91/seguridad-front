@@ -33,6 +33,10 @@ export const UnidadOrganizativaTable = ({
         header: "Descripcion",
       },
       {
+        accessorKey: "empresa_nombre",
+        header: "Empresa",
+      },
+      {
         accessorKey: "division_nombre",
         header: "Division",
         filterVariant: "select",

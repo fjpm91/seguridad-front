@@ -31,6 +31,10 @@ export const RolTable = ({
   const columns = useMemo<MRT_ColumnDef<Rol>[]>(
     () => [
       {
+        accessorKey: "rol_id",
+        header: "ID",
+      },
+      {
         accessorKey: "nombre",
         header: "Nombre",
       },
