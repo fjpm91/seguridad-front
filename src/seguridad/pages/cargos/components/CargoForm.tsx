@@ -110,7 +110,7 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
   };
 
   const getDivisiones = async (empresaId: number = 0) => {
-    const { data } = await apiClient.get<BackendResponse>(
+    const { data } = await apiClient.get<BackendResponse<Division[]>>(
       `/${ApiEndpoints.DIVISIONES}`,
       {
         params: {
@@ -129,11 +129,14 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
       return;
     }
 
-    setDivisiones([...data.data]);
+    const divisionesData = data.data;
+    setDivisiones([
+      ...divisionesData.sort((a, b) => a.nombre.localeCompare(b.nombre)),
+    ]);
   };
 
   const getUnidadesOrganizativas = async (divisionId: number = 0) => {
-    const { data } = await apiClient.get<BackendResponse>(
+    const { data } = await apiClient.get<BackendResponse<UnidadOrganizativa[]>>(
       `/${ApiEndpoints.UNIDADES_ORGANIZATIVAS}`,
       {
         params: { divisionId },
@@ -149,11 +152,14 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
       showMessage(data.message);
       return;
     }
-    setUnidadesOrganizativas([...data.data]);
+    const unidadesData = data.data;
+    setUnidadesOrganizativas([
+      ...unidadesData.sort((a, b) => a.nombre.localeCompare(b.nombre)),
+    ]);
   };
 
   const getCargos = async (empresaId?: number) => {
-    const { data } = await apiClient.get<BackendResponse>(
+    const { data } = await apiClient.get<BackendResponse<Cargo[]>>(
       `/${ApiEndpoints.CARGOS}`,
       {
         params: {
@@ -171,7 +177,10 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
       showMessage(data.message);
       return;
     }
-    setCargos([...data.data]);
+    const newLocal = data.data;
+    setCargos([
+      ...newLocal.sort((a, b) => a.cargo_nombre.localeCompare(b.cargo_nombre)),
+    ]);
   };
 
   const getCargoById = async () => {

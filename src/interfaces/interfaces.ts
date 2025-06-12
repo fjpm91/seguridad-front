@@ -203,10 +203,10 @@ export interface MenuItem {
   Menu: number;
 }
 
-export interface BackendResponse {
+export interface BackendResponse<T = any> {
   success: boolean;
   message: string;
-  data: any;
+  data: T;
 }
 
 export interface Cargo {

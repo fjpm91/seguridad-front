@@ -130,7 +130,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
   };
 
   const getCargos = async (unidadNegocioId = 0) => {
-    const { data } = await apiClient.get<BackendResponse>(
+    const { data } = await apiClient.get<BackendResponse<Cargo[]>>(
       `/${ApiEndpoints.CARGOS}`,
       {
         params: {
@@ -149,11 +149,16 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
       return;
     }
 
-    setCargos([...data.data]);
+    const cargosData = data.data;
+    setCargos([
+      ...cargosData.sort((a, b) =>
+        a.cargo_nombre.localeCompare(b.cargo_nombre)
+      ),
+    ]);
   };
 
   const getDivisiones = async (empresaId: number = 0) => {
-    const { data } = await apiClient.get<BackendResponse>(
+    const { data } = await apiClient.get<BackendResponse<Division[]>>(
       `/${ApiEndpoints.DIVISIONES}`,
       {
         params: {
@@ -172,11 +177,14 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
       return;
     }
 
-    setDivisiones([...data.data]);
+    const divisionesData = data.data;
+    setDivisiones([
+      ...divisionesData.sort((a, b) => a.nombre.localeCompare(b.nombre)),
+    ]);
   };
 
   const getUnidadesOrganizativas = async (divisionId: number = 0) => {
-    const { data } = await apiClient.get<BackendResponse>(
+    const { data } = await apiClient.get<BackendResponse<UnidadOrganizativa[]>>(
       `/${ApiEndpoints.UNIDADES_ORGANIZATIVAS}`,
       {
         params: { divisionId },
@@ -192,7 +200,13 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
       showMessage(data.message);
       return;
     }
-    setUnidadesOrganizativas([...data.data]);
+
+    const unidadesOrganizativasData = data.data;
+    setUnidadesOrganizativas([
+      ...unidadesOrganizativasData.sort((a, b) =>
+        a.nombre.localeCompare(b.nombre)
+      ),
+    ]);
   };
 
   const getPersonaById = async () => {
@@ -815,7 +829,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
 
           {/* Botones */}
           <Grid container item sm={10} md={8} paddingTop={2}>
-            <Grid item xs={6} sm={3} md={2}>
+            <Grid item xs={6} sm={3}>
               <Button
                 size="medium"
                 variant="contained"
@@ -826,7 +840,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
               </Button>
             </Grid>
 
-            <Grid item xs={6} sm={3} md={2}>
+            <Grid item xs={6} sm={3}>
               <Button
                 size="medium"
                 variant="outlined"
