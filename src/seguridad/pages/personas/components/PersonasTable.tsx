@@ -46,7 +46,7 @@ export const PersonasTable = ({
         header: "Nombre",
       },
       {
-        accessorKey: "cargo",
+        accessorFn: (row) => (row?.cargos ? row.cargos.nombre : ""),
         header: "Cargo",
       },
       {
