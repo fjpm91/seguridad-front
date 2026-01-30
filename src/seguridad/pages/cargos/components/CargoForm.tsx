@@ -56,11 +56,11 @@ export const CargoForm = ({ setOpen, setToastMessage }: Props) => {
   }, []);
 
   useEffect(() => {
-    if (empresaWatched) {
-      getUnidadesNegocio(empresaWatched);
-      getCargos(empresaWatched);
-      getDivisiones(empresaWatched);
-    }
+    console.log("🚀 ~ useEffect ~ empresaWatched:", empresaWatched);
+    if (!empresaWatched) return;
+    getUnidadesNegocio(empresaWatched);
+    getCargos(empresaWatched);
+    getDivisiones(empresaWatched);
   }, [empresaWatched]);
 
   useEffect(() => {

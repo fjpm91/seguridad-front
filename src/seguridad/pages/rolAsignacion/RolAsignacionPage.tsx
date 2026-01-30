@@ -173,7 +173,7 @@ export const RolAsignacionPage = ({ setOpen, setToastMessage }: Props) => {
         px: { md: 2 },
       }}
     >
-      <Container>
+      <Container maxWidth="xl">
         <PageTitle title="Rol Asignacion" divider={true} />
 
         {allowInsert && (
