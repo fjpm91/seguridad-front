@@ -61,7 +61,7 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
     if (!id || id === "0") return;
 
     const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.USERS}/${id}`
+      `/${ApiEndpoints.USERS}/${id}`,
     );
 
     if (!data) return;
@@ -71,13 +71,13 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
     setValue("name", userdata.name);
     setValue("persona_id", userdata.persona_id);
     setValue("email", userdata.email);
-    setValue("persona_id", userdata.persona_id);
     setValue("habilitado", userdata.habilitado === 1 ? true : false);
+    if (userdata.user_sai) setValue("user_sai", userdata.user_sai);
   };
 
   const getPersonas = async () => {
     const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.PERSONAS}`
+      `/${ApiEndpoints.PERSONAS}`,
     );
 
     if (!data) {
@@ -103,7 +103,7 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
           ...datos,
           user: user?.id,
           codigo_app: import.meta.env.VITE_CODIGO_APP,
-        }
+        },
       );
       if (!data) {
         showMessage(Messages.NO_SE_PUDO_COMPLETAR);
@@ -132,7 +132,7 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
       };
       const { data } = await apiClient.post<BackendResponse>(
         `/${ApiEndpoints.ELIMINAR_USUARIO_ROL}`,
-        datos
+        datos,
       );
 
       if (!data) {
@@ -168,7 +168,7 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
     try {
       const { data } = await apiClient.put<BackendResponse>(
         `/${ApiEndpoints.USERS}/${id}`,
-        datos
+        datos,
       );
 
       if (!data) {
@@ -226,11 +226,7 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
         }}
       >
         {/* Formulario */}
-        <Grid
-          container
-          spacing={2}
-          sx={{ mb: 4, justifyContent: { xs: "center", sm: "start" } }}
-        >
+        <Grid container spacing={2} sx={{ mb: 4, justifyContent: "center" }}>
           <Grid container item xs={12} md={10}>
             {/* Titulo Formulario */}
             <Grid item xs={12}>
@@ -242,12 +238,13 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Id */}
-            <Grid item xs={12} sm={4} sx={{ p: 1 }}>
+            <Grid item xs={12} sm={4} lg={3} sx={{ p: 1 }}>
               <TextField
                 {...register("id")}
                 label="Id"
                 defaultValue="0"
                 disabled
+                sx={{ width: "100%" }}
               />
             </Grid>
 
@@ -263,9 +260,9 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
                     <Autocomplete
                       value={
                         value
-                          ? personas.find(
-                              (option) => value === option.persona_id
-                            ) ?? null
+                          ? (personas.find(
+                              (option) => value === option.persona_id,
+                            ) ?? null)
                           : null
                       }
                       getOptionLabel={(option) =>
@@ -305,7 +302,7 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Username */}
-            <Grid item xs={12} sm={4} sx={{ p: 1 }}>
+            <Grid item xs={12} sm={4} lg={3} sx={{ p: 1 }}>
               <TextField
                 {...register("name", {
                   required: true,
@@ -324,6 +321,7 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
                     ? true
                     : false
                 }
+                sx={{ width: "100%" }}
               />
               {(errors.name?.type === "required" ||
                 errors.name?.type === "minLength") && (
@@ -332,7 +330,7 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
             </Grid>
 
             {/* Email */}
-            <Grid item xs={12} sm={8} sx={{ p: 1 }}>
+            <Grid item xs={12} sm={8} lg={5} sx={{ p: 1 }}>
               <TextField
                 {...register("email", { required: true })}
                 label="Email"
@@ -343,6 +341,27 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
               {errors.name?.type === "required" && (
                 <ErrorText text="El Email es obligatorio" />
               )}
+            </Grid>
+
+            {/* User SAI */}
+            <Grid item xs={12} sm={4} lg={3} sx={{ p: 1 }}>
+              <TextField
+                {...register("user_sai", {})}
+                required
+                label="User SAI"
+                defaultValue="..."
+                onFocus={() =>
+                  getValues("user_sai") === "..."
+                    ? setValue("user_sai", "")
+                    : null
+                }
+                onBlur={() =>
+                  getValues("user_sai") === ""
+                    ? setValue("user_sai", "...")
+                    : null
+                }
+                sx={{ width: "100%" }}
+              />
             </Grid>
 
             {/* Habilitado */}

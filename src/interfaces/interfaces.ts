@@ -83,13 +83,14 @@ export interface Division {
 }
 
 export interface User {
-  id: number;
   created_at: number;
   email: string;
   habilitado: number;
+  id: number;
   name: string;
   persona_id: number;
   updated_at: number;
+  user_sai: string;
   persona: Persona;
   roles: Rol[];
 }

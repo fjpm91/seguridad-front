@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Lock } from "@mui/icons-material";
 import {
   Alert,
   Avatar,
@@ -14,12 +14,12 @@ import {
   createTheme,
 } from "@mui/material";
 import { useContext, useState } from "react";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { BackendResponse, Modulo } from "../../interfaces/interfaces";
+import { Messages, StorageKeys } from "../../models/enums";
 import apiClient from "../../services/api-client";
 import { AuthContext } from "../context";
-import { Messages, StorageKeys } from "../../models/enums";
-import { BackendResponse, Modulo } from "../../interfaces/interfaces";
-import { useForm } from "react-hook-form";
 
 const guardarState = (
   accesos: any,
@@ -29,7 +29,7 @@ const guardarState = (
   rol: any,
   user: any,
   token: any,
-  cargo: any
+  cargo: any,
 ) => {
   localStorage.setItem(StorageKeys.ACCESOS, JSON.stringify(accesos));
   localStorage.setItem(StorageKeys.APLICACION, JSON.stringify(aplicacion));
@@ -103,7 +103,7 @@ export const LoginPage = () => {
         rol,
         user,
         token,
-        cargo
+        cargo,
       );
       login(
         accesos,
@@ -115,7 +115,7 @@ export const LoginPage = () => {
         token,
         user,
         true,
-        cargo
+        cargo,
       );
 
       navigate("/");
@@ -149,8 +149,7 @@ export const LoginPage = () => {
           sm={4}
           md={7}
           sx={{
-            backgroundImage:
-              "url(https://source.unsplash.com/random?wallpapers)",
+            backgroundImage: "url(/fondo.jpg)",
             backgroundRepeat: "no-repeat",
             backgroundColor: (t) =>
               t.palette.mode === "light"
@@ -160,23 +159,33 @@ export const LoginPage = () => {
             backgroundPosition: "center",
           }}
         />
-        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+        <Grid
+          item
+          xs={12}
+          sm={8}
+          md={5}
+          component={Paper}
+          elevation={6}
+          square
+          alignContent="center"
+        >
           <Grid container>
             <Grid item xs={12}>
               <Box
                 sx={{
                   p: 2,
-                  mt: 4,
+                  pb: 6,
+                  my: "auto",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
                 }}
               >
-                <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-                  <LockOutlinedIcon />
+                <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
+                  <Lock />
                 </Avatar>
 
-                <Typography component="h1" variant="h5">
+                <Typography component="h1" variant="h5" textAlign="center">
                   {import.meta.env.VITE_NOMBRE_APP}
                 </Typography>
 
@@ -185,7 +194,12 @@ export const LoginPage = () => {
                   autoComplete="off"
                   noValidate
                   onSubmit={handleSubmit(submitForm)}
-                  sx={{ width: "100%", mt: 1 }}
+                  sx={{
+                    width: "100%",
+                    mt: 2,
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
                 >
                   <TextField
                     {...register("username", {
@@ -200,7 +214,6 @@ export const LoginPage = () => {
                         ? true
                         : false
                     }
-                    sx={{ width: "100%" }}
                   />
                   {(errors.username?.type === "required" ||
                     errors.username?.type === "minLength") && (
@@ -228,7 +241,7 @@ export const LoginPage = () => {
                         ? true
                         : false
                     }
-                    sx={{ width: "100%", mt: 2 }}
+                    sx={{ mt: 2 }}
                   />
                   {(errors.password?.type === "required" ||
                     errors.password?.type === "minLength") && (
