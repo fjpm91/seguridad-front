@@ -75,7 +75,7 @@ export enum ApiEndpoints {
   UNIDADES_ORGANIZATIVAS = "unidades-organizativas",
   USERS = "users",
   USUARIO_ROL = "usuario-rol",
-  USUARIO_ROL_BASE = "usuario-rol/set-rol-base",
+  USUARIO_ROL_BASE = "usuario-rol-base",
   ASIGNAR_CARGOS = "asignar-cargos",
 }
 
