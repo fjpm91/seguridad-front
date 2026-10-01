@@ -50,12 +50,13 @@ export const ModalRolesByUser = React.forwardRef(
                   </Tooltip>
                 </Stack>
                 <Divider sx={{ mb: 1 }} />
-
                 <List>
                   {!!user &&
                     user.roles.map((rol) => (
                       <ListItem key={rol.rol_id}>
-                        <ListItemText primary={rol.nombre} />
+                        <ListItemText
+                          primary={rol.aplicacion.nombre + " - " + rol.nombre}
+                        />
                       </ListItem>
                     ))}
                 </List>
@@ -65,5 +66,5 @@ export const ModalRolesByUser = React.forwardRef(
         </Container>
       </Box>
     );
-  }
+  },
 );

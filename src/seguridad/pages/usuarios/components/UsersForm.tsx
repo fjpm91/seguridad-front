@@ -398,7 +398,9 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
               <List>
                 {userRoles.map((rol) => (
                   <ListItem key={rol.rol_id}>
-                    <ListItemText primary={rol.nombre} />
+                    <ListItemText
+                      primary={`${rol.nombre + " - " + rol.aplicacion.nombre}`}
+                    />
 
                     <IconButton
                       color="error"
