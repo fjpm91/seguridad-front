@@ -91,7 +91,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
 
   const getEmpresas = async () => {
     const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.EMPRESAS}`
+      `/${ApiEndpoints.EMPRESAS}`,
     );
 
     if (!data) {
@@ -114,7 +114,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
         params: {
           empresaId: empresaId ? empresaId : 0,
         },
-      }
+      },
     );
 
     if (!data) {
@@ -136,7 +136,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
         params: {
           unidadNegocioId,
         },
-      }
+      },
     );
 
     if (!data) {
@@ -152,7 +152,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
     const cargosData = data.data;
     setCargos([
       ...cargosData.sort((a, b) =>
-        a.cargo_nombre.localeCompare(b.cargo_nombre)
+        a.cargo_nombre.localeCompare(b.cargo_nombre),
       ),
     ]);
   };
@@ -164,7 +164,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
         params: {
           empresaId,
         },
-      }
+      },
     );
 
     if (!data) {
@@ -188,7 +188,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
       `/${ApiEndpoints.UNIDADES_ORGANIZATIVAS}`,
       {
         params: { divisionId },
-      }
+      },
     );
 
     if (!data) {
@@ -204,7 +204,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
     const unidadesOrganizativasData = data.data;
     setUnidadesOrganizativas([
       ...unidadesOrganizativasData.sort((a, b) =>
-        a.nombre.localeCompare(b.nombre)
+        a.nombre.localeCompare(b.nombre),
       ),
     ]);
   };
@@ -220,7 +220,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
       `/${ApiEndpoints.PERSONAS}/${id}`,
       {
         params: datos,
-      }
+      },
     );
 
     if (!data) {
@@ -267,7 +267,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
     try {
       const { data } = await apiClient.post<BackendResponse>(
         `/${ApiEndpoints.PERSONAS}`,
-        { ...datos }
+        { ...datos },
       );
       if (!data) {
         showMessage(Messages.NO_SE_PUDO_COMPLETAR);
@@ -299,7 +299,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
     try {
       const { data } = await apiClient.put<BackendResponse>(
         `/${ApiEndpoints.PERSONAS}/${id}`,
-        { ...datos }
+        { ...datos },
       );
       if (!data) {
         showMessage(Messages.NO_SE_PUDO_COMPLETAR);
@@ -378,26 +378,12 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
             {/* Codigo */}
             <Grid item xs={12} sm={6} sx={{ p: 1 }}>
               <TextField
-                {...register("codigo", {
-                  required: "El codigo es obligatorio",
-                  minLength: {
-                    value: 4,
-                    message: "El codigo debe ser mayor a 4 caracteres",
-                  },
-                })}
+                {...register("codigo")}
                 label="Codigo"
-                defaultValue="0"
-                required
-                error={
-                  errors.codigo?.type === "required" || codigoWatched === 0
-                    ? true
-                    : false
-                }
+                value={id === "0" ? "Asignado por el sistema" : codigoWatched ?? ""}
+                disabled
                 sx={{ width: "100%", pr: "16px" }}
               />
-              {errors.codigo && (
-                <ErrorText text={errors.codigo.message || "Error"} />
-              )}
             </Grid>
 
             {/* Nombre */}
@@ -542,9 +528,9 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                     <Autocomplete
                       value={
                         value
-                          ? empresas.find(
-                              (option) => value === option.empresa_id
-                            ) ?? null
+                          ? (empresas.find(
+                              (option) => value === option.empresa_id,
+                            ) ?? null)
                           : null
                       }
                       getOptionLabel={(option) => option.nombre}
@@ -593,8 +579,8 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                     <Autocomplete
                       value={
                         value
-                          ? unidades.find((option) => value === option.id) ??
-                            null
+                          ? (unidades.find((option) => value === option.id) ??
+                            null)
                           : null
                       }
                       getOptionLabel={(option) =>
@@ -645,9 +631,9 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                     <Autocomplete
                       value={
                         value
-                          ? divisiones.find(
-                              (option) => value === option.division_id
-                            ) ?? null
+                          ? (divisiones.find(
+                              (option) => value === option.division_id,
+                            ) ?? null)
                           : null
                       }
                       getOptionLabel={(option) => option.nombre}
@@ -698,10 +684,10 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                     <Autocomplete
                       value={
                         value
-                          ? unidadesOrganizativas.find(
+                          ? (unidadesOrganizativas.find(
                               (option) =>
-                                value === option.unidad_organizativa_id
-                            ) ?? null
+                                value === option.unidad_organizativa_id,
+                            ) ?? null)
                           : null
                       }
                       getOptionLabel={(option) => option.nombre}
@@ -712,7 +698,7 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                       )}
                       onChange={(_event: any, newValue) => {
                         onChange(
-                          newValue ? newValue.unidad_organizativa_id : null
+                          newValue ? newValue.unidad_organizativa_id : null,
                         );
                       }}
                       options={unidadesOrganizativas}
@@ -754,9 +740,9 @@ export const PersonasForm = ({ setOpen, setToastMessage }: Props) => {
                     <Autocomplete
                       value={
                         value
-                          ? cargos.find(
-                              (option) => value === option.cargo_id
-                            ) ?? null
+                          ? (cargos.find(
+                              (option) => value === option.cargo_id,
+                            ) ?? null)
                           : null
                       }
                       getOptionLabel={(option) => option.cargo_nombre}
