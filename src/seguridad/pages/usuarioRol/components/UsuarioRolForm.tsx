@@ -39,9 +39,9 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
   const { user } = authState;
   const {
     control,
-    register,
     handleSubmit,
     setValue,
+    resetField,
     formState: { errors },
     watch,
   } = useForm<UsuarioRol>();
@@ -52,27 +52,33 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const aplicacionWatched = watch("aplicacion_id");
+  const rolWatched = watch("rol_id");
 
   useEffect(() => {
     getUsers();
-    getRoles();
     getAplicaciones();
     getRolById();
   }, []);
 
   useEffect(() => {
     if (!rolActual) return;
+    setValue("aplicacion_id", rolActual.aplicacion_id);
     setValue("rol_id", rolActual.rol_id);
   }, [rolActual]);
 
   useEffect(() => {
-    if (!aplicacionWatched) return;
+    if (!aplicacionWatched) {
+      setRoles([]);
+      resetField("rol_id");
+      return;
+    }
+
     getRoles(aplicacionWatched);
   }, [aplicacionWatched]);
 
   const getUsers = async () => {
     const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.USERS}`
+      `/${ApiEndpoints.USERS}`,
     );
 
     if (!data) {
@@ -88,14 +94,14 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
     setUsers([...data.data]);
   };
 
-  const getRoles = async (aplicacionId = 0) => {
+  const getRoles = async (aplicacionId: number) => {
     const { data } = await apiClient.get<BackendResponse>(
       `/${ApiEndpoints.ROLES}`,
       {
         params: {
           aplicacionId,
         },
-      }
+      },
     );
 
     if (!data) {
@@ -112,7 +118,7 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
 
   const getAplicaciones = async () => {
     const { data } = await apiClient.get<BackendResponse>(
-      `/${ApiEndpoints.APLICACIONES}`
+      `/${ApiEndpoints.APLICACIONES}`,
     );
 
     if (!data) {
@@ -145,7 +151,7 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
       setIsLoading(true);
       const { data } = await apiClient.post<BackendResponse>(
         `/${ApiEndpoints.USUARIO_ROL}`,
-        { ...datos }
+        { ...datos },
       );
       if (!data) {
         showMessage(Messages.NO_SE_PUDO_COMPLETAR);
@@ -210,7 +216,7 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
       };
       const { data } = await apiClient.post<BackendResponse>(
         `/${ApiEndpoints.ELIMINAR_USUARIO_ROL}`,
-        datos
+        datos,
       );
 
       if (!data) {
@@ -275,9 +281,8 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
             {/* Id */}
             <Grid item xs={12} sm={4} md={3} sx={{ p: 1 }}>
               <TextField
-                {...register("rol_id")}
                 label="Id"
-                defaultValue="0"
+                value={rolWatched ?? ""}
                 disabled
                 sx={{ width: "100%" }}
               />
@@ -295,7 +300,8 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
                     <Autocomplete
                       value={
                         value
-                          ? users.find((option) => value === option.id) ?? null
+                          ? (users.find((option) => value === option.id) ??
+                            null)
                           : null
                       }
                       getOptionLabel={(option) =>
@@ -345,9 +351,9 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
                     <Autocomplete
                       value={
                         value
-                          ? aplicaciones.find(
-                              (option) => value === option.aplicacion_id
-                            ) ?? null
+                          ? (aplicaciones.find(
+                              (option) => value === option.aplicacion_id,
+                            ) ?? null)
                           : null
                       }
                       getOptionLabel={(option) =>
@@ -358,9 +364,11 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
                           {option.codigo_nombre} - {option.nombre}
                         </Box>
                       )}
-                      onChange={(_event: any, newValue) =>
-                        onChange(newValue ? newValue.aplicacion_id : null)
-                      }
+                      onChange={(_event: any, newValue) => {
+                        onChange(newValue ? newValue.aplicacion_id : null);
+                        resetField("rol_id");
+                        setRoles([]);
+                      }}
                       options={aplicaciones}
                       renderInput={(params) => (
                         <TextField
@@ -389,8 +397,8 @@ export const UsuarioRolForm = ({ setOpen, setToastMessage }: Props) => {
                     <Autocomplete
                       value={
                         value
-                          ? roles.find((option) => value === option.rol_id) ??
-                            null
+                          ? (roles.find((option) => value === option.rol_id) ??
+                            null)
                           : null
                       }
                       getOptionLabel={(option) =>
