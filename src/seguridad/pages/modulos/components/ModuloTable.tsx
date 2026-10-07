@@ -7,8 +7,9 @@ import {
   FormControlLabel,
   FormGroup,
   IconButton,
+  Tooltip,
 } from "@mui/material";
-import { Edit } from "@mui/icons-material";
+import { Download, Edit } from "@mui/icons-material";
 import { MRT_Localization_ES } from "material-react-table/locales/es";
 import { IconoHabilitado } from "../../../../components";
 
@@ -18,6 +19,7 @@ interface Props {
   filtroAplicaciones: string[];
   handleOpen: (modulo_id: number) => void;
   handleHabilitar: (modulo_id: number) => void;
+  handleExportar: (modulo: Modulo) => void;
 }
 
 export const ModuloTable = ({
@@ -26,6 +28,7 @@ export const ModuloTable = ({
   filtroAplicaciones,
   handleHabilitar,
   handleOpen,
+  handleExportar,
 }: Props) => {
   const columns = useMemo<MRT_ColumnDef<Modulo>[]>(
     () => [
@@ -85,7 +88,7 @@ export const ModuloTable = ({
         ),
       },
     ],
-    [modulos]
+    [filtroAplicaciones]
   );
 
   return (
@@ -93,7 +96,7 @@ export const ModuloTable = ({
       columns={columns}
       data={modulos}
       localization={MRT_Localization_ES}
-      enableRowActions={allowUpdate}
+      enableRowActions={true}
       positionActionsColumn="last"
       initialState={{ density: "compact" }}
       defaultColumn={{
@@ -104,18 +107,36 @@ export const ModuloTable = ({
           sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}
           key={row.id}
         >
-          <IconButton
-            color="warning"
-            onClick={() => handleHabilitar(row.original.modulo_id)}
-          >
-            <IconoHabilitado habilitado={row.original.habilitado} />
-          </IconButton>
-          <IconButton
-            color="primary"
-            onClick={() => handleOpen(row.original.modulo_id)}
-          >
-            <Edit />
-          </IconButton>
+          {allowUpdate && (
+            <>
+              <Tooltip title={row.original.habilitado ? "Deshabilitar" : "Habilitar"}>
+                <IconButton
+                  color="warning"
+                  onClick={() => handleHabilitar(row.original.modulo_id)}
+                >
+                  <IconoHabilitado habilitado={row.original.habilitado} />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Editar">
+                <IconButton
+                  color="primary"
+                  onClick={() => handleOpen(row.original.modulo_id)}
+                >
+                  <Edit />
+                </IconButton>
+              </Tooltip>
+            </>
+          )}
+          {!!row.original.menu && (
+            <Tooltip title="Exportar módulos">
+              <IconButton
+                color="secondary"
+                onClick={() => handleExportar(row.original)}
+              >
+                <Download />
+              </IconButton>
+            </Tooltip>
+          )}
         </Box>,
       ]}
     />

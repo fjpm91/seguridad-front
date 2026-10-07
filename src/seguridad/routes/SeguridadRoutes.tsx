@@ -9,7 +9,7 @@ import {
 } from "../pages";
 import { AplicacionForm, AplicacionesPage } from "../pages/aplicaciones";
 import { ComponentesPage } from "../pages/componentes/ComponentesPage";
-import { ModuloForm, ModulosPage } from "../pages/modulos";
+import { ExportarModulosForm, ModuloForm, ModulosPage } from "../pages/modulos";
 import { NavBar, SideBar } from "../../ui";
 import { RolesPage } from "../pages/roles/RolesPage";
 import { RolFormPage } from "../pages/roles/components";
@@ -84,6 +84,15 @@ export const SeguridadRoutes = () => {
               path="accesos"
               element={
                 <RolesAccesosForm
+                  setToastMessage={setToastMessage}
+                  setOpen={setOpen}
+                />
+              }
+            />
+            <Route
+              path="modulos/exportar"
+              element={
+                <ExportarModulosForm
                   setToastMessage={setToastMessage}
                   setOpen={setOpen}
                 />

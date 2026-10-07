@@ -10,7 +10,7 @@ import {
   TipoAcceso,
 } from "../../../models/enums";
 import { Button, Container } from "@mui/material";
-import { ModuloTable } from "./components";
+import { ModalImportarModulos, ModuloTable } from "./components";
 import useAutorizado from "../../../hooks/useAutorizado";
 import { PageBox, PageTitle } from "../../../components";
 
@@ -23,6 +23,7 @@ export const ModulosPage = ({ setOpen, setToastMessage }: Props) => {
   const { authState } = useAuth();
   const [modulos, setModulos] = useState<Modulo[]>([]);
   const [filtroAplicaciones, setFiltroAplicaciones] = useState<string[]>([]);
+  const [openImportar, setOpenImportar] = useState(false);
   const { accesos, user } = authState;
   const navigate = useNavigate();
   const { allowed: allowInsert } = useAutorizado(
@@ -60,6 +61,31 @@ export const ModulosPage = ({ setOpen, setToastMessage }: Props) => {
 
   const handleOpen = (id: number) => {
     navigate(`/${ApiEndpoints.MODULOS}/${id}`);
+  };
+
+  const handleExportar = async (modulo: Modulo) => {
+    try {
+      const response = await apiClient.get<Blob>(
+        `/${ApiEndpoints.MODULOS_TRANSFERENCIA_EXPORTAR}/${modulo.modulo_id}`,
+        { responseType: "blob" }
+      );
+      const blobUrl = URL.createObjectURL(response.data);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = getFilename(response.headers["content-disposition"], modulo);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.log(error);
+      showMessage("No se pudo exportar la configuración del módulo");
+    }
+  };
+
+  const getFilename = (contentDisposition: string | undefined, modulo: Modulo) => {
+    const filenameMatch = contentDisposition?.match(/filename\*?=(?:UTF-8''|\\")?([^;\\"]+)/i);
+    return filenameMatch?.[1] || `modulo-${modulo.modulo_id}.json`;
   };
 
   const handleHabilitar = async (id: number) => {
@@ -122,6 +148,21 @@ export const ModulosPage = ({ setOpen, setToastMessage }: Props) => {
           </Button>
         )}
 
+        <Button
+          variant="outlined"
+          onClick={() => setOpenImportar(true)}
+          sx={{ mb: 2, ml: { sm: 2 } }}
+        >
+          Importar módulos
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={() => navigate("/modulos/exportar")}
+          sx={{ mb: 2, ml: { sm: 2 } }}
+        >
+          Exportar módulos
+        </Button>
+
         {modulos && (
           <ModuloTable
             filtroAplicaciones={filtroAplicaciones}
@@ -129,9 +170,20 @@ export const ModulosPage = ({ setOpen, setToastMessage }: Props) => {
             modulos={modulos}
             handleHabilitar={handleHabilitar}
             handleOpen={handleOpen}
+            handleExportar={handleExportar}
           />
         )}
       </Container>
+      <ModalImportarModulos
+        open={openImportar}
+        userId={user?.id}
+        onClose={() => setOpenImportar(false)}
+        onSuccess={async (message) => {
+          setOpenImportar(false);
+          showMessage(message);
+          await getModulos();
+        }}
+      />
     </PageBox>
   );
 };
