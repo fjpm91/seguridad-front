@@ -1,4 +1,4 @@
-import { Box, Button, Container, Modal } from "@mui/material";
+import { Box, Button, Container } from "@mui/material";
 import { useAuth } from "../../../auth/context/useAuth";
 import { useEffect, useState } from "react";
 import { BackendResponse, Persona } from "../../../interfaces/interfaces";
@@ -112,6 +112,32 @@ export const PersonasPage = ({ setOpen, setToastMessage }: Props) => {
     setShow(false);
   };
 
+  const handleExportar = async (personaId: number, nombrePersona: string) => {
+    try {
+      const query = `ids[]=${encodeURIComponent(personaId)}`;
+      const response = await apiClient.get<Blob>(
+        `/${ApiEndpoints.EXPORTAR_PERSONAS_JSON}?${query}`,
+        { responseType: "blob" }
+      );
+      const blobUrl = URL.createObjectURL(response.data);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      const nombreArchivo = nombrePersona
+        .trim()
+        .replace(/[<>:"/\\|?*\x00-\x1F]/g, "")
+        .replace(/\s+/g, "-") || `persona-${personaId}`;
+      link.download = `${nombreArchivo}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.log(error);
+      showMessage("No se pudieron exportar las personas");
+    } finally {
+    }
+  };
+
   return (
     <PageBox>
       <Container maxWidth="xl">
@@ -144,19 +170,17 @@ export const PersonasPage = ({ setOpen, setToastMessage }: Props) => {
             handleHabilitar={handleHabilitar}
             handleOpen={handleOpen}
             handleOpenCC={handleOpenCentroCosto}
+            allowExport={allowInsert}
+            handleExportar={handleExportar}
           />
         )}
       </Container>
 
-      <Modal
-        disableEnforceFocus
+      <ModalImportarPersonas
         open={show}
         onClose={handleCloseModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <ModalImportarPersonas />
-      </Modal>
+        onSuccess={() => { getPersonas(); handleCloseModal(); }}
+      />
     </PageBox>
   );
 };

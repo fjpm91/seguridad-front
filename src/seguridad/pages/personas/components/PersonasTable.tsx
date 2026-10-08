@@ -15,6 +15,7 @@ import {
   AccountCircle,
   AddToPhotos,
   AssignmentInd,
+  Download,
   Edit,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
@@ -25,6 +26,8 @@ interface Props {
   handleOpen: (persona_id: number) => void;
   handleOpenCC: (persona_id: number) => void;
   handleHabilitar: (persona_id: number) => void;
+  allowExport: boolean;
+  handleExportar: (persona_id: number, nombrePersona: string) => void;
 }
 
 export const PersonasTable = ({
@@ -33,6 +36,8 @@ export const PersonasTable = ({
   handleHabilitar,
   handleOpen,
   handleOpenCC,
+  allowExport,
+  handleExportar,
 }: Props) => {
   const navigate = useNavigate();
   const columns = useMemo<MRT_ColumnDef<Persona>[]>(
@@ -145,6 +150,13 @@ export const PersonasTable = ({
                 onClick={() => navigate(`/cargos/${row.original.cargos_id}`)}
               >
                 <AssignmentInd color="warning" />
+              </IconButton>
+            </Tooltip>
+          )}
+          {allowExport && (
+            <Tooltip title="Exportar Persona">
+              <IconButton onClick={() => handleExportar(row.original.persona_id, row.original.nombre_completo)}>
+                <Download />
               </IconButton>
             </Tooltip>
           )}
