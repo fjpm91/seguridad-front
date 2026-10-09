@@ -2,12 +2,13 @@ import { Close } from "@mui/icons-material";
 import {
   Box,
   Container,
-  Divider,
   Grid,
   IconButton,
   List,
   ListItem,
   ListItemText,
+  Paper,
+  Typography,
   Stack,
   Tooltip,
 } from "@mui/material";
@@ -22,6 +23,7 @@ interface Props {
 
 export const ModalRolesByUser = React.forwardRef(
   ({ user, handleCloseModal }: Props, _ref) => {
+    const roles = user?.roles ?? [];
     return (
       <Box sx={{ padding: "1rem" }}>
         <Container>
@@ -36,9 +38,7 @@ export const ModalRolesByUser = React.forwardRef(
             <Grid container justifyContent="center">
               {/* Roles del Usuario*/}
               <Grid item xs={12} sm={10} md={8} sx={{ p: 1 }}>
-                <Stack
-                  sx={{ flexDirection: "row", alignContent: "space-around" }}
-                >
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
                   <PageTitle
                     variant="h5"
                     title={"Roles del usuario " + user?.name}
@@ -49,17 +49,26 @@ export const ModalRolesByUser = React.forwardRef(
                     </IconButton>
                   </Tooltip>
                 </Stack>
-                <Divider sx={{ mb: 1 }} />
-                <List>
-                  {!!user &&
-                    user.roles.map((rol) => (
-                      <ListItem key={rol.rol_id}>
-                        <ListItemText
-                          primary={rol.aplicacion.nombre + " - " + rol.nombre}
-                        />
-                      </ListItem>
-                    ))}
-                </List>
+                <Paper variant="outlined" sx={{ borderRadius: 2, overflow: "hidden" }}>
+                  {!roles.length ? (
+                    <Typography color="text.secondary" sx={{ p: 2 }}>Este usuario no tiene roles asignados.</Typography>
+                  ) : (
+                    <Box sx={{ maxHeight: "55vh", overflowY: "auto", px: 2 }}>
+                      <List disablePadding>
+                        {roles.map((rol) => (
+                          <ListItem key={rol.rol_id} divider sx={{ py: 0.75, px: 0 }}>
+                            <ListItemText
+                              primary={rol.nombre}
+                              secondary={<Box component="span" sx={{ display: "block", pl: 1.5 }}>└─ {rol.aplicacion.nombre}</Box>}
+                              primaryTypographyProps={{ variant: "body1" }}
+                              secondaryTypographyProps={{ variant: "body2" }}
+                            />
+                          </ListItem>
+                        ))}
+                      </List>
+                    </Box>
+                  )}
+                </Paper>
               </Grid>
             </Grid>
           </Box>

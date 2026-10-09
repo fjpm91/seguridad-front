@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { MRT_Localization_ES } from "material-react-table/locales/es";
 import { IconoHabilitado } from "../../../../components";
-import { AccountCircle, AccountTree, Edit } from "@mui/icons-material";
+import { AccountCircle, AccountTree, Download, Edit } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 interface Props {
@@ -19,6 +19,8 @@ interface Props {
   handleOpen: (user_id: number) => void;
   handleHabilitar: (user_id: number) => void;
   handleVerRoles: (usuario: User) => void;
+  allowExport: boolean;
+  handleExportar: (user: User) => void;
 }
 
 export const UsersTable = ({
@@ -27,6 +29,8 @@ export const UsersTable = ({
   handleHabilitar,
   handleVerRoles,
   handleOpen,
+  allowExport,
+  handleExportar,
 }: Props) => {
   const navigate = useNavigate();
   const columns = useMemo<MRT_ColumnDef<User>[]>(
@@ -74,7 +78,7 @@ export const UsersTable = ({
       columns={columns}
       data={users}
       localization={MRT_Localization_ES}
-      enableRowActions={allowUpdate}
+      enableRowActions={allowUpdate || allowExport}
       positionActionsColumn="last"
       initialState={{ density: "compact", showColumnFilters: true }}
       defaultColumn={{
@@ -112,6 +116,11 @@ export const UsersTable = ({
           {row.original.roles.length > 0 && (
             <IconButton onClick={() => handleVerRoles(row.original)}>
               <AccountTree color="info" />
+            </IconButton>
+          )}
+          {allowExport && (
+            <IconButton onClick={() => handleExportar(row.original)}>
+              <Download />
             </IconButton>
           )}
         </Box>,

@@ -23,7 +23,7 @@ import {
   IconButton,
   List,
   ListItem,
-  ListItemText,
+  Paper,
   TextField,
   Typography,
 } from "@mui/material";
@@ -393,24 +393,30 @@ export const UsersForm = ({ setOpen, setToastMessage }: Props) => {
 
             {/* Roles del Usuario*/}
             <Grid item xs={12} sm={8} md={6} sx={{ p: 1 }}>
-              <Typography variant="body2">Roles del usuario</Typography>
-              <Divider />
-              <List>
-                {userRoles.map((rol) => (
-                  <ListItem key={rol.rol_id}>
-                    <ListItemText
-                      primary={`${rol.nombre + " - " + rol.aplicacion.nombre}`}
-                    />
-
-                    <IconButton
-                      color="error"
-                      onClick={() => handleEliminar(rol.rol_id)}
-                    >
-                      <Delete />
-                    </IconButton>
-                  </ListItem>
-                ))}
-              </List>
+              <Paper variant="outlined" sx={{ borderRadius: 2, overflow: "hidden" }}>
+                <Box sx={{ px: 2, py: 1.5, backgroundColor: "action.hover", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <Typography variant="subtitle1">Roles asignados</Typography>
+                  <Typography variant="body2" color="text.secondary">{userRoles.length} {userRoles.length === 1 ? "rol" : "roles"}</Typography>
+                </Box>
+                <Divider />
+                {userRoles.length === 0 ? (
+                  <Typography color="text.secondary" sx={{ p: 2 }}>Este usuario no tiene roles asignados.</Typography>
+                ) : (
+                  <List disablePadding>
+                    {userRoles.map((rol) => (
+                      <ListItem key={rol.rol_id} divider sx={{ py: 1.25, px: 2, alignItems: "center" }}>
+                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                          <Typography variant="body1">{rol.nombre}</Typography>
+                          <Typography variant="body2" color="text.secondary">{rol.aplicacion.nombre}</Typography>
+                        </Box>
+                        <IconButton color="error" size="small" aria-label="Quitar rol" onClick={() => handleEliminar(rol.rol_id)}>
+                          <Delete fontSize="small" />
+                        </IconButton>
+                      </ListItem>
+                    ))}
+                  </List>
+                )}
+              </Paper>
             </Grid>
           </Grid>
         </Grid>

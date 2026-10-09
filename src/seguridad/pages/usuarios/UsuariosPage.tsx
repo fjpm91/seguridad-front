@@ -1,7 +1,7 @@
 import { Box, Button, Container, Modal } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ModalRolesByUser, UsersTable } from ".";
+import { ModalImportarUsuarios, ModalRolesByUser, UsersTable } from ".";
 import { useAuth } from "../../../auth/context/useAuth";
 import { PageBox, PageTitle } from "../../../components";
 import useAutorizado from "../../../hooks/useAutorizado";
@@ -24,6 +24,7 @@ export const UsuariosPage = ({ setOpen, setToastMessage }: Props) => {
   const [users, setUsers] = useState<User[]>([]);
   const [selecteUser, setSelecteUser] = useState<User | null>(null);
   const [show, setShow] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const { accesos, user } = authState;
   const { allowed: allowInsert } = useAutorizado(
     ModulosSistema.PERSONAS + TipoAcceso.INSERT,
@@ -113,6 +114,27 @@ export const UsuariosPage = ({ setOpen, setToastMessage }: Props) => {
     setSelecteUser(null);
   };
 
+  const handleExportar = async (usuario: User) => {
+    try {
+      const response = await apiClient.get<Blob>(
+        `/${ApiEndpoints.EXPORTAR_USERS_JSON}?ids[]=${encodeURIComponent(usuario.id)}`,
+        { responseType: "blob" }
+      );
+      const blobUrl = URL.createObjectURL(response.data);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      const nombre = usuario.name.trim().replace(/[<>:"/\\|?*\x00-\x1F]/g, "").replace(/\s+/g, "-") || `usuario-${usuario.id}`;
+      link.download = `${nombre}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.log(error);
+      showMessage("No se pudo exportar el usuario");
+    }
+  };
+
   const showMessage = (text: string = "Operacion correcta") => {
     setToastMessage(text);
     setOpen(true);
@@ -131,6 +153,11 @@ export const UsuariosPage = ({ setOpen, setToastMessage }: Props) => {
               sx={{ mb: 2 }}
             >
               Nuevo Usuario
+            </Button>
+          )}
+          {allowInsert && (
+            <Button variant="outlined" onClick={() => setShowImport(true)} sx={{ mb: 2, ml: 1 }}>
+              Importar Usuarios
             </Button>
           )}
 
@@ -162,6 +189,8 @@ export const UsuariosPage = ({ setOpen, setToastMessage }: Props) => {
             handleHabilitar={handleHabilitar}
             handleOpen={handleOpen}
             handleVerRoles={handleVerRoles}
+            allowExport={allowInsert}
+            handleExportar={handleExportar}
           />
         ) : null}
       </Container>
@@ -178,6 +207,11 @@ export const UsuariosPage = ({ setOpen, setToastMessage }: Props) => {
           handleCloseModal={handleCloseModal}
         />
       </Modal>
+      <ModalImportarUsuarios
+        open={showImport}
+        onClose={() => setShowImport(false)}
+        onSuccess={() => { getUsers(); setShowImport(false); }}
+      />
     </PageBox>
   );
 };
