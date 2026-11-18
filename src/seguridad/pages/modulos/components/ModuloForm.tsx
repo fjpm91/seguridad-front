@@ -130,17 +130,17 @@ export const ModuloForm = ({ setOpen, setToastMessage }: Props) => {
 
   const submitForm = (event: any) => {
     if (!event.aplicacion_id) {
-      showMessage("Debes seleccionar una Aplicación");
+      showMessage("Debes seleccionar una Aplicacion");
       return;
     }
     if (!event.menu && !event.modulo_padre) {
       showMessage(
-        "Debes seleccionar un Módulo Padre para Módulos que no son Menú"
+        "Debes seleccionar un Modulo Padre para Modulos que no son Menú"
       );
       return;
     }
     if (event.menu && event.modulo_padre) {
-      showMessage("Menú no puede tener un Módulo Padre");
+      showMessage("Menú no puede tener un Modulo Padre");
       return;
     }
     if (id === "0") {
@@ -196,8 +196,8 @@ export const ModuloForm = ({ setOpen, setToastMessage }: Props) => {
         navigate("/modulos");
       }, 1000);
     } catch (error) {
-      console.log("🚀 ~ file: ModuloForm.tsx:128 ~ store ~ error:", error);
-      showMessage(JSON.stringify(error));
+      console.error("Error al crear el modulo:", error);
+      showMessage(getApiErrorMessage(error));
     }
   };
 
@@ -244,16 +244,28 @@ export const ModuloForm = ({ setOpen, setToastMessage }: Props) => {
         navigate("/modulos");
       }, 1000);
     } catch (error) {
-      console.log("🚀 ~ file: AplicacionForm.tsx:55 ~ store ~ error:", error);
-      showMessage(JSON.stringify(error));
+      console.error("Error al actualizar el modulo:", error);
+      showMessage(getApiErrorMessage(error));
     }
   };
 
   const cancel = () => navigate(`/${ApiEndpoints.MODULOS}`);
 
-  const showMessage = (text: string = "Operacion correcta") => {
+  const showMessage = (text: string = "Operación correcta") => {
     setToastMessage(text);
     setOpen(true);
+  };
+
+  const getApiErrorMessage = (error: any) => {
+    const backendMessage = error?.response?.data?.message;
+
+    if (backendMessage) return backendMessage;
+
+    if (error?.response?.status === 422) {
+      return "No se puede crear o actualizar el modulo porque los datos enviados no son válidos.";
+    }
+
+    return error?.message || Messages.NO_SE_PUDO_COMPLETAR;
   };
 
   return (
@@ -303,7 +315,7 @@ export const ModuloForm = ({ setOpen, setToastMessage }: Props) => {
                   },
                 })}
                 required
-                label="Titulo"
+                label="Título"
                 defaultValue="---"
                 error={!!errors.titulo}
                 onFocus={() =>
@@ -412,7 +424,7 @@ export const ModuloForm = ({ setOpen, setToastMessage }: Props) => {
                       renderInput={(params) => (
                         <TextField
                           {...params}
-                          label="Aplicacion *"
+                          label="Aplicación *"
                           error={
                             errors.aplicacion_id?.type === "required"
                               ? true

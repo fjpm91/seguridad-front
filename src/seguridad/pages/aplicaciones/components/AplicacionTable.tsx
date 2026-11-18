@@ -1,4 +1,5 @@
 import { Edit, Launch } from "@mui/icons-material";
+import KeyIcon from "@mui/icons-material/Key";
 import { useMemo } from "react";
 import {
   FormGroup,
@@ -19,6 +20,7 @@ interface Props {
   aplicaciones: Aplicacion[];
   handleOpen: (aplicacion_id: number) => void;
   handleHabilitar: (aplicacion_id: number) => void;
+  handleGenerarCredencial: (aplicacion_id: number) => void;
 }
 
 export const AplicacionTable = ({
@@ -26,6 +28,7 @@ export const AplicacionTable = ({
   aplicaciones,
   handleHabilitar,
   handleOpen,
+  handleGenerarCredencial,
 }: Props) => {
   const columns = useMemo<MRT_ColumnDef<Aplicacion>[]>(
     () => [
@@ -100,6 +103,17 @@ export const AplicacionTable = ({
               onClick={() => handleOpen(row.original.aplicacion_id)}
             >
               <Edit />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Generar credencial">
+            <IconButton
+              color="secondary"
+              onClick={() =>
+                handleGenerarCredencial(row.original.aplicacion_id)
+              }
+            >
+              <KeyIcon />
             </IconButton>
           </Tooltip>
 

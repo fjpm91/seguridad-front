@@ -1,6 +1,21 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Container } from "@mui/material";
+import {
+  Alert,
+  Button,
+  CircularProgress,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import CloseIcon from "@mui/icons-material/Close";
 import apiClient from "../../../services/api-client";
 import { useAuth } from "../../../auth/context/useAuth";
 import { Aplicacion, BackendResponse } from "../../../interfaces/interfaces";
@@ -21,6 +36,10 @@ interface Props {
 export const AplicacionesPage = ({ setOpen, setToastMessage }: Props) => {
   const { authState } = useAuth();
   const [aplicaciones, setAplicaciones] = useState<Aplicacion[]>([]);
+  const [aplicacionParaCredencial, setAplicacionParaCredencial] =
+    useState<Aplicacion | null>(null);
+  const [credential, setCredential] = useState("");
+  const [generandoCredencial, setGenerandoCredencial] = useState(false);
   const navigate = useNavigate();
   const { accesos, user } = authState;
   const { allowed: allowInsert } = useAutorizado(
@@ -99,6 +118,49 @@ export const AplicacionesPage = ({ setOpen, setToastMessage }: Props) => {
     }
   };
 
+  const handleGenerarCredencial = (id: number) => {
+    const aplicacion = aplicaciones.find(
+      (app) => app.aplicacion_id === id
+    );
+    if (aplicacion) setAplicacionParaCredencial(aplicacion);
+  };
+
+  const generarCredencial = async () => {
+    if (!aplicacionParaCredencial) return;
+
+    try {
+      setGenerandoCredencial(true);
+      const { data } = await apiClient.post<{ data: { credential: string } }>(
+        `/aplicaciones/${aplicacionParaCredencial.aplicacion_id}/generar-credencial`,
+        undefined,
+        {
+          headers: {
+            Authorization: `Bearer ${authState.token}`,
+            Accept: "application/json",
+          },
+        }
+      );
+
+      if (!data?.data?.credential) {
+        showMessage("La respuesta no contiene una credencial válida");
+        return;
+      }
+
+      setCredential(data.data.credential);
+      setAplicacionParaCredencial(null);
+    } catch (error: any) {
+      showMessage(
+        error?.response?.data?.message || "No se pudo generar la credencial"
+      );
+    } finally {
+      setGenerandoCredencial(false);
+    }
+  };
+
+  const copiarCredencial = async () => {
+    await navigator.clipboard.writeText(credential);
+  };
+
   const showMessage = (text: string = "Operacion correcta") => {
     setToastMessage(text);
     setOpen(true);
@@ -125,9 +187,74 @@ export const AplicacionesPage = ({ setOpen, setToastMessage }: Props) => {
             aplicaciones={aplicaciones}
             handleHabilitar={handleHabilitar}
             handleOpen={handleOpen}
+            handleGenerarCredencial={handleGenerarCredencial}
           />
         )}
       </Container>
+
+      <Dialog
+        open={Boolean(aplicacionParaCredencial)}
+        onClose={() => !generandoCredencial && setAplicacionParaCredencial(null)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>Generar credencial</DialogTitle>
+        <DialogContent>
+          <Typography>
+            ¿Deseas generar una nueva credencial para la aplicación{" "}
+            <strong>{aplicacionParaCredencial?.nombre}</strong>?
+          </Typography>
+          <Alert severity="warning" sx={{ mt: 2 }}>
+            La credencial actual dejará de ser válida.
+          </Alert>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setAplicacionParaCredencial(null)}
+            disabled={generandoCredencial}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => void generarCredencial()}
+            disabled={generandoCredencial}
+          >
+            {generandoCredencial && <CircularProgress size={18} sx={{ mr: 1 }} />}
+            Confirmar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={Boolean(credential)} onClose={() => setCredential("")} fullWidth maxWidth="sm">
+        <DialogTitle sx={{ pr: 6 }}>
+          Credencial generada
+          <IconButton
+            aria-label="Cerrar"
+            onClick={() => setCredential("")}
+            sx={{ position: "absolute", right: 8, top: 8 }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <Stack spacing={2}>
+            <TextField value={credential} fullWidth InputProps={{ readOnly: true }} />
+            <Typography variant="body2" color="text.secondary">
+              Esta credencial solo se mostrará una vez.
+            </Typography>
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            startIcon={<ContentCopyIcon />}
+            onClick={() => void copiarCredencial()}
+          >
+            Copiar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </PageBox>
   );
 };

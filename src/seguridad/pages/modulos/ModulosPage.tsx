@@ -79,7 +79,7 @@ export const ModulosPage = ({ setOpen, setToastMessage }: Props) => {
       URL.revokeObjectURL(blobUrl);
     } catch (error) {
       console.log(error);
-      showMessage("No se pudo exportar la configuración del módulo");
+      showMessage("No se pudo exportar la configuracion del modulo");
     }
   };
 
@@ -128,7 +128,7 @@ export const ModulosPage = ({ setOpen, setToastMessage }: Props) => {
     }
   };
 
-  const showMessage = (text: string = "Operacion correcta") => {
+  const showMessage = (text: string = "Operación correcta") => {
     setToastMessage(text);
     setOpen(true);
   };
@@ -153,14 +153,14 @@ export const ModulosPage = ({ setOpen, setToastMessage }: Props) => {
           onClick={() => setOpenImportar(true)}
           sx={{ mb: 2, ml: { sm: 2 } }}
         >
-          Importar módulos
+          Importar modulos
         </Button>
         <Button
           variant="outlined"
           onClick={() => navigate("/modulos/exportar")}
           sx={{ mb: 2, ml: { sm: 2 } }}
         >
-          Exportar módulos
+          Exportar modulos
         </Button>
 
         {modulos && (
